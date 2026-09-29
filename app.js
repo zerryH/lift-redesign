@@ -1,0 +1,116 @@
+const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
+let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
+const TN=['Iron','Bronze','Silver','Gold','Platinum','Diamond','Master','Legend'];
+const IC={today:'M3 11l9-8 9 8v10H3z',history:'M12 7v5l3 2M3 12a9 9 0 1018 0 9 9 0 10-18 0',ranks:'M5 20V10M12 20V4M19 20v-7',settings:'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v3M12 19v3M2 12h3M19 12h3'};
+const LB={today:'Home',history:'History',ranks:'Ranks',settings:'Profile'};
+/* storage: whole state in one IndexedDB record, saved on every change */
+const idb=()=>new Promise((r,j)=>{const q=indexedDB.open('liftlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>r(q.result);q.onerror=j});
+const dbGet=async()=>{const d=await idb();return new Promise(r=>{const q=d.transaction('kv').objectStore('kv').get('s');q.onsuccess=()=>r(q.result)})};
+const save=async()=>{const d=await idb();d.transaction('kv','readwrite').objectStore('kv').put(S,'s')};
+const go=()=>{save();render()};
+const toast=(m,f)=>{const t=document.createElement('div');t.className='toast';t.textContent=m;if(f){t.onclick=f;t.style.animation='f .2s'}document.body.append(t);setTimeout(()=>t.remove(),f?15e3:2700)};
+/* maths */
+const num=v=>parseFloat(String(v).replace(',','.'))||0;
+const bw=()=>S.bw.length?S.bw[S.bw.length-1].kg:0;
+const est=(n,s)=>{const r=num(s.reps);if(s.t=='w'||r<1||r>12)return 0;let w=num(s.kg);if(EX[n]?.t=='W')w+=bw();const e=r==1?w:w*(1+r/30);return e>0?e:0};
+const th=n=>{const c=R.t[R.alias[n]||n];return c&&c[S.set.table=='F'?1:0]};
+const tier=(n,e)=>{const t=th(n);if(!t||!e||!bw())return -1;const r=e/bw();let i=0;t.forEach((v,j)=>{if(r>=v)i=j});return i};
+const bests=()=>{const m={};S.workouts.forEach(w=>w.ex.forEach(x=>x.sets.forEach(s=>{m[x.n]=Math.max(m[x.n]||0,est(x.n,s))})));return m};
+const tiers=()=>{const b=bests(),o={};for(const n in b)o[n]=tier(n,b[n]);return o};
+const last=n=>{for(let i=S.workouts.length-1;i>=0;i--){const x=S.workouts[i].ex.find(e=>e.n==n);if(x&&x.sets.length){const s=x.sets[x.sets.length-1];return s.kg+' kg x '+s.reps}}return''};
+const rem=()=>{if(!S.workouts.length)return'';const n=S.workouts.filter(w=>w.id>S.lastBackup).length,ref=S.lastBackup||S.workouts[0].id;return n>=10||(n>0&&Date.now()-ref>12096e5)?'<div class=note><small>Time for a backup — Profile → Export backup.</small></div>':''};
+const h=(a,b)=>`<h1><b>${a}</b>${b?' <i>'+b+'</i>':''}</h1>`;
+/* views */
+const RG=t=>t=='W'?[-60,100,.5]:t=='D'?[0,80,.5]:[0,300,2.5],G=12,TC=['#8b8f98','#c8834a','#c9d0da','#f2c14e','#3ecfc0','#a06cf5','#ff5a8a','#ff3b3b'],cv=(v,u)=>u=='lb'?v*2.20462:v,fm=v=>+(+v).toFixed(1);
+const lastSet=n=>{for(const w of [S.cur,...S.workouts.slice().reverse()]){const x=w&&w.ex.find(e=>e.n==n);if(x&&x.sets.length)return x.sets[x.sets.length-1]}};
+const ruler=()=>{const r=$('#rl');if(r)r.scrollLeft=(dr.kg-dr.lo)/dr.st*G};
+const chk=n=>{const r=S.rk[n],u=r.u,f=v=>fm(cv(v,u));return `<div class=row><div><b>${n}</b><small>${f(r.w)} ${u} × ${r.r} at ${f(r.b)} ${u} BW · ${r.x.toFixed(2)}x</small><i class=bar><u style="width:${r.pc}%"></u></i><small>${r.need==null?'Legend reached':f(r.need)+' '+u+' to '+TN[r.i+1]}</small></div><div class=col><span class=badge style="--c:${TC[r.i]}">${TN[r.i]}</span><button class=pill data-a=gr data-v="${n}">Update</button></div></div>`};
+const sheet=()=>{let s=$('#sh');if(!gr){s&&s.remove();return}if(!s){s=document.createElement('div');s.id='sh';s.className='sheet';document.body.append(s)}
+ const u=gr.u,r=gr.res,f=v=>fm(cv(v,u)),ch=(a,v,l,on)=>`<button class="pill ${on?'dark':''}" data-a=${a} data-v=${v}>${l}</button>`;
+ s.innerHTML=`<div class=bd data-a=gx></div><div class=sb><div class=hd><b class=ttl>Get your rank</b><button data-a=gx aria-label=Close>×</button></div>
+<label class=fl>Exercise<input data-g=n list=dl2 value="${gr.n}" placeholder="Search a lift" autocomplete=off></label><datalist id=dl2>${Object.keys(EX).filter(n=>R.t[R.alias[n]||n]).map(n=>`<option value="${n}">`).join('')}</datalist>
+<div class=chips>${ch('gu','kg','kg',u=='kg')}${ch('gu','lb','lb',u=='lb')}${ch('gs','M','Male',gr.f!='F')}${ch('gs','F','Female',gr.f=='F')}</div>
+<div class=g3><label class=fl>${EX[gr.n]?.t=='W'?'Added ('+u+')':'Weight ('+u+')'}<input data-g=w inputmode=decimal value="${gr.w}"></label><label class=fl>Reps<input data-g=r inputmode=numeric value="${gr.r}"></label><label class=fl>Bodyweight (${u})<input data-g=b inputmode=decimal value="${gr.b}"></label></div>
+<button class=cta data-a=calc>${r?'Update rank':'Get rank'}</button>${r?`<div class=res style="--c:${TC[r.i]}"><small>${r.n}</small><b>${TN[r.i]}</b><span>${r.x.toFixed(2)}x bodyweight · est. 1RM ${f(r.e)} ${u}</span><i class=bar><u style="width:${r.pc}%"></u></i><small>${r.need==null?'Top tier reached':f(r.need)+' '+u+' more to reach '+TN[r.i+1]}</small></div>`:''}</div>`};
+const V={
+today(){const c=S.cur,add=`<div class=add><input id=q list=dl placeholder="Add exercise" autocomplete=off><datalist id=dl>${Object.keys(EX).map(n=>`<option value="${n}">${EX[n].g}</option>`).join('')}</datalist><button class=pill data-a=addx>Add</button><button class=pill data-a=cx>Custom</button></div>`;
+ if(!c)return h('Today\'s','workout')+rem()+'<p class=q>Choose a split</p><div class=chips>'+['Empty',...Object.keys(X.templates)].map(t=>`<button class=pill data-a=start data-v="${t}">${t}</button>`).join('')+'</div>';
+ const L=c.ex,x=L[ci=Math.min(ci,L.length-1)],top=`<div class=top>${h(c.split=='Empty'?'Workout':c.split,c.d)}<button class=lnk data-a=tab data-v=settings>Set bodyweight</button></div>`,foot=`<div class=chips><button class="pill dark" data-a=fin>Finish workout</button><button class=pill data-a=cancel>Discard</button></div>`;
+ if(!x)return top+'<p class=q>Add your first exercise</p>'+add+foot;
+ const t=EX[x.n].t,[lo,hi,st]=RG(t),P=L[ci-1],N=L[ci+1],note={D:'per dumbbell',W:'added kg (negative = assisted)',M:'approximate, machines vary by gym'}[t]||'';
+ if(dr.n!=x.n){const l=lastSet(x.n);dr={n:x.n,kg:l?num(l.kg):t=='W'?0:t=='D'?10:20,reps:l?num(l.reps)||8:8}}
+ Object.assign(dr,{lo,hi,st});dr.kg=Math.min(hi,Math.max(lo,dr.kg));
+ let run=0;S.workouts.forEach(w=>w.ex.forEach(y=>{if(y.n==x.n)y.sets.forEach(s=>run=Math.max(run,est(x.n,s)))}));
+ const rows=x.sets.map((s,j)=>{const e=est(x.n,s),pr=e>run;run=Math.max(run,e);return `<div class=srow><span>Set ${j+1}</span><b>${s.kg} kg × ${s.reps}</b><em>${pr?'PR':''}</em><button class="tag ${s.t}" title="Warm-up" data-a=wu data-i=${ci} data-j=${j}>W</button><button data-a=ds data-i=${ci} data-j=${j} aria-label="Delete set">×</button></div>`}).join('');
+ return top+`<div class=car>${P?`<button class=side data-a=cp>${P.n}</button>`:'<span class=side></span>'}<div class=mid><small>${EX[x.n].g}</small><b>${x.n}</b></div>${N?`<button class=side data-a=cn>${N.n}</button>`:'<span class=side></span>'}</div>`+
+ `<div class=wt><b id=wv>${fm(dr.kg)}</b><span>kg</span></div><small class=ctr>${note}</small><div class=rw><div id=rl class=rl><div class=rt style="width:${(hi-lo)/st*G}px"></div></div></div>`+
+ `<div class=rp><button data-a=rm aria-label="Fewer reps">−</button><label><input id=rp inputmode=numeric value="${dr.reps}"><small>reps</small></label><button data-a=rpl aria-label="More reps">+</button></div><button class=cta data-a=log>Log set</button>`+
+ (rows?`<div class=sets>${rows}</div>`:'')+(N?'<button class="cta ghost" data-a=cn>Next exercise</button>':'')+`<button class=lnk data-a=rx data-i=${ci}>Remove ${x.n}</button>`+add+foot},
+history(){const o=[...S.workouts.keys()].sort((a,b)=>S.workouts[b].d.localeCompare(S.workouts[a].d)||b-a);
+ return h('Past','workouts')+(o.length?o.map(i=>{const w=S.workouts[i];return `<div class=row><div><b>${w.d} · ${w.split}</b><small>${w.ex.map(x=>x.n).join(', ')}</small><small>${w.ex.reduce((s,x)=>s+x.sets.length,0)} sets</small></div><div><button class=pill data-a=he data-i=${i}>Edit</button> <button class=pill data-a=hd data-i=${i}>Delete</button></div></div>`}).join(''):'<p class=q>No workouts yet. Finish one and it shows up here.</p>')},
+ranks(){const B=bw(),b=bests(),rows=B?Object.keys(EX).filter(th).map(n=>{const e=b[n]||0;return{n,g:EX[n].g,e,ti:tier(n,e),r:e/B,t:th(n)}}):[],d=rows.filter(x=>x.ti>=0);
+ const avg=a=>a.length?a.reduce((s,x)=>s+x.ti,0)/a.length:-1,nm=v=>v<0?'Unranked':TN[Math.round(v)],col=v=>v<0?'#4a4658':TC[Math.round(v)],gv=g=>avg(d.filter(x=>x.g==g)),o=avg(d),ck=Object.keys(S.rk);
+ const row=x=>{const nx=x.t[x.ti+1],txt=x.ti<0?'Unranked':x.ti==7?'Legend reached':`${(nx*B-x.e).toFixed(1)} kg to ${TN[x.ti+1]}`,pc=x.ti<0?0:x.ti==7?100:(x.r-x.t[x.ti])/(nx-x.t[x.ti])*100;
+  return `<div class=row><div><b>${x.n}</b><small>${x.e?x.e.toFixed(1)+' kg est. 1RM · '+x.r.toFixed(2)+'x BW':'No data'}${EX[x.n].t=='M'?' · approx':''}</small><i class=bar><u style="width:${pc}%"></u></i><small>${txt}</small></div><span class=badge style="--c:${col(x.ti)}">${nm(x.ti)}</span></div>`};
+ const fig=`<div class=fig style="--p:${col(gv('Push'))};--u:${col(gv('Pull'))};--l:${col(gv('Legs'))}"><svg viewBox="0 0 200 300" role=img aria-label="Body map"><circle class=sk cx=100 cy=26 r=15 /><path class=sk d="M92 40h16v14H92z"/><path class=pu d="M60 62Q100 50 140 62L136 102Q100 112 64 102Z"/><circle class=pu cx=54 cy=70 r=14 /><circle class=pu cx=146 cy=70 r=14 /><path class=pl d="M42 82L28 152L44 156L60 92Z"/><path class=pl d="M158 82L172 152L156 156L140 92Z"/><path class=ab d="M78 106h44v52q-22 8-44 0z"/><path class=lg d="M66 164L98 164L94 288L74 288Z"/><path class=lg d="M102 164L134 164L126 288L106 288Z"/></svg>${[['Push','l1'],['Pull','r1'],['Legs','l2']].map(([g,c])=>`<div class="co ${c}" style="--c:${col(gv(g))}"><small>${g}</small><b>${nm(gv(g))}</b></div>`).join('')}</div>`;
+ return h('Your','rank')+`<div class=big><b style="color:${col(o)}">${nm(o)}</b><span>${d.length?(d.reduce((s,x)=>s+x.r,0)/d.length).toFixed(2)+'x BW average':'Log a lift or check one below'}</span></div>`+fig+`<button class=cta data-a=gr>Get your rank</button>`+
+ (ck.length?'<p class=q>Your rank checks</p>'+ck.map(chk).join(''):'')+
+ (B?`<p class=q>Logged lifts</p><div class=chips>${['All','Push','Pull','Legs'].map(g=>`<button class="pill ${flt==g?'dark':''}" data-a=flt data-v=${g}>${g}</button>`).join('')}</div>`+rows.filter(x=>flt=='All'||x.g==flt).map(row).join(''):'<p class=q>Add your bodyweight in Profile to rank your logged lifts.</p>')},
+settings(){const B=bw(),d=S.lastBackup?Math.floor((Date.now()-S.lastBackup)/864e5)+' days ago':'never';
+ return h('Your','profile')+`<p class=q>Bodyweight (kg)</p><div class=add><input id=bw inputmode=decimal placeholder="${B||'e.g. 80'}"><button class=pill data-a=bw>Save</button></div><small>${S.bw.slice(-4).map(x=>x.d+': '+x.kg+' kg').join(' · ')}</small><p class=q>Ranking table</p><div class=chips>${['M','F'].map(t=>`<button class="pill ${S.set.table==t?'dark':''}" data-a=tbl data-v=${t}>${t=='M'?'Male':'Female'}</button>`).join('')}<button class="pill ${S.set.dark?'dark':''}" data-a=dk>Dark mode</button></div><p class=q>Backup · last: ${d}</p><div class=chips><button class=pill data-a=exp>Export backup</button><label class=pill>Import backup<input type=file accept=".json,application/json" id=imp hidden></label><button class=pill data-a=demo>Load demo data</button></div>`}};
+const render=()=>{$('#v').innerHTML=V[view]();$('#v').style.animation='none';$('#v').offsetWidth;$('#v').style.animation='';ruler()};
+const nav=()=>{$('#n').innerHTML='<span class=wm><b>Lift</b>log</span>'+Object.keys(IC).map(k=>`<button class="${view==k?'on':''}" data-a=tab data-v=${k}><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg><small>${LB[k]}</small></button>`).join('')};
+/* actions */
+const addN=n=>{if(!n)return;if(!EX[n]){const t=(prompt('Type for "'+n+'":\nB = barbell/other, D = per dumbbell, W = bodyweight (+added kg), M = machine','B')||'B').toUpperCase();S.custom.push({n,t});EX[n]={g:'Custom',t}}ci=S.cur.ex.push({n,sets:[]})-1;go()};
+const A={
+log:()=>{S.cur.ex[ci].sets.push({kg:dr.kg,reps:dr.reps,t:''});go()},
+cp:()=>{ci=Math.max(0,ci-1);render()},cn:()=>{ci++;render()},
+rm:()=>{dr.reps=Math.max(1,dr.reps-1);render()},rpl:()=>{dr.reps++;render()},
+gr:d=>{const k=S.rk[d.v],u=k?k.u:S.set.unit||'kg',c=v=>fm(cv(v,u));gr=k?{n:d.v,w:c(k.w),r:String(k.r),b:c(k.b),u,f:k.f,res:k}:{n:'',w:'',r:'5',b:bw()?c(bw()):'',u,f:S.set.table,res:null};sheet()},
+gx:()=>{gr=null;sheet()},gs:d=>{gr.f=d.v;sheet()},
+gu:d=>{if(gr.u==d.v)return;const k=d.v=='lb'?2.20462:1/2.20462,f=v=>v===''?'':String(fm(num(v)*k));gr.w=f(gr.w);gr.b=f(gr.b);gr.u=d.v;S.set.unit=d.v;save();sheet()},
+calc:()=>{const k=gr.u=='lb'?1/2.20462:1,n=gr.n.trim(),f=gr.f=='F'?1:0,t=R.t[R.alias[n]||n]?.[f],w=num(gr.w)*k,r=Math.round(num(gr.r)),b=num(gr.b)*k;
+ if(!EX[n]||!t)return toast('Pick an exercise from the list');if(r<1||r>12)return toast('Reps must be 1 to 12');if(b<=0)return toast('Enter your bodyweight');if(w<=0&&EX[n].t!='W')return toast('Enter the weight you lifted');
+ const W=EX[n].t=='W'?w+b:w,e=r==1?W:W*(1+r/30),x=e/b;let i=0;t.forEach((v,j)=>{if(x>=v)i=j});const nx=t[i+1],rec={n,w,r,b,u:gr.u,f:gr.f,i,x,e,pc:i==7?100:Math.max(0,(x-t[i])/(nx-t[i])*100),need:i==7?null:nx*b-e,d:iso()};
+ S.rk[n]=rec;gr.res=rec;if(!bw())S.bw.push({d:iso(),kg:b});save();render();sheet()},
+tab:d=>{view=d.v;nav();render()},
+start:d=>{const T=X.templates[d.v],L=!T?[]:typeof T=='string'?Object.keys(EX).filter(n=>EX[n].g==T.slice(2)):T;ci=0;S.cur={id:Date.now(),d:iso(),split:d.v,ex:L.map(n=>({n,sets:[]}))};go()},
+ds:d=>{S.cur.ex[d.i].sets.splice(d.j,1);go()},
+wu:d=>{const s=S.cur.ex[d.i].sets[d.j];s.t=s.t=='w'?'':'w';go()},
+rx:d=>{S.cur.ex.splice(d.i,1);go()},
+up:d=>{const a=S.cur.ex,i=+d.i;if(i>0)[a[i-1],a[i]]=[a[i],a[i-1]];go()},
+addx:()=>addN($('#q').value.trim()),cx:()=>addN((prompt('Custom exercise name')||'').trim()),
+cancel:()=>{if(confirm('Discard this workout?')){S.cur=null;go()}},
+fin:()=>{const a=tiers();S.workouts.push(S.cur);S.cur=null;const b=tiers(),up=Object.keys(b).filter(n=>b[n]>=0&&b[n]>(a[n]??-1));go();if(up[0])toast(TN[b[up[0]]]+' - '+up[0])},
+he:d=>{if(S.cur&&!confirm('Replace the workout in progress?'))return;ci=0;S.cur=S.workouts.splice(d.i,1)[0];view='today';nav();go()},
+hd:d=>{if(confirm('Delete this workout?')){S.workouts.splice(d.i,1);go()}},
+flt:d=>{flt=d.v;render()},
+bw:()=>{const v=num($('#bw').value);if(v>0){S.bw.push({d:iso(),kg:v});go();toast('Saved')}},
+tbl:d=>{S.set.table=d.v;go()},
+dk:()=>{S.set.dark=+!S.set.dark;document.documentElement.dataset.d=S.set.dark;go()},
+exp:async()=>{const j=JSON.stringify({app:'liftlog',version:1,date:iso(),workouts:S.workouts,custom:S.custom,bw:S.bw,settings:S.set,rk:S.rk}),f=new File([j],`lift-backup-${iso()}.json`,{type:'application/json'});
+ try{if(navigator.canShare?.({files:[f]}))await navigator.share({files:[f]});else throw 0}catch(e){if(e&&e.name=='AbortError')return;const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;a.click()}
+ S.lastBackup=Date.now();go()},
+demo:()=>{S.bw.push({d:iso(),kg:80});for(let k=0;k<8;k++){const t=Date.now()-(8-k)*6048e5,W=(n,kg,reps)=>({n,sets:[{kg,reps,t:''}]});S.workouts.push({id:t,d:new Date(t).toISOString().slice(0,10),split:'Demo',ex:[W('Bench Press',60+k*3,5),W('Squat',80+k*5,5),W('Deadlift',100+k*5,3),W('Pull-Up',k*1.25,6),W('Lateral Raise',6+k*.5,10)]})}go();toast('Demo data loaded')}};
+const addCustom=c=>EX[c.n]=EX[c.n]||{g:'Custom',t:c.t||'B'};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)A[b.dataset.a]?.(b.dataset)});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.g)gr[t.dataset.g]=t.value;if(t.id=='rp')dr.reps=Math.max(1,Math.round(num(t.value)))});
+document.addEventListener('change',async e=>{const t=e.target;if(t.id!='imp'||!t.files[0])return;
+ try{const d=JSON.parse(await t.files[0].text());if(!Array.isArray(d.workouts)||!Array.isArray(d.bw))throw 0;
+  const m=confirm('Merge with current data?\nOK = Merge · Cancel = choose Replace');if(!m&&!confirm('Replace ALL current data with this backup?'))return;
+  if(m){S.rk={...(d.rk||{}),...S.rk};const ids=new Set(S.workouts.map(w=>w.id));S.workouts.push(...d.workouts.filter(w=>!ids.has(w.id)));S.custom.push(...(d.custom||[]).filter(c=>!S.custom.some(o=>o.n==c.n)));S.bw=[...S.bw,...d.bw.filter(b=>!S.bw.some(o=>o.d==b.d&&o.kg==b.kg))].sort((a,b)=>a.d.localeCompare(b.d))}
+  else{S.workouts=d.workouts;S.custom=d.custom||[];S.bw=d.bw;S.set={...S.set,...d.settings};S.rk=d.rk||{}}
+  S.custom.forEach(addCustom);document.documentElement.dataset.d=S.set.dark;go();toast('Backup imported')}catch{toast('Not a valid backup file')}});
+document.addEventListener('keydown',e=>{const t=e.target,inp=t.tagName=='INPUT';
+ if(e.key=='/'&&!inp){const q=$('#q');if(q){e.preventDefault();q.focus()}}
+ if((e.ctrlKey||e.metaKey)&&e.key=='z'&&S.cur){e.preventDefault();S.cur.ex[ci]?.sets.pop();go()}
+ if(e.key=='Enter'&&t.id=='q')A.addx();});
+function sw(){if(!('serviceWorker' in navigator))return;const had=!!navigator.serviceWorker.controller;
+ navigator.serviceWorker.register('sw.js').then(r=>r.addEventListener('updatefound',()=>{const w=r.installing;w.addEventListener('statechange',()=>{if(w.state=='installed'&&navigator.serviceWorker.controller)toast('Update available — tap to reload',()=>w.postMessage('skip'))})}));
+ navigator.serviceWorker.addEventListener('controllerchange',()=>had&&location.reload())}
+(async()=>{[X,R]=await Promise.all(['exercises.json','ranks-config.json'].map(u=>fetch(u).then(r=>r.json())));
+ S=Object.assign({workouts:[],custom:[],bw:[],set:{table:'M',dark:1},rk:{},cur:null,lastBackup:0},await dbGet());if(S.set.v!=3){S.set.dark=1;S.set.v=3}
+ X.ex.forEach(s=>{const[n,g,t]=s.split('|');EX[n]={g,t}});S.custom.forEach(addCustom);
+ document.documentElement.dataset.d=S.set.dark;navigator.storage?.persist?.();nav();render();sw()})();
+
+document.addEventListener('scroll',e=>{const r=e.target;if(r.id!='rl')return;const v=Math.min(dr.hi,Math.max(dr.lo,dr.lo+Math.round(r.scrollLeft/G)*dr.st));dr.kg=v;$('#wv').textContent=fm(v)},true);
