@@ -31,7 +31,7 @@ nav button.on{color:var(--ac)}nav svg{width:24px;height:24px;stroke:currentColor
 .phead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:6px}
 .phead>span{color:var(--mu);font-size:11px;letter-spacing:.18em;font-weight:800}
 .phead>div{display:flex;align-items:baseline;gap:6px}.phead b{font-size:52px;line-height:.95;letter-spacing:-1.8px;font-weight:850}.phead small{font-size:12px}
-\.range-wrap{position:relative;height:102px;margin:4px -2px 0;overflow:hidden;border-radius:18px;--pct:50%}
+.range-wrap{position:relative;height:102px;margin:4px -2px 0;overflow:hidden;border-radius:18px;--pct:50%}
 .range-window{position:absolute;inset:0;overflow:hidden;border-radius:18px;mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 90%,transparent 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 90%,transparent 100%)}
 .range-window:before{content:'';position:absolute;left:8%;right:8%;bottom:20px;height:2px;background:color-mix(in srgb,var(--fg) 16%,transparent);border-radius:99px;pointer-events:none}
 .range-window:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--cd),transparent 14%,transparent 86%,var(--cd));opacity:.8;pointer-events:none;z-index:2}

@@ -17,3 +17,11 @@ Minimal offline strength tracker: logging + bodyweight-relative ranks. Kg only, 
 - Dark purple UI, exercise carousel + working weight and reps sliders for logging (kg), body map on Ranks.
 - Ranks → **Get your rank**: pick a lift, enter weight, reps and bodyweight (kg or lb) to see your tier. The result is saved per exercise until you update it, and included in backups.
 - New workouts created from any split start with a clean exercise list; add exercises manually as you go.
+
+
+### Open directly from the downloaded ZIP
+The `index.html` file is self-contained. After extracting the ZIP, double-click `index.html` to run Lift directly from `file://` without npm, localhost, or a server. Exercise/rank data is embedded for this mode; IndexedDB is used when available, with localStorage fallback.
+
+
+### Ranking balance
+Legs exercises use 25% higher rank-entry ratios than before, making high ranks require proportionally stronger estimated 1RM relative to bodyweight.
