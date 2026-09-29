@@ -4,9 +4,11 @@ const TN=['Iron','Bronze','Silver','Gold','Platinum','Diamond','Master','Legend'
 const IC={today:'M3 11l9-8 9 8v10H3z',history:'M12 7v5l3 2M3 12a9 9 0 1018 0 9 9 0 10-18 0',ranks:'M5 20V10M12 20V4M19 20v-7',settings:'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v3M12 19v3M2 12h3M19 12h3'};
 const LB={today:'Home',history:'History',ranks:'Ranks',settings:'Profile'};
 /* storage: whole state in one IndexedDB record, saved on every change */
-const idb=()=>new Promise((r,j)=>{try{const q=indexedDB.open('liftlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error||new Error('IndexedDB unavailable'))}catch(e){j(e)}});
-const dbGet=async()=>{try{const d=await idb();return await new Promise((r,j)=>{const q=d.transaction('kv').objectStore('kv').get('s');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error||new Error('IndexedDB read failed'))})}catch(e){try{return JSON.parse(localStorage.getItem('liftlog-state')||'null')}catch{return null}}};
-const save=async()=>{try{const d=await idb();d.transaction('kv','readwrite').objectStore('kv').put(S,'s')}catch(e){try{localStorage.setItem('liftlog-state',JSON.stringify(S))}catch{}}};
+const idb=()=>new Promise((r,j)=>{try{if(location.protocol==='file:')return j(new Error('Use localStorage for file URLs'));const q=indexedDB.open('liftlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error||new Error('IndexedDB unavailable'))}catch(e){j(e)}});
+const localGet=()=>{try{return JSON.parse(localStorage.getItem('liftlog-state')||'null')}catch{return null}};
+const localSave=()=>{try{localStorage.setItem('liftlog-state',JSON.stringify(S));return true}catch{return false}};
+const dbGet=async()=>{if(location.protocol==='file:')return localGet();try{const d=await Promise.race([idb(),new Promise((_,j)=>setTimeout(()=>j(new Error('IndexedDB timeout')),1200))]);return await new Promise((r,j)=>{const q=d.transaction('kv').objectStore('kv').get('s');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error||new Error('IndexedDB read failed'))})}catch(e){return localGet()}};
+const save=async()=>{if(location.protocol==='file:'){localSave();return}try{const d=await Promise.race([idb(),new Promise((_,j)=>setTimeout(()=>j(new Error('IndexedDB timeout')),1200))]);d.transaction('kv','readwrite').objectStore('kv').put(S,'s')}catch(e){localSave()}};
 const go=()=>{save();render()};
 const toast=(m,f)=>{const t=document.createElement('div');t.className='toast';t.textContent=m;if(f){t.onclick=f;t.style.animation='f .2s'}document.body.append(t);setTimeout(()=>t.remove(),f?15e3:2700)};
 /* maths */
@@ -56,12 +58,14 @@ ranks(){const B=bw(),b=bests(),rows=B?Object.keys(EX).filter(th).map(n=>{const e
  (ck.length?'<p class=q>Your rank checks</p>'+ck.map(chk).join(''):'')+
  (B?`<p class=q>Logged lifts</p><div class=chips>${['All','Push','Pull','Legs'].map(g=>`<button class="pill ${flt==g?'dark':''}" data-a=flt data-v=${g}>${g}</button>`).join('')}</div>`+rows.filter(x=>flt=='All'||x.g==flt).map(row).join(''):'<p class=q>Add your bodyweight in Profile to rank your logged lifts.</p>')},
 settings(){const B=bw(),d=S.lastBackup?Math.floor((Date.now()-S.lastBackup)/864e5)+' days ago':'never';
- return h('Your','profile')+`<p class=q>Bodyweight (kg)</p><div class=add><input id=bw inputmode=decimal placeholder="${B||'e.g. 80'}"><button class=pill data-a=bw>Save</button></div><small>${S.bw.slice(-4).map(x=>x.d+': '+x.kg+' kg').join(' · ')}</small><p class=q>Appearance</p><div class=chips><button class="pill ${S.set.table=='M'?'dark':''}" data-a=tbl data-v=M>Male</button><button class="pill ${S.set.table=='F'?'dark':''}" data-a=tbl data-v=F>Female</button><button class="pill ${S.set.dark?'dark':''}" data-a=dk>Dark mode</button><button class="toggle ${S.set.motion?'on':''}" data-a=anim aria-pressed="${!!S.set.motion}"><span class=track><i></i></span><span>Animations</span><small>${S.set.motion?'On':'Off'}</small></button></div><p class=q>Backup · last: ${d}</p><div class=chips><button class=pill data-a=exp>Export backup</button><label class=pill>Import backup<input type=file accept=".json,application/json" id=imp hidden></label><button class=pill data-a=demo>Load demo data</button></div>`}};
+ return h('Your','profile')+`<p class=q>Bodyweight (kg)</p><div class=add><input id=bw inputmode=decimal placeholder="${B||'e.g. 80'}"><button class=pill data-a=bw>Save</button></div><small>${S.bw.slice(-4).map(x=>x.d+': '+x.kg+' kg').join(' · ')}</small><p class=q>Appearance</p><div class=chips><button class="pill ${S.set.table=='M'?'dark':''}" data-a=tbl data-v=M>Male</button><button class="pill ${S.set.table=='F'?'dark':''}" data-a=tbl data-v=F>Female</button><button class="pill ${S.set.dark?'dark':''}" data-a=dk>Dark mode</button><button class="toggle ${S.set.motion?'on':''}" data-a=anim aria-pressed="${!!S.set.motion}"><span class=track><i></i></span><span>Animations</span><small>${S.set.motion?'On':'Off'}</small></button></div><p class=q>Backup · last: ${d}</p><div class=chips><button class=pill data-a=exp>Export backup</button><label class=pill>Import backup<input type=file accept=".json,application/json" id=imp hidden></label><button class=pill data-a=demo>Load demo data</button></div><p class=q>Danger zone</p><div class=chips><button class="pill danger" data-a=reset>Reset all data</button></div><small>Clears workouts, ranks, bodyweight, and custom exercises on this device.</small>`}};
 const rulerTicks=(lo,hi,st)=>{const n=Math.max(0,Math.round((hi-lo)/st)),maj=Math.max(1,Math.round(10/st));return Array.from({length:n+1},(_,i)=>{const v=lo+i*st,major=i%maj==0||i==n;return `<div class="ruler-tick ${major?'major':''}"><i></i>${major?`<span>${fm(v)}</span>`:''}</div>`}).join('')};
 const syncRuler=(el,v)=>{if(!el)return;const lo=num(el.min),st=num(el.step)||1,idx=Math.max(0,Math.round((num(v)-lo)/st));const track=el.parentElement?.querySelector('.ruler-track');if(track)track.style.setProperty('--tx',`${-(idx*28+14)}px`)};
+const bindRuler=wrap=>{if(!wrap||wrap.dataset.bound)return;const el=wrap.querySelector('.range');if(!el)return;wrap.dataset.bound='1';let sx=0,sv=0,cid=null;const step=()=>num(el.step)||1;const clamp=v=>Math.min(num(el.max),Math.max(num(el.min),v));const set=v=>{el.value=String(clamp(Math.round(v/step())*step()));el.dispatchEvent(new Event('input',{bubbles:true}))};wrap.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;sx=e.clientX;sv=num(el.value);cid=e.pointerId;wrap.setPointerCapture?.(e.pointerId);e.preventDefault()},{passive:false});wrap.addEventListener('pointermove',e=>{if(cid!==e.pointerId)return;const dx=sx-e.clientX;set(sv+(dx/28)*step());e.preventDefault()},{passive:false});const end=e=>{if(cid!==e.pointerId)return;cid=null;wrap.releasePointerCapture?.(e.pointerId);e.preventDefault()};wrap.addEventListener('pointerup',end,{passive:false});wrap.addEventListener('pointercancel',end,{passive:false})};
+const bindRulers=()=>document.querySelectorAll('.range-wrap').forEach(bindRuler);
 const syncSlider=(el,v)=>{if(!el)return;const lo=num(el.min),hi=num(el.max);const p=hi>lo?Math.max(0,Math.min(100,(num(v)-lo)/(hi-lo)*100)):0;el.parentElement?.style.setProperty('--pct',p+'%');syncRuler(el,v)};
 const syncPickers=()=>{const w=$('#ws'),r=$('#rs'),wv=$('#wv'),rv=$('#rv'),ri=$('#rp');if(w){w.value=String(dr.kg);if(wv)wv.textContent=fm(dr.kg);syncSlider(w,dr.kg)}if(r){r.value=String(dr.reps);if(rv)rv.textContent=dr.reps;if(ri)ri.value=dr.reps;syncSlider(r,dr.reps)}};
-const render=()=>{$('#v').innerHTML=V[view]();$('#v').style.animation='none';$('#v').offsetWidth;$('#v').style.animation='';syncPickers()};
+const render=()=>{$('#v').innerHTML=V[view]();$('#v').style.animation='none';$('#v').offsetWidth;$('#v').style.animation='';syncPickers();bindRulers()};
 const nav=()=>{$('#n').innerHTML='<span class=wm><b>Lift</b>log</span>'+Object.keys(IC).map(k=>`<button class="${view==k?'on':''}" data-a=tab data-v=${k}><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg><small>${LB[k]}</small></button>`).join('')};
 /* actions */
 const addN=n=>{if(!n)return;if(!EX[n]){const t=(prompt('Type for "'+n+'":\nB = barbell/other, D = per dumbbell, W = bodyweight (+added kg), M = machine','B')||'B').toUpperCase();S.custom.push({n,t});EX[n]={g:'Custom',t}}ci=S.cur.ex.push({n,sets:[]})-1;go()};
@@ -78,27 +82,66 @@ calc:()=>{const k=gr.u=='lb'?1/2.20462:1,n=gr.n.trim(),f=gr.f=='F'?1:0,t=R.t[R.a
  S.rk[n]=rec;gr.res=rec;if(!bw())S.bw.push({d:iso(),kg:b});save();render();sheet()},
 tab:d=>{view=d.v;nav();render()},
 start:d=>{ci=0;S.cur={id:Date.now(),d:iso(),split:d.v,ex:[]};go()},
-ds:d=>{S.cur.ex[d.i].sets.splice(d.j,1);go()},
+ds:d=>{const i=+d.i,j=+d.j;confirmAction('Delete set?','This will remove Set '+(j+1)+' from '+S.cur.ex[i].n+'.','Delete',()=>{S.cur.ex[i].sets.splice(j,1);go()})},
 wu:d=>{const s=S.cur.ex[d.i].sets[d.j];s.t=s.t=='w'?'':'w';go()},
-rx:d=>{S.cur.ex.splice(d.i,1);go()},
+rx:d=>{const i=+d.i;confirmAction('Remove exercise?',S.cur.ex[i].n+' and all of its sets will be removed from this workout.','Remove',()=>{S.cur.ex.splice(i,1);ci=Math.max(0,Math.min(ci,S.cur.ex.length-1));go()})},
 up:d=>{const a=S.cur.ex,i=+d.i;if(i>0)[a[i-1],a[i]]=[a[i],a[i-1]];go()},
 addx:()=>addN($('#q').value.trim()),cx:()=>addN((prompt('Custom exercise name')||'').trim()),
-cancel:()=>{if(confirm('Discard this workout?')){S.cur=null;go()}},
+cancel:()=>{confirmAction('Discard workout?','Your current workout and its sets will be discarded. This cannot be undone.','Discard',()=>{S.cur=null;ci=0;go()})},
 fin:()=>{const a=tiers();S.workouts.push(S.cur);S.cur=null;const b=tiers(),up=Object.keys(b).filter(n=>b[n]>=0&&b[n]>(a[n]??-1));go();if(up[0])toast(TN[b[up[0]]]+' - '+up[0])},
-he:d=>{if(S.cur&&!confirm('Replace the workout in progress?'))return;ci=0;S.cur=S.workouts.splice(d.i,1)[0];view='today';nav();go()},
-hd:d=>{if(confirm('Delete this workout?')){S.workouts.splice(d.i,1);go()}},
+he:d=>{const i=+d.i;if(S.cur){confirmAction('Replace workout in progress?','You have an active workout. Opening this saved workout will replace it.','Replace',()=>{ci=0;S.cur=S.workouts.splice(i,1)[0];view='today';nav();go()})}else{ci=0;S.cur=S.workouts.splice(i,1)[0];view='today';nav();go()}},
+hd:d=>{const i=+d.i;confirmAction('Delete workout?','This saved workout will be permanently removed from History.','Delete',()=>{S.workouts.splice(i,1);go()})},
 flt:d=>{flt=d.v;render()},
 bw:()=>{const v=num($('#bw').value);if(v>0){S.bw.push({d:iso(),kg:v});go();toast('Saved')}},
 tbl:d=>{S.set.table=d.v;go()},
 dk:()=>{S.set.dark=+!S.set.dark;document.documentElement.dataset.d=S.set.dark;go()},
 anim:()=>{S.set.motion=+!S.set.motion;document.documentElement.dataset.motion=S.set.motion?'1':'0';go()},
+reset:()=>confirmReset(),
 exp:async()=>{const j=JSON.stringify({app:'liftlog',version:1,date:iso(),workouts:S.workouts,custom:S.custom,bw:S.bw,settings:S.set,rk:S.rk}),f=new File([j],`lift-backup-${iso()}.json`,{type:'application/json'});
  try{if(navigator.canShare?.({files:[f]}))await navigator.share({files:[f]});else throw 0}catch(e){if(e&&e.name=='AbortError')return;const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;a.click()}
  S.lastBackup=Date.now();go()},
 demo:()=>{S.bw.push({d:iso(),kg:80});for(let k=0;k<8;k++){const t=Date.now()-(8-k)*6048e5,W=(n,kg,reps)=>({n,sets:[{kg,reps,t:''}]});S.workouts.push({id:t,d:new Date(t).toISOString().slice(0,10),split:'Demo',ex:[W('Bench Press',60+k*3,5),W('Squat',80+k*5,5),W('Deadlift',100+k*5,3),W('Pull-Up',k*1.25,6),W('Lateral Raise',6+k*.5,10)]})}go();toast('Demo data loaded')}};
 const addCustom=c=>EX[c.n]=EX[c.n]||{g:'Custom',t:c.t||'B'};
-const ripple=e=>{if(!S?.set?.motion)return;const b=e.target.closest('button,.pill');if(!b||b.disabled||b.closest('.range-wrap'))return;if(b.tagName==='BUTTON'&&b.classList.contains('side'))return;const r=document.createElement('span');r.className='ripple';const box=b.getBoundingClientRect(),x=e.clientX-box.left,y=e.clientY-box.top,sz=Math.max(box.width,box.height)*.18;r.style.left=x+'px';r.style.top=y+'px';r.style.width=sz+'px';r.style.height=sz+'px';b.append(r);setTimeout(()=>r.remove(),560)};
+const microTouch=(x,y,b)=>{if(!S?.set?.motion)return;const flare=document.createElement('span');flare.className='tap-flare';flare.style.left=x+'px';flare.style.top=y+'px';document.body.append(flare);const sparks=[];for(let i=0;i<2;i++){const p=document.createElement('span');p.className='tap-spark';p.style.left=x+'px';p.style.top=y+'px';const dx=(i?1:-1)*(5+Math.random()*4),dy=-2-Math.random()*5;p.style.setProperty('--dx',dx+'px');p.style.setProperty('--dy',dy+'px');p.style.setProperty('--delay',(i*8)+'ms');document.body.append(p);sparks.push(p)}if(b){b.classList.remove('tap-glow');void b.offsetWidth;b.classList.add('tap-glow');setTimeout(()=>b.classList.remove('tap-glow'),190)}setTimeout(()=>{flare.remove();sparks.forEach(p=>p.remove())},220)};
+const ripple=e=>{if(!S?.set?.motion)return;const b=e.target.closest('button,.pill');if(!b||b.disabled||b.closest('.range-wrap'))return;if(b.tagName==='BUTTON'&&b.classList.contains('side'))return;const r=document.createElement('span');r.className='ripple';const box=b.getBoundingClientRect(),x=e.clientX-box.left,y=e.clientY-box.top,sz=Math.max(box.width,box.height)*.16;r.style.left=x+'px';r.style.top=y+'px';r.style.width=sz+'px';r.style.height=sz+'px';b.append(r);microTouch(e.clientX,e.clientY,b);setTimeout(()=>r.remove(),240)};
 document.addEventListener('pointerdown',ripple,{passive:true});
+const resetDefaults=()=>({workouts:[],custom:[],bw:[],set:{table:'M',dark:1,motion:0,v:4},rk:{},cur:null,lastBackup:0});
+const confirmAction=(title,message,confirmText,action)=>{
+ if($('#action-modal'))return;
+ const m=document.createElement('div');m.id='action-modal';m.className='action-modal';
+ m.innerHTML=`<div class=action-backdrop></div><div class=action-card role=dialog aria-modal=true><div class=action-kicker>CONFIRM</div><h2>${title}</h2><p>${message}</p><div class=action-actions><button class=pill data-action-cancel>Cancel</button><button class="pill danger" data-action-confirm>${confirmText}</button></div></div>`;
+ document.body.append(m);
+ const close=()=>m.remove();
+ const run=async()=>{
+   const btn=m.querySelector('[data-action-confirm]');btn.disabled=true;
+   try{action?.()}finally{close()}
+ };
+ m.addEventListener('click',e=>{
+   if(e.target.closest('[data-action-cancel]')||e.target.classList.contains('action-backdrop')){close();return}
+   if(e.target.closest('[data-action-confirm]')){run()}
+ });
+};
+const confirmReset=()=>{
+ if($('#reset-modal'))return;
+ const m=document.createElement('div');m.id='reset-modal';m.className='reset-modal';
+ m.innerHTML=`<div class=reset-backdrop></div><div class=reset-card><div class=reset-kicker>DANGER ZONE</div><h2>Reset all data?</h2><p>This permanently clears your workouts, ranks, bodyweight history and custom exercises stored on this device.</p><div class=reset-count><b id=reset-countdown>5</b><span>seconds</span></div><div class=reset-bar><i id=reset-progress></i></div><div class=reset-actions><button class=pill data-reset-cancel>Cancel</button><button class="pill danger" data-reset-confirm disabled>Reset data</button></div></div>`;
+ document.body.append(m);
+ let left=5; const cd=$('#reset-countdown'),prog=$('#reset-progress'),ok=m.querySelector('[data-reset-confirm]');
+ let alive=true;const tick=()=>{if(!alive)return;cd.textContent=left;prog.style.width=((5-left)/5*100)+'%';if(left<=0){cd.textContent='0';ok.disabled=false;prog.style.width='100%';ok.textContent='Reset now';return}left--;setTimeout(tick,1000)};tick();
+ const close=()=>{alive=false;m.remove()};
+ m.addEventListener('click',async e=>{
+   if(e.target.closest('[data-reset-cancel]')||e.target.classList.contains('reset-backdrop')){close();return}
+   if(e.target.closest('[data-reset-confirm]')&&!ok.disabled){
+     microTouch(innerWidth/2,innerHeight/2);
+     close();
+     S=resetDefaults();
+     try{await save()}catch{}
+     try{localStorage.removeItem('liftlog-state')}catch{}
+     try{sessionStorage.removeItem('liftlog-state')}catch{}
+     location.reload();
+   }
+ });
+};
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)A[b.dataset.a]?.(b.dataset)});
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset.g)gr[t.dataset.g]=t.value;if(t.id=='rp'){dr.reps=Math.min(30,Math.max(1,Math.round(num(t.value)||1)));syncPickers()}if(t.id=='ws'){dr.kg=Math.min(dr.hi,Math.max(dr.lo,num(t.value)));const wv=$('#wv');if(wv)wv.textContent=fm(dr.kg);syncSlider(t,dr.kg)}if(t.id=='rs'){dr.reps=Math.min(30,Math.max(1,Math.round(num(t.value)||1)));const rv=$('#rv');if(rv)rv.textContent=dr.reps;const ri=$('#rp');if(ri)ri.value=dr.reps;syncSlider(t,dr.reps)}});
 document.addEventListener('change',async e=>{const t=e.target;if(t.id!='imp'||!t.files[0])return;

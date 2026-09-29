@@ -25,3 +25,17 @@ The `index.html` file is self-contained. After extracting the ZIP, double-click 
 
 ### Ranking balance
 Legs exercises use 25% higher rank-entry ratios than before, making high ranks require proportionally stronger estimated 1RM relative to bodyweight.
+
+
+### Profile & safety
+- Animations remain off by default.
+- Profile includes a 5-second confirmation countdown before Reset all data becomes available.
+- Button taps use short Liquid Glass-inspired micro-feedback: a brief press glow, soft touch flare, and two tiny light sparks when animations are enabled. The effect is intentionally brief (about 0.2s).
+## Local/offline build
+- `index.html` and `lift-local.html` are self-contained and do not fetch JSON data.
+- They are intended to work when opened directly from a downloaded folder/file viewer.
+- No npm, localhost, or server is required for the standalone files.
+
+
+### Destructive actions
+Delete/discard actions use an in-app confirmation sheet rather than browser confirm dialogs, so they work reliably in Safari/iPhone local HTML viewers as well as on desktop.
