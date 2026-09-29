@@ -14,5 +14,6 @@ Minimal offline strength tracker: logging + bodyweight-relative ranks. Kg only, 
 - After editing files, bump `V` in `sw.js` so installed copies update.
 
 ## v3 redesign
-- Dark UI, exercise carousel + weight ruler for logging (kg), body map on Ranks.
+- Dark purple UI, exercise carousel + working weight and reps sliders for logging (kg), body map on Ranks.
 - Ranks → **Get your rank**: pick a lift, enter weight, reps and bodyweight (kg or lb) to see your tier. The result is saved per exercise until you update it, and included in backups.
+- New workouts created from any split start with a clean exercise list; add exercises manually as you go.
