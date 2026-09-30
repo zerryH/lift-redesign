@@ -45,3 +45,9 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 - Profile stores age and bodyweight, and offers male/female reference standards.
 - Ranks use bodyweight-relative thresholds plus a provisional broad age-band adjustment. This estimate is not an official federation age-grading formula.
 - Demo data is not loaded automatically, and the demo-data button has been removed. New installs start with empty workout history.
+
+
+## Reliability and accessibility fixes
+- Saves write a timestamped localStorage fallback first, reuse a single IndexedDB connection, and compare timestamps at startup to avoid loading an older IndexedDB copy after a timed-out save.
+- Editing a past workout keeps the original in History until Finish commits the edit; Discard no longer removes the saved workout.
+- Custom/imported exercise names are normalized before use, confirmation dialog content is HTML-escaped, and pinch-to-zoom is allowed.
