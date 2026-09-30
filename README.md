@@ -39,3 +39,9 @@ Legs exercises use 25% higher rank-entry ratios than before, making high ranks r
 
 ### Destructive actions
 Delete/discard actions use an in-app confirmation sheet rather than browser confirm dialogs, so they work reliably in Safari/iPhone local HTML viewers as well as on desktop.
+
+
+### Relative strength profile update
+- Profile stores age and bodyweight, and offers male/female reference standards.
+- Ranks use bodyweight-relative thresholds plus a provisional broad age-band adjustment. This estimate is not an official federation age-grading formula.
+- Demo data is not loaded automatically, and the demo-data button has been removed. New installs start with empty workout history.
