@@ -51,3 +51,11 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 - Saves write a timestamped localStorage fallback first, reuse a single IndexedDB connection, and compare timestamps at startup to avoid loading an older IndexedDB copy after a timed-out save.
 - Editing a past workout keeps the original in History until Finish commits the edit; Discard no longer removes the saved workout.
 - Custom/imported exercise names are normalized before use, confirmation dialog content is HTML-escaped, and pinch-to-zoom is allowed.
+
+## QoL update
+- Added progress charts for estimated 1RM plus bodyweight.
+- Added a rest timer with optional screen wake lock, typed weight/reps entry, last-set repeat, RPE and notes.
+- Added a plate calculator, global kg/lb setting, optional interpolated age adjustment, and custom-exercise ranked-lift mapping.
+- Ranking now records bodyweight with logged sets, uses a recent 90-day window with per-lift all-time fallback, and overall rank uses core compound lifts when enough data exists.
+- Added common aliases for close-grip bench, sumo/trap-bar deadlift, cable lateral raise, and machine row.
+- Added build.mjs and tests/smoke.mjs so the two self-contained HTML builds stay synchronized and are syntax-checked.
