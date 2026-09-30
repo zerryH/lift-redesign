@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>Liftlog</title><meta name="theme-color" content="#120f1a"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Liftlog"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><style>:root{--bg:#0d0915;--cd:#171121;--fg:#f7f3ff;--mu:#857b91;--ln:#2a2035;--ac:#756bff;--ac2:#52a7ff}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=yes"><title>Liftlog</title><meta name="theme-color" content="#120f1a"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Liftlog"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><style>:root{--bg:#0d0915;--cd:#171121;--fg:#f7f3ff;--mu:#857b91;--ln:#2a2035;--ac:#756bff;--ac2:#52a7ff}
 [data-d="0"]{--bg:#f6f4fa;--cd:#fff;--fg:#17131f;--mu:#7d778a;--ln:#e4e0ec;--ac:#6758f5;--ac2:#2787ee}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;overscroll-behavior:none;touch-action:manipulation}
@@ -133,15 +133,18 @@ body::after{right:-16vw;top:36vh;background:radial-gradient(circle at 50% 50%,co
 [data-motion="1"] .action-card{animation:sheetIn .28s cubic-bezier(.16,1,.3,1)}
 </style></head><body><nav id="n"></nav><main id="v"></main><script>const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
+const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
 const TN=['Iron','Bronze','Silver','Gold','Platinum','Diamond','Master','Legend'];
 const IC={today:'M3 11l9-8 9 8v10H3z',history:'M12 7v5l3 2M3 12a9 9 0 1018 0 9 9 0 10-18 0',ranks:'M5 20V10M12 20V4M19 20v-7',settings:'M12 8a4 4 0 100 8 4 4 0 000-8zM12 2v3M12 19v3M2 12h3M19 12h3'};
 const LB={today:'Home',history:'History',ranks:'Ranks',settings:'Profile'};
 /* storage: whole state in one IndexedDB record, saved on every change */
-const idb=()=>new Promise((r,j)=>{try{if(location.protocol==='file:')return j(new Error('Use localStorage for file URLs'));const q=indexedDB.open('liftlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error||new Error('IndexedDB unavailable'))}catch(e){j(e)}});
+let dbPromise=null;const idb=()=>{if(location.protocol==='file:')return Promise.reject(new Error('Use localStorage for file URLs'));if(!dbPromise)dbPromise=new Promise((r,j)=>{try{const q=indexedDB.open('liftlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>r(q.result);q.onerror=()=>{dbPromise=null;j(q.error||new Error('IndexedDB unavailable'))}}catch(e){dbPromise=null;j(e)}});return dbPromise};
 const localGet=()=>{try{return JSON.parse(localStorage.getItem('liftlog-state')||'null')}catch{return null}};
 const localSave=()=>{try{localStorage.setItem('liftlog-state',JSON.stringify(S));return true}catch{return false}};
-const dbGet=async()=>{if(location.protocol==='file:')return localGet();try{const d=await Promise.race([idb(),new Promise((_,j)=>setTimeout(()=>j(new Error('IndexedDB timeout')),1200))]);return await new Promise((r,j)=>{const q=d.transaction('kv').objectStore('kv').get('s');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error||new Error('IndexedDB read failed'))})}catch(e){return localGet()}};
-const save=async()=>{if(location.protocol==='file:'){localSave();return}try{const d=await Promise.race([idb(),new Promise((_,j)=>setTimeout(()=>j(new Error('IndexedDB timeout')),1200))]);d.transaction('kv','readwrite').objectStore('kv').put(S,'s')}catch(e){localSave()}};
+const dbRead=async()=>{const d=await idb();return await new Promise((r,j)=>{const q=d.transaction('kv').objectStore('kv').get('s');q.onsuccess=()=>r(q.result||null);q.onerror=()=>j(q.error||new Error('IndexedDB read failed'))})};
+const dbGet=async()=>{const l=localGet();if(location.protocol==='file:')return l;try{const d=await dbRead();return l&&(!d||(Number(l.savedAt)||0)>(Number(d.savedAt)||0))?l:(d||l)}catch(e){return l}};
+const save=async()=>{S.savedAt=Date.now();localSave();if(location.protocol==='file:')return;try{const d=await idb();await new Promise((r,j)=>{const tx=d.transaction('kv','readwrite');tx.objectStore('kv').put(S,'s');tx.oncomplete=r;tx.onerror=()=>j(tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>j(tx.error||new Error('IndexedDB write aborted'))})}catch(e){toast('Saved locally; browser storage fallback is active')}};
 const go=()=>{save();render()};
 const toast=(m,f)=>{const t=document.createElement('div');t.className='toast';t.textContent=m;if(f){t.onclick=f;t.style.animation='f .2s'}document.body.append(t);setTimeout(()=>t.remove(),f?15e3:2700)};
 /* maths */
@@ -222,9 +225,9 @@ wu:d=>{const s=S.cur.ex[d.i].sets[d.j];s.t=s.t=='w'?'':'w';go()},
 rx:d=>{const i=+d.i;confirmAction('Remove exercise?',S.cur.ex[i].n+' and all of its sets will be removed from this workout.','Remove',()=>{S.cur.ex.splice(i,1);ci=Math.max(0,Math.min(ci,S.cur.ex.length-1));go()})},
 up:d=>{const a=S.cur.ex,i=+d.i;if(i>0)[a[i-1],a[i]]=[a[i],a[i-1]];go()},
 addx:()=>addN($('#q').value.trim()),cx:()=>addN((prompt('Custom exercise name')||'').trim()),
-cancel:()=>{confirmAction('Discard workout?','Your current workout and its sets will be discarded. This cannot be undone.','Discard',()=>{S.cur=null;ci=0;go()})},
-fin:()=>{const a=tiers();S.workouts.push(S.cur);S.cur=null;const b=tiers(),up=Object.keys(b).filter(n=>b[n]>=0&&b[n]>(a[n]??-1));go();if(up[0])toast(TN[b[up[0]]]+' - '+up[0])},
-he:d=>{const i=+d.i;if(S.cur){confirmAction('Replace workout in progress?','You have an active workout. Opening this saved workout will replace it.','Replace',()=>{ci=0;S.cur=S.workouts.splice(i,1)[0];view='today';nav();go()})}else{ci=0;S.cur=S.workouts.splice(i,1)[0];view='today';nav();go()}},
+cancel:()=>{confirmAction('Discard workout?','Your current changes will be discarded. A previously saved workout remains in History.','Discard',()=>{S.cur=null;S.editingId=null;ci=0;go()})},
+fin:()=>{const a=tiers(),done=S.cur;if(S.editingId!=null){const ix=S.workouts.findIndex(w=>w.id===S.editingId);if(ix>=0)S.workouts[ix]=done;else S.workouts.push(done)}else S.workouts.push(done);S.cur=null;S.editingId=null;const b=tiers(),up=Object.keys(b).filter(n=>b[n]>=0&&b[n]>(a[n]??-1));go();if(up[0])toast(TN[b[up[0]]]+' - '+up[0])},
+he:d=>{const w=S.workouts[+d.i];if(!w)return;const open=()=>{ci=0;S.editingId=w.id;S.cur=JSON.parse(JSON.stringify(w));view='today';nav();go()};if(S.cur)confirmAction('Replace workout in progress?','Your current unsaved changes will be discarded. The saved workout stays in History until you finish editing.','Replace',open);else open()},
 hd:d=>{const i=+d.i;confirmAction('Delete workout?','This saved workout will be permanently removed from History.','Delete',()=>{S.workouts.splice(i,1);go()})},
 flt:d=>{flt=d.v;render()},
 age:()=>{const raw=$('#age').value,n=Number(raw);if(raw===''||!Number.isInteger(n)||n<13||n>100)return toast('Enter an age from 13 to 100');S.set.age=n;Object.values(S.rk).forEach(r=>{const t=R.t[R.alias[r.n]||r.n]?.[r.f=='F'?1:0];if(!t)return;const a=t.map(v=>v*ageFactor(n));let i=0;a.forEach((v,j)=>{if(r.x>=v)i=j});r.i=i;const nx=a[i+1];r.pc=i==7?100:Math.max(0,(r.x-a[i])/(nx-a[i])*100);r.need=i==7?null:nx*r.b-r.e;r.age=n});go();toast('Age saved · ranks updated')},
@@ -236,12 +239,12 @@ reset:()=>confirmReset(),
 exp:async()=>{const j=JSON.stringify({app:'liftlog',version:1,date:iso(),workouts:S.workouts,custom:S.custom,bw:S.bw,settings:S.set,rk:S.rk}),f=new File([j],`lift-backup-${iso()}.json`,{type:'application/json'});
  try{if(navigator.canShare?.({files:[f]}))await navigator.share({files:[f]});else throw 0}catch(e){if(e&&e.name=='AbortError')return;const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=f.name;a.click()}
  S.lastBackup=Date.now();go()}};
-const addCustom=c=>EX[c.n]=EX[c.n]||{g:'Custom',t:c.t||'B'};
+const addCustom=c=>{const n=safeName(c.n);if(n){c.n=n;EX[n]=EX[n]||{g:'Custom',t:['B','D','W','M','U'].includes(c.t)?c.t:'B'}}};
 const microTouch=(x,y,b)=>{if(!S?.set?.motion)return;const flare=document.createElement('span');flare.className='tap-flare';flare.style.left=x+'px';flare.style.top=y+'px';document.body.append(flare);const sparks=[];for(let i=0;i<2;i++){const p=document.createElement('span');p.className='tap-spark';p.style.left=x+'px';p.style.top=y+'px';const dx=(i?1:-1)*(5+Math.random()*4),dy=-2-Math.random()*5;p.style.setProperty('--dx',dx+'px');p.style.setProperty('--dy',dy+'px');p.style.setProperty('--delay',(i*8)+'ms');document.body.append(p);sparks.push(p)}if(b){b.classList.remove('tap-glow');void b.offsetWidth;b.classList.add('tap-glow');setTimeout(()=>b.classList.remove('tap-glow'),190)}setTimeout(()=>{flare.remove();sparks.forEach(p=>p.remove())},220)};
 const ripple=e=>{if(!S?.set?.motion)return;const b=e.target.closest('button,.pill');if(!b||b.disabled||b.closest('.range-wrap'))return;if(b.tagName==='BUTTON'&&b.classList.contains('side'))return;const r=document.createElement('span');r.className='ripple';const box=b.getBoundingClientRect(),x=e.clientX-box.left,y=e.clientY-box.top,sz=Math.max(box.width,box.height)*.16;r.style.left=x+'px';r.style.top=y+'px';r.style.width=sz+'px';r.style.height=sz+'px';b.append(r);microTouch(e.clientX,e.clientY,b);setTimeout(()=>r.remove(),240)};
 document.addEventListener('pointerdown',ripple,{passive:true});
 const resetDefaults=()=>({workouts:[],custom:[],bw:[],set:{table:'M',dark:1,motion:0,v:4,age:''},rk:{},cur:null,lastBackup:0});
-const confirmAction=(title,message,confirmText,action)=>{
+const confirmAction=(title,message,confirmText,action)=>{title=esc(title);message=esc(message);confirmText=esc(confirmText);
  if($('#action-modal'))return;
  const m=document.createElement('div');m.id='action-modal';m.className='action-modal';
  m.innerHTML=`<div class=action-backdrop></div><div class=action-card role=dialog aria-modal=true><div class=action-kicker>CONFIRM</div><h2>${title}</h2><p>${message}</p><div class=action-actions><button class=pill data-action-cancel>Cancel</button><button class="pill danger" data-action-confirm>${confirmText}</button></div></div>`;
