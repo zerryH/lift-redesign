@@ -85,7 +85,7 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 ## Profile field draft persistence
 
 - Age and height inputs are saved as drafts while typing, before any Save button rerenders the Profile screen. Saving age, height, or bodyweight therefore no longer discards the other profile field’s unsaved value. Draft writes use the timestamped local fallback; normal save actions persist the full state to IndexedDB when available.
-## Procedural 3D muscle model (2026-10)
+## Front/back anatomy map (2026-10)
 
 The Ranks tab now uses a newly built Three.js procedural anatomy model. Its torso is a continuous opaque mesh, with a solid base body behind distinct front and back muscle volumes. Depth testing prevents rear muscles from showing through the chest or abs. The model supports touch/mouse dragging, explicit Front/Back controls, and rank-coloured muscle groups. If WebGL is unavailable, the app falls back to the static anatomical map instead of leaving a blank panel. The old GLB model, GLTF loader, DRACO decoder and related assets are no longer used or shipped.
 
