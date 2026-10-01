@@ -1,5 +1,5 @@
 # Liftlog
-Minimal offline strength tracker: logging + bodyweight-relative ranks. Kg only, no backend.
+Minimal offline strength tracker: logging + bodyweight-relative ranks. No backend; data stays on the device.
 
 ## Deploy
 1. Drag this folder onto Netlify Drop (app.netlify.com/drop), or push it to GitHub Pages.
@@ -14,8 +14,8 @@ Minimal offline strength tracker: logging + bodyweight-relative ranks. Kg only, 
 - After editing files, bump `V` in `sw.js` so installed copies update.
 
 ## v3 redesign
-- Dark purple UI, exercise carousel + working weight and reps sliders for logging (kg), body map on Ranks.
-- Ranks → **Get your rank**: pick a lift, enter weight, reps and bodyweight (kg or lb) to see your tier. The result is saved per exercise until you update it, and included in backups.
+- Dark/light iOS-style UI, exercise carousel + working weight and reps sliders for logging, and an interactive muscle map on Ranks.
+- Ranks → **Get your rank**: pick a lift, enter weight, reps, bodyweight and height (kg/lb supported) to see your tier. Male/Female references are clearly labeled benchmark sets. The result is saved per exercise until you update it, and included in backups.
 - New workouts created from any split start with a clean exercise list; add exercises manually as you go.
 
 
@@ -59,3 +59,12 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 - Ranking now records bodyweight with logged sets, uses a recent 90-day window with per-lift all-time fallback, and overall rank uses core compound lifts when enough data exists.
 - Added common aliases for close-grip bench, sumo/trap-bar deadlift, cable lateral raise, and machine row.
 - Added build.mjs and tests/smoke.mjs so the two self-contained HTML builds stay synchronized and are syntax-checked.
+
+## v4 UX + ranking update
+- First launch now opens a guided tutorial covering Home/workouts, History, Ranks, Get Rank, Profile, theme selection, and credits. Profile includes **Replay tutorial**.
+- Profile now has explicit **Dark** and **Light** theme buttons instead of a single ambiguous mode toggle.
+- Rank references are labeled **Male reference** and **Female reference** with an explanation that they are benchmark sets for comparison and do not alter workout logging.
+- Height / ROM adjustment can be switched on or off. Lift uses a mild provisional height correction: taller athletes receive a small downward ratio adjustment to reflect the app's longer-ROM model. This is a Lift heuristic, not a biomechanical or federation-standard formula.
+- Ranks now include a draggable 3D-style front/back body map. Related lifts unlock muscle areas; unlocked areas use the corresponding rank color, while unranked areas stay locked/neutral. The muscle mapping is a Lift visualization based on related strength exercises, not a direct measurement of individual muscle size or strength.
+- Credits are shown in Profile: **Made by @o.r146 · TikTok**.
+- `tests/smoke.mjs` now checks tutorial/rank/theme markers, synchronized embedded builds, syntax, and height-adjustment markers.
