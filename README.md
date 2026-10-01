@@ -105,3 +105,10 @@ The anatomy model is bundled as `body.glb.gz` and decompressed locally at runtim
 For a standalone iPhone app window, open the hosted app in Safari, tap **Share → Add to Home Screen**, and leave **Open as Web App** enabled if iOS shows that option. Remove an older Lift Home Screen icon first so iOS does not keep its cached icon or old launch behaviour. A normal Safari bookmark always opens in Safari; a website cannot force a bookmark to become a standalone app. The current build uses a versioned 180×180 Apple touch icon plus 192×192 and 512×512 PWA icons.
 
 The 3D anatomy view uses low-opacity unranked muscle surfaces and restrained outlines; only mapped muscle groups receive rank-coloured outlines. This avoids the dense, overexposed triangle-wireframe appearance on small screens.
+
+
+## Expanded exercise library
+
+The workout picker contains 320 exercises, grouped into Chest, Shoulders, Triceps, Back, Biceps, Legs, Glutes, Calves, Core, Forearms and Full Body. Search by exercise name, filter by muscle group, and see the load-entry method (barbell/loaded, dumbbell per hand, cable/machine, bodyweight + load, or bodyweight). Common cable, dumbbell and machine variations are included, such as cable lateral raises, incline/alternating dumbbell curls, machine biceps curls and rope pushdowns.
+
+Exercises without their own benchmark may be logged normally but will not receive a rank until a suitable standard exists. A limited set of close variants use an explicitly configured comparison alias to a related benchmark; machine/cable loads vary between gyms, so those comparisons are approximate rather than exact strength standards. The exercise and rank JSON files are cached by the service worker, and the same catalogue is embedded into the standalone offline HTML build.

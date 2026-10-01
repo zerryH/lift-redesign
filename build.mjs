@@ -1,9 +1,12 @@
 import fs from 'node:fs';
 const app=fs.readFileSync('app.js','utf8');
 const renderer=fs.readFileSync('muscle3d.js','utf8');
+const exerciseData=JSON.parse(fs.readFileSync('exercises.json','utf8'));
+const rankData=JSON.parse(fs.readFileSync('ranks-config.json','utf8'));
 const anatomy=fs.readFileSync('body.glb.gz').toString('base64');
 for (const name of ['index.html','lift-local.html']) {
   let html=fs.readFileSync(name,'utf8');
+
   const appRe=/(<script[^>]*>)[\s\S]*?(<\/script>)/;
   if (!appRe.test(html)) throw new Error(`No inline app script found in ${name}`);
   html=html.replace(appRe,(_,open,close)=>open+app+close);
