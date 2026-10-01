@@ -68,3 +68,10 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 - Ranks now include a draggable 3D-style front/back body map. Related lifts unlock muscle areas; unlocked areas use the corresponding rank color, while unranked areas stay locked/neutral. The muscle mapping is a Lift visualization based on related strength exercises, not a direct measurement of individual muscle size or strength.
 - Credits are shown in Profile: **Made by @o.r146 · TikTok**.
 - `tests/smoke.mjs` now checks tutorial/rank/theme markers, synchronized embedded builds, syntax, and height-adjustment markers.
+
+
+## Bug-fix pass
+- Fixed a missing rear-deltoid rank mapping that could throw while rendering the Ranks tab. Added a defensive fallback for unmatched muscle zones and corrected the aggregate muscle-rank calculation.
+- The tutorial now leaves the app visible underneath a compact coach card, with click-through everywhere outside the card. Tutorial buttons remain usable without hiding the app behind a dark overlay.
+- Reduced action button sizing inside button groups and the rank muscle controls; full-width primary workout actions retain their larger size.
+- Added a render error fallback with a Retry button so a future view error does not silently leave navigation appearing broken.
