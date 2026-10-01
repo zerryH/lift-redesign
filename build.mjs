@@ -4,7 +4,7 @@ const renderer=fs.readFileSync('muscle3d.js','utf8');
 const three=fs.readFileSync('three.min.js','utf8');
 const modelCSS=`<style id="lift-procedural-3d-style">
 .body-stage{position:relative;isolation:isolate;min-height:390px;touch-action:pan-y;overflow:hidden}
-.body-spin{display:none!important}
+.body-spin{display:none}
 .muscle3d-root{position:absolute;inset:0;width:100%;height:100%;min-height:390px;z-index:2;overflow:hidden;touch-action:pan-y;background:radial-gradient(ellipse at 50% 44%,rgba(94,111,166,.09),transparent 65%)}
 .muscle3d-canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab;outline:none}
 .muscle3d-canvas.dragging{cursor:grabbing}

@@ -85,37 +85,21 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 ## Profile field draft persistence
 
 - Age and height inputs are saved as drafts while typing, before any Save button rerenders the Profile screen. Saving age, height, or bodyweight therefore no longer discards the other profile field’s unsaved value. Draft writes use the timestamped local fallback; normal save actions persist the full state to IndexedDB when available.
-## 3D muscle model and app icon
+## Procedural 3D muscle model (2026-10)
 
-- Replaced the two-plane SVG flip with a self-contained WebGL canvas drawing a depth-tested, lit 3D body assembled from ellipsoid meshes. Drag with a finger or mouse to rotate freely; Front/Back controls rotate to the corresponding view. Muscle overlays read current rank colors and lock states from the rank map.
-- Added custom dumbbell-and-spark icon assets (`icon.svg`, 192/512 PNG, and Apple touch icon), plus a valid install manifest and head metadata.
-- Both hosted and standalone HTML builds embed the WebGL renderer, so it works offline without a CDN.
-- Fixed the service-worker cache list: it previously referenced several missing files, which could reject the entire cache install.
-- Validation includes JS syntax, smoke tests, HTML renderer synchronization, PNG dimensions/signatures, and manifest/cache assets. No physical iPhone/Safari visual session was available for this pass.
+The Ranks tab now uses a newly built Three.js procedural anatomy model. Its torso is a continuous opaque mesh, with a solid base body behind distinct front and back muscle volumes. Depth testing prevents rear muscles from showing through the chest or abs. The model supports touch/mouse dragging, explicit Front/Back controls, and rank-coloured muscle groups. If WebGL is unavailable, the app falls back to the static anatomical map instead of leaving a blank panel. The old GLB model, GLTF loader, DRACO decoder and related assets are no longer used or shipped.
 
-## Holographic 3D muscle ranks
-
-The Ranks tab uses a real, locally bundled, segmented anatomical GLB rather than the previous primitive ellipsoid figure. The model is rendered as a translucent hologram with pale outlines; named muscle meshes map to the app's chest, delts, arms, abs, back, glutes, quads, hamstrings, and calf rank groups. As a related lift is ranked, those meshes take the rank color while unranked structures remain muted. The user can rotate the model by touch/mouse and use Front/Back controls.
-
-The anatomy model is bundled as `body.glb.gz` and decompressed locally at runtime; the model and decoder are cached for offline use. The model is sourced from hpfrei's Body Anatomy 3D Viewer and Z-Anatomy data under CC BY-SA 4.0; attribution and change notes are in `ANATOMY-ATTRIBUTION.md`. Three.js and its GLTF/Draco support are bundled locally with their license.
-
+The renderer and Three.js runtime are embedded in `index.html` and `lift-local.html`; the standalone file does not need a CDN, server, or separate data files. The custom model is an educational strength-progress visualisation, not a medically validated anatomical or strength assessment.
 
 ## iPhone Home Screen installation
 
 For a standalone iPhone app window, open the hosted app in Safari, tap **Share → Add to Home Screen**, and leave **Open as Web App** enabled if iOS shows that option. Remove an older Lift Home Screen icon first so iOS does not keep its cached icon or old launch behaviour. A normal Safari bookmark always opens in Safari; a website cannot force a bookmark to become a standalone app. The current build uses a versioned 180×180 Apple touch icon plus 192×192 and 512×512 PWA icons.
 
-The 3D anatomy view uses low-opacity unranked muscle surfaces and restrained outlines; only mapped muscle groups receive rank-coloured outlines. This avoids the dense, overexposed triangle-wireframe appearance on small screens.
+The 3D anatomy uses opaque, depth-correct surfaces and a neutral base body; rank colours are applied only to the relevant muscle groups.
 
 
 ## Expanded exercise library
 
-The workout picker contains 320 exercises, grouped into Chest, Shoulders, Triceps, Back, Biceps, Legs, Glutes, Calves, Core, Forearms and Full Body. Search by exercise name, filter by muscle group, and see the load-entry method (barbell/loaded, dumbbell per hand, cable/machine, bodyweight + load, or bodyweight). Common cable, dumbbell and machine variations are included, such as cable lateral raises, incline/alternating dumbbell curls, machine biceps curls and rope pushdowns.
+The workout picker contains 460 exercises, including 140 additional cable-stack and functional-trainer variations across chest, shoulders, triceps, back, biceps, legs, glutes and core, grouped into Push, Pull, Legs, Core and Full Body. Search by exercise name, filter by muscle group, and see the load-entry method (barbell/loaded, dumbbell per hand, cable/machine, bodyweight + load, or bodyweight). Common cable, dumbbell and machine variations are included, including single-arm and seated cable presses, high/low cable flyes, cable lateral and rear-delt variations, single-arm pulldowns and rows, rope and preacher cable curls, cable glute/hamstring movements, and anti-rotation core work.
 
 Exercises without their own benchmark may be logged normally but will not receive a rank until a suitable standard exists. A limited set of close variants use an explicitly configured comparison alias to a related benchmark; machine/cable loads vary between gyms, so those comparisons are approximate rather than exact strength standards. The exercise and rank JSON files are cached by the service worker, and the same catalogue is embedded into the standalone offline HTML build.
-
-
-## Procedural 3D muscle model (2026-10)
-
-The Ranks tab now uses a new Three.js procedural anatomy model built from independent 3D muscle volumes. It does not load the previous GLB anatomy asset or the GLTF/DRACO loader chain. The model can be rotated by dragging, has front/back controls, and reads each muscle group's current rank colour from the rank map. Unranked muscle groups use a translucent grey hologram with pale outlines. `lift-local.html` embeds the Three.js runtime so the standalone file does not need a separate JavaScript library file.
-
-Validation: `node build.mjs`, `node --check muscle3d.js`, `node --check app.js`, `node --check build.mjs`, and `node tests/smoke.mjs`. Automated checks validate code/data wiring; a physical iPhone visual test is still required for final appearance and touch feel.
