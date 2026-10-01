@@ -1,22 +1,30 @@
 {
+  "id": "./",
   "name": "Lift \u2014 Strength Tracker",
   "short_name": "Lift",
-  "start_url": "./index.html",
+  "description": "Offline workout logging and strength rankings.",
+  "start_url": "./index.html?source=homescreen-v2",
+  "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "background_color": "#0d0915",
   "theme_color": "#120f1a",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "./icon-192.png",
+      "src": "./lift-icon-192-v2.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "./icon-512.png",
+      "src": "./lift-icon-512-v2.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }

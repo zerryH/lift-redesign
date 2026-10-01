@@ -98,3 +98,10 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 The Ranks tab uses a real, locally bundled, segmented anatomical GLB rather than the previous primitive ellipsoid figure. The model is rendered as a translucent hologram with pale outlines; named muscle meshes map to the app's chest, delts, arms, abs, back, glutes, quads, hamstrings, and calf rank groups. As a related lift is ranked, those meshes take the rank color while unranked structures remain muted. The user can rotate the model by touch/mouse and use Front/Back controls.
 
 The anatomy model is bundled as `body.glb.gz` and decompressed locally at runtime; the model and decoder are cached for offline use. The model is sourced from hpfrei's Body Anatomy 3D Viewer and Z-Anatomy data under CC BY-SA 4.0; attribution and change notes are in `ANATOMY-ATTRIBUTION.md`. Three.js and its GLTF/Draco support are bundled locally with their license.
+
+
+## iPhone Home Screen installation
+
+For a standalone iPhone app window, open the hosted app in Safari, tap **Share → Add to Home Screen**, and leave **Open as Web App** enabled if iOS shows that option. Remove an older Lift Home Screen icon first so iOS does not keep its cached icon or old launch behaviour. A normal Safari bookmark always opens in Safari; a website cannot force a bookmark to become a standalone app. The current build uses a versioned 180×180 Apple touch icon plus 192×192 and 512×512 PWA icons.
+
+The 3D anatomy view uses low-opacity unranked muscle surfaces and restrained outlines; only mapped muscle groups receive rank-coloured outlines. This avoids the dense, overexposed triangle-wireframe appearance on small screens.
