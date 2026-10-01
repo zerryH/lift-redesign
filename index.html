@@ -220,6 +220,18 @@ body::after{right:-16vw;top:36vh;background:radial-gradient(circle at 50% 50%,co
 .muscle-zone.locked{fill:#909aa7;opacity:.28;filter:none;stroke:#dfe5ec;stroke-opacity:.28}
 @media(max-width:480px){.body-stage{height:415px}.anatomy-pair{gap:4px}.anatomy-figure .anatomy-svg{height:365px}}
 @media(min-width:640px){.anatomy-figure .anatomy-svg{height:400px}.anatomy-pair{width:460px}}
+</style><style id="lift-anatomy-map-style">
+/* Reliable front/back anatomy map — no 3D renderer */
+.body-stage{height:430px;display:grid;place-items:center;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 45%,rgba(110,130,175,.08),transparent 68%)}
+.anatomy-pair{width:min(430px,100%);height:100%;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end;justify-items:center;padding:4px 4px 8px}
+.anatomy-figure{margin:0;display:grid;justify-items:center;align-content:end;min-width:0;height:100%;width:100%}
+.anatomy-figure .anatomy-svg{width:min(190px,100%);height:385px;display:block;overflow:visible}
+.anatomy-figure figcaption{margin-top:-2px;font-size:10px;letter-spacing:1.7px;text-transform:uppercase;font-weight:800;color:var(--mu);opacity:.8}
+.anatomy-svg .body-base{opacity:1}
+.muscle-zone{fill:var(--mc);fill-opacity:var(--ma);stroke:color-mix(in srgb,var(--mc) 76%,#fff 24%);stroke-width:1.25;filter:drop-shadow(0 1px 2px rgba(0,0,0,.18));transition:fill .18s ease,opacity .18s ease,stroke .18s ease}
+.muscle-zone.locked{fill:#909aa7;opacity:.28;filter:none;stroke:#dfe5ec;stroke-opacity:.28}
+@media(max-width:480px){.body-stage{height:415px}.anatomy-pair{gap:4px}.anatomy-figure .anatomy-svg{height:365px}}
+@media(min-width:640px){.anatomy-figure .anatomy-svg{height:400px}.anatomy-pair{width:460px}}
 </style></head><body><nav id="n"></nav><main id="v"></main><script>const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
@@ -341,7 +353,7 @@ const bindRuler=wrap=>{if(!wrap||wrap.dataset.bound)return;const el=wrap.querySe
 const bindRulers=()=>document.querySelectorAll('.range-wrap').forEach(bindRuler);
 const syncSlider=(el,v)=>{if(!el)return;const lo=num(el.min),hi=num(el.max);const p=hi>lo?Math.max(0,Math.min(100,(num(v)-lo)/(hi-lo)*100)):0;el.parentElement?.style.setProperty('--pct',p+'%');syncRuler(el,v)};
 const syncPickers=()=>{const w=$('#ws'),r=$('#rs'),wv=$('#wv'),rv=$('#rv'),ri=$('#rp');if(w){w.value=String(dr.kg);if(wv)wv.textContent=fm(dr.kg);syncSlider(w,dr.kg)}if(r){r.value=String(dr.reps);if(rv)rv.textContent=dr.reps;if(ri)ri.value=dr.reps;syncSlider(r,dr.reps)}};
-const render=()=>{const root=$('#v');try{root.innerHTML=V[view]();root.style.animation='none';root.offsetWidth;root.style.animation='';syncPickers();bindRulers();bindMuscleSpin()}catch(err){console.error('Lift render failed in '+view,err);root.innerHTML=`<section class=note role=alert><b>Could not load ${esc(view)}.</b><p>The app is still running. Try again; your saved data has not been reset.</p><button class=pill data-a=retryRender>Retry</button></section>`;}};
+const render=()=>{const root=$('#v');try{root.innerHTML=V[view]();root.style.animation='none';root.offsetWidth;root.style.animation='';syncPickers();bindRulers()}catch(err){console.error('Lift render failed in '+view,err);root.innerHTML=`<section class=note role=alert><b>Could not load ${esc(view)}.</b><p>The app is still running. Try again; your saved data has not been reset.</p><button class=pill data-a=retryRender>Retry</button></section>`;}};
 const nav=()=>{$('#n').innerHTML='<span class=wm><b>Lift</b>log</span>'+Object.keys(IC).map(k=>`<button class="${view==k?'on':''}" data-a=tab data-v=${k}><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg><small>${LB[k]}</small></button>`).join('')};
 /* actions */
 const addN=n=>{n=String(n||'').trim();if(!n)return;if(!EX[n]){const t='B',c='Custom';S.custom.push({n,t,c});EX[n]={g:'Custom',t,c}}ci=S.cur.ex.push({n,sets:[]})-1;exercisePickerClose();go()};
