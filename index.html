@@ -166,6 +166,51 @@ body::after{right:-16vw;top:36vh;background:radial-gradient(circle at 50% 50%,co
 @media(min-width:650px){.exercise-library{align-items:center;padding:24px}.exercise-library-panel{border-bottom:1px solid var(--ln);border-radius:26px;max-height:88dvh}.exercise-results{max-height:42dvh}}
 @media(max-height:720px){.exercise-library-panel{max-height:96dvh}.exercise-results{max-height:25dvh}.exercise-library-head p{margin-bottom:7px}.exercise-custom-fields{gap:6px}}
 
+
+/* rank sheet redesign */
+.rank-sheet{padding:22px 18px calc(28px + env(safe-area-inset-bottom));max-height:94vh}
+.rank-hero{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;padding:2px 2px 18px}
+.rank-hero .ttl{font-size:30px;line-height:1.05;letter-spacing:-.03em}
+.rank-sub{margin:6px 0 0;color:var(--mu);font-size:14px;line-height:1.45;max-width:420px}
+.eyebrow{font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--ac2)}
+.sheet-close{min-width:44px!important;min-height:44px!important;border-radius:14px!important;background:color-mix(in srgb,var(--bg) 70%,transparent)!important;border:1px solid var(--ln)!important}
+.rank-section{margin:9px 0;padding:16px;border:1px solid color-mix(in srgb,var(--ln) 82%,transparent);border-radius:22px;background:color-mix(in srgb,var(--bg) 28%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
+.section-head{display:flex;gap:11px;align-items:center;margin-bottom:13px}
+.section-head .step{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;background:color-mix(in srgb,var(--ac) 18%,var(--bg));color:var(--ac2);font-weight:800;font-size:13px;flex:0 0 auto}
+.section-head b{display:block;font-size:15px}
+.section-head small{display:block;margin-top:2px;color:var(--mu);font-size:11px;line-height:1.35}
+.rank-search>span{display:block;color:var(--mu);font-size:11px;font-weight:700;margin:0 0 6px 2px}
+.rank-input-wrap{position:relative}
+.rank-input-wrap .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mu);font-size:20px;pointer-events:none}
+.rank-input-wrap input{padding-left:42px!important;height:54px!important;border-radius:17px!important;font-size:16px!important;background:var(--bg)!important}
+.rank-input-wrap input:focus{border-color:color-mix(in srgb,var(--ac) 72%,var(--ln))!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--ac) 13%,transparent)}
+.selected-exercise{display:flex;align-items:center;gap:10px;margin-top:10px;padding:10px 11px;border-radius:14px;background:color-mix(in srgb,var(--ac) 9%,var(--bg));border:1px solid color-mix(in srgb,var(--ac) 24%,var(--ln))}
+.selected-exercise span{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ac2);font-weight:800}
+.selected-exercise b{font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.clear-exercise{border:0;background:none;color:var(--mu);font-weight:700;padding:6px 4px}
+.rank-help{display:block;margin-top:9px;color:var(--mu);font-size:11px}
+.rank-option-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-top:1px solid color-mix(in srgb,var(--ln) 60%,transparent)}
+.rank-option-row:first-of-type{border-top:0;padding-top:0}
+.rank-option-row:last-of-type{padding-bottom:0}
+.option-label{display:block;font-size:13px;font-weight:750}
+.rank-option-row small{display:block;color:var(--mu);font-size:10px;margin-top:2px}
+.rank-option-row .chips{margin:0;flex-wrap:nowrap}
+.rank-option-row .pill{min-height:40px;padding:0 14px}
+.rank-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rank-fields .fl{margin:0}
+.rank-fields .fl input{height:50px}
+.rank-submit{width:100%;margin-top:6px;min-height:58px;border-radius:19px!important;font-size:17px!important}
+.rank-submit[disabled]{opacity:.45;filter:saturate(.5);cursor:not-allowed}
+.rank-sheet .res{margin-top:12px}
+@media(max-width:500px){
+ .rank-sheet{padding-left:14px;padding-right:14px}
+ .rank-hero{padding-bottom:14px}
+ .rank-hero .ttl{font-size:28px}
+ .rank-section{padding:14px;border-radius:19px}
+ .rank-fields{grid-template-columns:1fr 1fr}
+ .rank-option-row{align-items:flex-start}
+ .rank-option-row .chips{justify-content:flex-end}
+}
 </style><link rel="icon" type="image/png" sizes="192x192" href="./lift-icon-192-v2.png"><link rel="icon" type="image/svg+xml" href="./lift-icon-v2.svg"><link rel="apple-touch-icon" sizes="180x180" href="./lift-icon-180-v2.png"><link rel="manifest" href="./manifest.webmanifest"><style id="lift-procedural-3d-style">
 .body-stage{position:relative;isolation:isolate;min-height:390px;touch-action:pan-y;overflow:hidden}
 .body-spin{display:none}
@@ -324,7 +369,7 @@ const A={
 log:()=>{S.cur.ex[ci].sets.push({kg:dr.kg,reps:dr.reps,t:''});go()},
 cp:()=>{ci=Math.max(0,ci-1);render()},cn:()=>{ci++;render()},
 rm:()=>{dr.reps=Math.max(1,dr.reps-1);syncPickers()},rpl:()=>{dr.reps=Math.min(30,dr.reps+1);syncPickers()},
-gr:d=>{refreshRanks();const k=S.rk[d.v],u=k?k.u:S.set.unit||'kg',c=v=>fm(cv(v,u));gr=k?{n:d.v,w:c(k.w),r:String(k.r),b:c(k.b),h:String(k.h||S.set.heightCm||''),u,f:k.f,res:k}:{n:'',w:'',r:'5',b:bw()?c(bw()):'',h:S.set.heightCm?String(S.set.heightCm):'',u,f:S.set.table,res:null};sheet()},
+gr:d=>{refreshRanks();const name=String(d.v||'').trim(),k=name?S.rk[name]:null,u=k?k.u:S.set.unit||'kg',c=v=>fm(cv(v,u));gr=k?{n:name,w:c(k.w),r:String(k.r),b:c(k.b),h:String(k.h||S.set.heightCm||''),u,f:k.f,res:k}:{n:'',w:'',r:'',b:bw()?c(bw()):'',h:S.set.heightCm?String(S.set.heightCm):'',u,f:S.set.table,res:null};sheet()},
 gx:()=>{gr=null;sheet()},gs:d=>{gr.f=d.v;sheet()},
 gu:d=>{if(gr.u==d.v)return;const k=d.v=='lb'?2.20462:1/2.20462,f=v=>v===''?'':String(fm(num(v)*k));gr.w=f(gr.w);gr.b=f(gr.b);gr.u=d.v;S.set.unit=d.v;save();sheet()},
 calc:async()=>{if(!gr)return toast('Open the rank form first');const k=gr.u=='lb'?1/2.20462:1,n=String(gr.n||'').trim(),was=!!S.rk[n],f=gr.f=='F'?1:0,t=R.t[R.alias[n]||n]?.[f],w=num(gr.w)*k,r0=num(gr.r),r=Math.round(r0),b=num(gr.b)*k,h=num(gr.h);if(!EX[n]||!t)return toast('Choose a supported exercise from the list');if(!Number.isInteger(r0)||r<1||r>12)return toast('Reps must be a whole number from 1 to 12');if(b<=0)return toast('Enter your bodyweight');if(w<0||(w<=0&&EX[n].t!='W'))return toast('Enter the weight you lifted');if(h&&(!Number.isFinite(h)||h<120||h>230))return toast('Height must be between 120 and 230 cm');const baseH=h||num(S.set.heightCm)||175,hf=heightFactor(baseH),W=EX[n].t=='W'?w+b:w,e=r==1?W:W*(1+r/30),rawX=e/b,x=rankScore(n,e,b,baseH),af=ageFactor(S.set.age),adj=t.map(v=>v*af);let i=0;adj.forEach((v,j)=>{if(x>=v)i=j});const nx=adj[i+1],span=nx===undefined?1:Math.max(.0001,nx-adj[i]),pc=i===MAX_RANK?100:Math.max(0,Math.min(100,(x-adj[i])/span*100)),rec={n,w,r,b,u:gr.u,f:gr.f,i,x,e,pc,need:i===MAX_RANK?null:Math.max(0,(nx*rankDifficulty(n)/hf)*b-e),d:iso(),age:S.set.age??null,h:h||num(S.set.heightCm)||null,rawX};S.rk[n]=rec;gr.res=rec;if(!bw())S.bw.push({d:iso(),kg:b});refreshRanks();await save();render();sheet();toast('Rank '+(was?'updated':'saved'))},
