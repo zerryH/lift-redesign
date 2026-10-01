@@ -75,3 +75,10 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 - The tutorial now leaves the app visible underneath a compact coach card, with click-through everywhere outside the card. Tutorial buttons remain usable without hiding the app behind a dark overlay.
 - Reduced action button sizing inside button groups and the rank muscle controls; full-width primary workout actions retain their larger size.
 - Added a render error fallback with a Retry button so a future view error does not silently leave navigation appearing broken.
+## Mobile profile and anatomy visual fix
+
+- Profile age/height adjustment switches now remain compact on narrow screens instead of stretching into oversized oval cards.
+- Age/height save buttons align to their own content and keep a normal tap-target height.
+- Replaced the blocky rank placeholder with a shaded front/back anatomical SVG, clearer torso/limb contours, and separately mapped muscle regions that retain rank colors.
+- Smoke tests now guard against the mobile stretch rule returning and check the upgraded anatomy markup.
+- Validation covers build, JavaScript syntax, smoke tests, and matching embedded scripts; no live iPhone/Safari browser session was available for this pass.
