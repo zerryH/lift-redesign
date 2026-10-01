@@ -1,0 +1,63 @@
+(()=>{
+'use strict';
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const palette={frontDelts:'#a06cf5',chest:'#3f91ff',biceps:'#ff9d43',triceps:'#ff9d43',abs:'#f2c14e',quads:'#ff5a8a',calves:'#3ecfc0',rearDelts:'#a06cf5',upperBack:'#a06cf5',lats:'#3ecfc0',glutes:'#a06cf5',hamstrings:'#3ecfc0'};
+const hex=h=>{const m=/^#([0-9a-f]{6})$/i.exec(h||'');if(!m)return [.5,.5,.6];const n=parseInt(m[1],16);return [((n>>16)&255)/255,((n>>8)&255)/255,(n&255)/255]};
+const parts=[];const add=(id,c,s,rz=0,view='both',skin=false)=>parts.push({id,c,s,rz,view,skin,sign:rz<0?-1:1});
+// Sculpted base anatomy: every part is a lit 3D ellipsoid, not a pair of flat images.
+add('skin',[.62,.59,.64],[.26,.35,.23],0,'both',true); // head
+add('skin',[.56,.52,.59],[.14,.22,.15],0,'both',true); // neck
+add('skin',[.57,.54,.60],[.58,.43,.30],0,'both',true); // rib cage
+add('skin',[.55,.52,.59],[.42,.40,.25],0,'both',true); // waist
+add('skin',[.55,.52,.59],[.44,.25,.28],0,'both',true); // pelvis
+for(const sign of [-1,1]){
+ add('skin',[.60,.56,.61],[.19,.40,.19],sign*.20,'both',true); // upper arm
+ add('skin',[.57,.53,.59],[.145,.36,.15],sign*.10,'both',true); // forearm
+ add('skin',[.58,.54,.60],[.22,.58,.22],sign*.035,'both',true); // thigh
+ add('skin',[.56,.53,.59],[.155,.49,.16],sign*.015,'both',true); // shin
+ add('skin',[.58,.54,.60],[.18,.09,.27],sign*.02,'both',true); // foot
+ add('skin',[.60,.56,.61],[.21,.22,.20],sign*.22,'both',true); // shoulder cap
+}
+// Front muscle groups. Their individual meshes are tinted from the app's live rank colours.
+for(const sign of [-1,1]){
+ add('frontDelts',[.65,.56,.63],[.205,.24,.18],sign*.22,'front');
+ add('chest',[.4,.57,.98],[.30,.22,.105],sign*.07,'front');
+ add('biceps',[.95,.34,.25],[.13,.29,.13],sign*.18,'front');
+ add('abs',[.95,.72,.25],[.135,.105,.075],sign*.025,'front');
+ add('abs',[.95,.72,.25],[.135,.105,.075],sign*.025,'front');
+ add('quads',[.95,.28,.34],[.175,.43,.105],sign*.035,'front');
+ add('calves',[.3,.78,.83],[.12,.31,.095],sign*.015,'front');
+ add('triceps',[.9,.31,.24],[.12,.29,.12],sign*.17,'back');
+ add('rearDelts',[.65,.56,.63],[.205,.24,.17],sign*.22,'back');
+ add('upperBack',[.68,.36,.72],[.28,.31,.09],sign*.08,'back');
+ add('lats',[.3,.78,.83],[.23,.34,.09],sign*.20,'back');
+ add('glutes',[.65,.30,.78],[.22,.20,.09],sign*.035,'back');
+ add('hamstrings',[.3,.78,.83],[.16,.39,.09],sign*.035,'back');
+}
+// Recenter the left/right shapes around the body's centre line.
+parts.forEach(p=>{if(p.s[0]<.4 && p.id!=='skin' && p.id!=='abs' && p.id!=='chest')p.x=(p.rz<0?-1:1)*.3;});
+function init(stage){if(stage.dataset.webgl3d==='1')return;const old=$('.body-spin',stage);if(!old)return;stage.dataset.webgl3d='1';old.style.display='none';
+ const canvas=document.createElement('canvas');canvas.className='muscle3d-canvas';canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Interactive three-dimensional muscle model. Drag to rotate.');stage.appendChild(canvas);
+ const gl=canvas.getContext('webgl',{alpha:true,antialias:true,powerPreference:'low-power'});if(!gl){canvas.remove();old.style.display='';stage.dataset.webgl3d='';return}
+ const vs=`attribute vec3 aPos;attribute vec3 aNormal;uniform vec3 uCenter;uniform vec3 uScale;uniform float uRz;uniform float uAngle;uniform float uTilt;varying vec3 vNormal;varying float vLight;void main(){float cz=cos(uRz),sz=sin(uRz);vec3 p=aPos*uScale;p=vec3(p.x*cz-p.y*sz,p.x*sz+p.y*cz,p.z);float ca=cos(uAngle),sa=sin(uAngle);p=vec3(p.x*ca+p.z*sa,p.y,-p.x*sa+p.z*ca)+uCenter;float ct=cos(uTilt),st=sin(uTilt);p=vec3(p.x,p.y*ct-p.z*st,p.y*st+p.z*ct);vec3 n=vec3(aNormal.x*cz-aNormal.y*sz,aNormal.x*sz+aNormal.y*cz,aNormal.z);n=vec3(n.x*ca+n.z*sa,n.y,-n.x*sa+n.z*ca);n=vec3(n.x,n.y*ct-n.z*st,n.y*st+n.z*ct);vNormal=normalize(n);float d=5.8-p.z;gl_Position=vec4(p.x*2.15/d,p.y*2.15/d,1.0-(5.8/d),1.0);}`;
+ const fs=`precision mediump float;uniform vec3 uColor;uniform float uOpacity;varying vec3 vNormal;void main(){vec3 n=normalize(vNormal);vec3 light=normalize(vec3(-.42,.75,1.0));float diffuse=max(dot(n,light),0.0);float rim=pow(1.0-max(dot(n,vec3(0.0,0.0,1.0)),0.0),2.0);vec3 color=uColor*(.43+.72*diffuse)+vec3(.12,.17,.28)*rim;gl_FragColor=vec4(color,uOpacity);}`;
+ const shader=(type,src)=>{const sh=gl.createShader(type);gl.shaderSource(sh,src);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(sh));return sh};
+ let prog;try{prog=gl.createProgram();gl.attachShader(prog,shader(gl.VERTEX_SHADER,vs));gl.attachShader(prog,shader(gl.FRAGMENT_SHADER,fs));gl.linkProgram(prog);if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(prog))}catch(e){canvas.remove();old.style.display='';stage.dataset.webgl3d='';return}
+ gl.useProgram(prog);const loc=n=>gl.getAttribLocation(prog,n),uni=n=>gl.getUniformLocation(prog,n);const A={p:loc('aPos'),n:loc('aNormal')},U={center:uni('uCenter'),scale:uni('uScale'),rz:uni('uRz'),angle:uni('uAngle'),tilt:uni('uTilt'),color:uni('uColor'),opacity:uni('uOpacity')};
+ const pos=[],norm=[],idx=[],lat=20,lon=28;for(let y=0;y<=lat;y++){const th=y*Math.PI/lat;for(let x=0;x<=lon;x++){const ph=x*2*Math.PI/lon;const nx=Math.sin(th)*Math.cos(ph),ny=Math.cos(th),nz=Math.sin(th)*Math.sin(ph);pos.push(nx,ny,nz);norm.push(nx,ny,nz)}}for(let y=0;y<lat;y++)for(let x=0;x<lon;x++){const a=y*(lon+1)+x,b=a+lon+1;idx.push(a,b,a+1,b,b+1,a+1)}
+ const pb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,pb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(pos),gl.STATIC_DRAW);gl.enableVertexAttribArray(A.p);gl.vertexAttribPointer(A.p,3,gl.FLOAT,false,0,0);const nb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,nb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(norm),gl.STATIC_DRAW);gl.enableVertexAttribArray(A.n);gl.vertexAttribPointer(A.n,3,gl.FLOAT,false,0,0);const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(idx),gl.STATIC_DRAW);
+ gl.enable(gl.DEPTH_TEST);gl.depthFunc(gl.LEQUAL);gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.clearColor(0,0,0,0);
+ // Explicit centre coordinates keep the whole sculpted figure balanced in the viewport.
+ const geometry=parts.map((p,i)=>{let x=0,y=0,z=0;if(p.skin){if(i===0)y=2.25;else if(i===1)y=1.87;else if(i===2)y=1.25;else if(i===3)y=.72;else if(i===4)y=.30;else{const j=i-5,side=j<6?-1:1,sub=j%6;x=side*[.75,.85,.29,.31,.29,.60][sub];y=[1.18,.55,-.22,-1.00,-1.56,1.52][sub];z=[0,0,0,0,.02,.01][sub]}}else{x=p.sign*(p.id==='chest'?.19:p.id==='abs'?.12:p.id==='frontDelts'||p.id==='rearDelts'?.58:p.id==='biceps'||p.id==='triceps'?.77:p.id==='quads'||p.id==='hamstrings'?.29:p.id==='calves'?.30:p.id==='glutes'?.23:p.id==='lats'?.26:.20);y=p.id==='frontDelts'||p.id==='rearDelts'?1.48:p.id==='chest'?1.38:p.id==='abs'?1.02:p.id==='biceps'||p.id==='triceps'?1.0:p.id==='quads'||p.id==='hamstrings'?-.23:p.id==='calves'?-1.03:p.id==='upperBack'?1.34:p.id==='lats'?1.0:p.id==='glutes'?.30:.8;z=p.view==='back'?-.27:(p.id==='chest'?.29:p.id==='abs'?.27:p.id==='quads'?.23:p.id==='calves'?.18:.19)}return {...p,x,y,z,color:p.skin?[.57,.54,.60]:[.5,.5,.6],opacity:1}});
+ // Size the body parts in 3D proportionally; muscle overlays sit just above the body surface.
+ geometry.forEach(g=>{if(g.skin)return;if(g.id==='chest')g.s=[.29,.20,.10];else if(g.id==='frontDelts'||g.id==='rearDelts')g.s=[.19,.22,.13];else if(g.id==='abs')g.s=[.12,.095,.07];else if(g.id==='biceps'||g.id==='triceps')g.s=[.12,.25,.11];else if(g.id==='quads'||g.id==='hamstrings')g.s=[.16,.39,.10];else if(g.id==='calves')g.s=[.115,.29,.085];else if(g.id==='upperBack')g.s=[.25,.29,.09];else if(g.id==='lats')g.s=[.22,.30,.085];else if(g.id==='glutes')g.s=[.20,.18,.09]});
+ let angle=0,target=0,tilt=0,dirty=true,raf=0;const getColors=()=>{const map={};$$('.muscle-zone',stage).forEach(el=>{const id=el.dataset.muscle,c=getComputedStyle(el).getPropertyValue('--mc').trim(),a=getComputedStyle(el).getPropertyValue('--ma').trim();if(id&&c)map[id]={color:c,opacity:el.classList.contains('locked')?.25:(Number(a)||.78)}});geometry.forEach(g=>{if(!g.skin){const v=map[g.id];g.color=hex(v?.color||palette[g.id]||'#777786');g.opacity=v?.opacity??.8}})};
+ const resize=()=>{const r=stage.getBoundingClientRect(),d=Math.min(window.devicePixelRatio||1,2),w=Math.max(240,Math.round((r.width||320)*d)),h=Math.max(360,Math.round((r.height||470)*d));if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;canvas.style.width='100%';canvas.style.height='100%';gl.viewport(0,0,w,h);dirty=true}};
+ const draw=()=>{raf=0;resize();angle+=(target-angle)*.19;if(Math.abs(target-angle)>.001){dirty=true;raf=requestAnimationFrame(draw)}if(!dirty)return;dirty=false;gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);const aspect=canvas.width/canvas.height;gl.uniform1f(U.angle,angle);gl.uniform1f(U.tilt,tilt);geometry.forEach(g=>{if(!g.skin&&g.view==='front'&&Math.cos(angle)<-.05)return;if(!g.skin&&g.view==='back'&&Math.cos(angle)>.05)return;gl.uniform3f(U.center,g.x,g.y,g.z);gl.uniform3f(U.scale,g.s[0],g.s[1],g.s[2]);gl.uniform1f(U.rz,g.rz||0);gl.uniform3f(U.color,...g.color);gl.uniform1f(U.opacity,g.skin?1:(g.opacity||1));gl.drawElements(gl.TRIANGLES,idx.length,gl.UNSIGNED_SHORT,0)});};
+ const wake=()=>{dirty=true;if(!raf)raf=requestAnimationFrame(draw)};getColors();wake();
+ let down=false,sx=0,sy=0,sa=0;canvas.addEventListener('pointerdown',e=>{down=true;sx=e.clientX;sy=e.clientY;sa=target;canvas.setPointerCapture?.(e.pointerId);canvas.classList.add('dragging');e.preventDefault()});canvas.addEventListener('pointermove',e=>{if(!down)return;target=sa+(e.clientX-sx)*.012;tilt=Math.max(-.22,Math.min(.22,(e.clientY-sy)*.003));wake()});const end=()=>{down=false;canvas.classList.remove('dragging')};canvas.addEventListener('pointerup',end);canvas.addEventListener('pointercancel',end);
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-muscle-turn]');if(!b||!stage.contains(b))return;target=(Number(b.dataset.muscleTurn)||0)<0?0:Math.PI;wake()});
+ const observer=new MutationObserver(()=>{getColors();wake()});observer.observe(stage,{subtree:true,attributes:true,attributeFilter:['style','class']});if(window.ResizeObserver)new ResizeObserver(wake).observe(stage);else window.addEventListener('resize',wake);
+ }
+ const scan=()=>$$('.body-stage').forEach(init);new MutationObserver(scan).observe(document.documentElement,{subtree:true,childList:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scan);else scan();
+})();

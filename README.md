@@ -85,3 +85,10 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 ## Profile field draft persistence
 
 - Age and height inputs are saved as drafts while typing, before any Save button rerenders the Profile screen. Saving age, height, or bodyweight therefore no longer discards the other profile field’s unsaved value. Draft writes use the timestamped local fallback; normal save actions persist the full state to IndexedDB when available.
+## 3D muscle model and app icon
+
+- Replaced the two-plane SVG flip with a self-contained WebGL canvas drawing a depth-tested, lit 3D body assembled from ellipsoid meshes. Drag with a finger or mouse to rotate freely; Front/Back controls rotate to the corresponding view. Muscle overlays read current rank colors and lock states from the rank map.
+- Added custom dumbbell-and-spark icon assets (`icon.svg`, 192/512 PNG, and Apple touch icon), plus a valid install manifest and head metadata.
+- Both hosted and standalone HTML builds embed the WebGL renderer, so it works offline without a CDN.
+- Fixed the service-worker cache list: it previously referenced several missing files, which could reject the entire cache install.
+- Validation includes JS syntax, smoke tests, HTML renderer synchronization, PNG dimensions/signatures, and manifest/cache assets. No physical iPhone/Safari visual session was available for this pass.
