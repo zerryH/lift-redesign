@@ -93,7 +93,7 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 - Fixed the service-worker cache list: it previously referenced several missing files, which could reject the entire cache install.
 - Validation includes JS syntax, smoke tests, HTML renderer synchronization, PNG dimensions/signatures, and manifest/cache assets. No physical iPhone/Safari visual session was available for this pass.
 
-## Holographic 3D muscle ranks
+## Holographic 3D muscle ranks **DOESNT WORK RN FIX WILL COME WITHIN OCTOBER!**
 
 The Ranks tab uses a real, locally bundled, segmented anatomical GLB rather than the previous primitive ellipsoid figure. The model is rendered as a translucent hologram with pale outlines; named muscle meshes map to the app's chest, delts, arms, abs, back, glutes, quads, hamstrings, and calf rank groups. As a related lift is ranked, those meshes take the rank color while unranked structures remain muted. The user can rotate the model by touch/mouse and use Front/Back controls.
 
