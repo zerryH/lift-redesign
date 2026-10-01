@@ -92,3 +92,9 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 - Both hosted and standalone HTML builds embed the WebGL renderer, so it works offline without a CDN.
 - Fixed the service-worker cache list: it previously referenced several missing files, which could reject the entire cache install.
 - Validation includes JS syntax, smoke tests, HTML renderer synchronization, PNG dimensions/signatures, and manifest/cache assets. No physical iPhone/Safari visual session was available for this pass.
+
+## Holographic 3D muscle ranks
+
+The Ranks tab uses a real, locally bundled, segmented anatomical GLB rather than the previous primitive ellipsoid figure. The model is rendered as a translucent hologram with pale outlines; named muscle meshes map to the app's chest, delts, arms, abs, back, glutes, quads, hamstrings, and calf rank groups. As a related lift is ranked, those meshes take the rank color while unranked structures remain muted. The user can rotate the model by touch/mouse and use Front/Back controls.
+
+The anatomy model is bundled as `body.glb.gz` and decompressed locally at runtime; the model and decoder are cached for offline use. The model is sourced from hpfrei's Body Anatomy 3D Viewer and Z-Anatomy data under CC BY-SA 4.0; attribution and change notes are in `ANATOMY-ATTRIBUTION.md`. Three.js and its GLTF/Draco support are bundled locally with their license.
