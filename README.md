@@ -82,3 +82,6 @@ Delete/discard actions use an in-app confirmation sheet rather than browser conf
 - Replaced the blocky rank placeholder with a shaded front/back anatomical SVG, clearer torso/limb contours, and separately mapped muscle regions that retain rank colors.
 - Smoke tests now guard against the mobile stretch rule returning and check the upgraded anatomy markup.
 - Validation covers build, JavaScript syntax, smoke tests, and matching embedded scripts; no live iPhone/Safari browser session was available for this pass.
+## Profile field draft persistence
+
+- Age and height inputs are saved as drafts while typing, before any Save button rerenders the Profile screen. Saving age, height, or bodyweight therefore no longer discards the other profile field’s unsaved value. Draft writes use the timestamped local fallback; normal save actions persist the full state to IndexedDB when available.

@@ -338,7 +338,7 @@ const confirmReset=()=>{
  });
 };
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b)A[b.dataset.a]?.(b.dataset)});
-document.addEventListener('input',e=>{const t=e.target;if(t.dataset.g)gr[t.dataset.g]=t.value;if(t.id=='rp'){dr.reps=Math.min(30,Math.max(1,Math.round(num(t.value)||1)));syncPickers()}if(t.id=='ws'){dr.kg=Math.min(dr.hi,Math.max(dr.lo,num(t.value)));const wv=$('#wv');if(wv)wv.textContent=fm(dr.kg);syncSlider(t,dr.kg)}if(t.id=='rs'){dr.reps=Math.min(30,Math.max(1,Math.round(num(t.value)||1)));const rv=$('#rv');if(rv)rv.textContent=dr.reps;const ri=$('#rp');if(ri)ri.value=dr.reps;syncSlider(t,dr.reps)}});
+document.addEventListener('input',e=>{const t=e.target;if(t.id==='age'||t.id==='heightCm'){S.set[t.id==='age'?'age':'heightCm']=t.value;S.savedAt=Date.now();localSave()}if(t.dataset.g)gr[t.dataset.g]=t.value;if(t.id=='rp'){dr.reps=Math.min(30,Math.max(1,Math.round(num(t.value)||1)));syncPickers()}if(t.id=='ws'){dr.kg=Math.min(dr.hi,Math.max(dr.lo,num(t.value)));const wv=$('#wv');if(wv)wv.textContent=fm(dr.kg);syncSlider(t,dr.kg)}if(t.id=='rs'){dr.reps=Math.min(30,Math.max(1,Math.round(num(t.value)||1)));const rv=$('#rv');if(rv)rv.textContent=dr.reps;const ri=$('#rp');if(ri)ri.value=dr.reps;syncSlider(t,dr.reps)}});
 document.addEventListener('change',async e=>{const t=e.target;if(t.id!='imp'||!t.files[0])return;
  try{const d=JSON.parse(await t.files[0].text());if(!Array.isArray(d.workouts)||!Array.isArray(d.bw))throw 0;
   const m=confirm('Merge with current data?\nOK = Merge · Cancel = choose Replace');if(!m&&!confirm('Replace ALL current data with this backup?'))return;
