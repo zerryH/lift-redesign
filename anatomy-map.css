@@ -57,3 +57,7 @@
   stroke:#858c9d!important;
   stroke-opacity:.82!important;
 }
+
+/* v5.5.18: rank state is applied directly to each anatomical zone. */
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path{fill:var(--mc)!important;fill-opacity:1!important;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--mc) 42%,transparent))}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{fill:#596072!important;fill-opacity:1!important;filter:none!important}
