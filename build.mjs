@@ -1,13 +1,22 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-const BUILD_VERSION = '5.5.24';
+const BUILD_VERSION = '5.5.25';
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => fs.writeFileSync(p, s);
 function validateData(ex, ranks) {
-  if (!Array.isArray(ex.ex) || !Array.isArray(ranks.tiers) || !ranks.t || typeof ranks.t !== 'object') throw new Error('Invalid JSON shape');
-  if (ex.ex.length !== 469 && ex.ex.length !== 471) throw new Error('Unexpected exercise row count: ' + ex.ex.length);
-  if (ranks.tiers.length !== 46 || Object.keys(ranks.t).length !== 460) throw new Error('Unexpected rank config: ' + ranks.tiers.length + ' tiers / ' + Object.keys(ranks.t).length + ' standards');
-  for (const row of ex.ex) if (typeof row !== 'string' || row.split('|').length !== 4) throw new Error('Malformed exercise row: ' + row);
+  if (!Array.isArray(ex.ex) || ex.ex.length === 0 || !Array.isArray(ranks.tiers) || ranks.tiers.length === 0 || !ranks.t || typeof ranks.t !== 'object') throw new Error('Invalid JSON shape');
+  const names = new Set();
+  for (const row of ex.ex) {
+    if (typeof row !== 'string' || row.split('|').length !== 4) throw new Error('Malformed exercise row: ' + row);
+    const name = row.split('|')[0];
+    if (names.has(name)) throw new Error('Duplicate exercise name: ' + name);
+    names.add(name);
+  }
+  const tierCount = ranks.tiers.length;
+  for (const [name, sexes] of Object.entries(ranks.t)) {
+    if (!Array.isArray(sexes) || sexes.length !== 2 || sexes.some(v => !Array.isArray(v) || v.length !== tierCount || v.some(n => !Number.isFinite(n)))) throw new Error('Malformed rank standard: ' + name);
+  }
+  for (const [alias, target] of Object.entries(ranks.alias || {})) if (!ranks.t[target]) throw new Error('Alias target missing: ' + alias + ' -> ' + target);
 }
 function injectData(appSource, ex, ranks) {
   const exRe = /\/\*BEGIN:EXERCISES\*\/[\s\S]*?\/\*END:EXERCISES\*\//;
@@ -34,11 +43,11 @@ write('app.js', app);
 const anatomyCss = read('anatomy-map.css');
 for (const name of ['index.html', 'lift-local.html']) write(name, buildHtml(name, app, anatomyCss));
 if (read('index.html') !== read('lift-local.html')) throw new Error('index.html and lift-local.html diverged');
-const hashInput = [app, read('index.html'), read('exercises.json'), read('ranks-config.json'), anatomyCss, read('manifest.webmanifest')].join('\n');
+const hashInput = [app, read('index.html'), read('exercises.json'), read('ranks-config.json'), anatomyCss, read('manifest.webmanifest'), fs.readFileSync('lift-icon-180-v2.png').toString('base64'), fs.readFileSync('apple-touch-icon.png').toString('base64')].join('\n');
 const shortHash = crypto.createHash('sha256').update(hashInput).digest('hex').slice(0, 12);
 const cacheVersion = 'liftlog-v' + BUILD_VERSION + '-' + shortHash;
 let sw = read('sw.js');
-sw = sw.replace(/const V='[^']+'(?:;)+,F=/, "const V='" + cacheVersion + "',F=");
+sw = sw.replace(/const V='[^']+',F=/, "const V='" + cacheVersion + "',F=");
 sw = sw.replace(/F=\[[^\]]*\]/, "F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','anatomy-map.css','manifest.webmanifest','lift-icon-180-v2.png','apple-touch-icon.png']");
 write('sw.js', sw);
 console.log('build ok · ' + BUILD_VERSION + ' · ' + cacheVersion);

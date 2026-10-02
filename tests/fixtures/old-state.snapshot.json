@@ -1,0 +1,155 @@
+{
+  "savedAt": 1790959000000,
+  "workouts": [
+    {
+      "id": 1001,
+      "d": "2026-09-20",
+      "split": "Push",
+      "ex": [
+        {
+          "n": "Bench Press",
+          "sets": [
+            {
+              "kg": 100,
+              "reps": 5,
+              "t": "",
+              "note": "baseline",
+              "extraSet": "keep"
+            }
+          ]
+        }
+      ],
+      "unknownWorkout": "keep"
+    },
+    {
+      "id": 1790960000001,
+      "d": "2026-09-21",
+      "split": "Pull",
+      "ex": [
+        {
+          "n": "Pull-Up",
+          "sets": [
+            {
+              "kg": 20,
+              "reps": 8,
+              "t": "w",
+              "bw": 72,
+              "height": 180,
+              "extraSet": 7
+            }
+          ]
+        }
+      ],
+      "unknownWorkout": 42
+    },
+    {
+      "id": 1790960000002,
+      "d": "2026-10-02",
+      "split": "Bad",
+      "ex": [
+        {
+          "n": "Custom Lift",
+          "sets": [
+            {
+              "kg": 12.5,
+              "reps": 6,
+              "t": "w",
+              "bw": 70,
+              "height": 175
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1790960000003,
+      "d": "2026-09-19",
+      "split": "Workout",
+      "ex": [
+        {
+          "n": "Sumo Deadlift",
+          "sets": [
+            {
+              "kg": 140,
+              "reps": 3,
+              "t": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "custom": [
+    {
+      "n": "My Custom",
+      "t": "M",
+      "c": "Chest",
+      "rank": "Bench Press",
+      "customExtra": "keep"
+    }
+  ],
+  "bw": [
+    {
+      "d": "2026-09-10",
+      "kg": 70
+    },
+    {
+      "d": "2026-09-20",
+      "kg": 73
+    },
+    {
+      "d": "2026-10-02",
+      "kg": 72
+    }
+  ],
+  "set": {
+    "table": "F",
+    "dark": 0,
+    "motion": 0,
+    "v": 4,
+    "age": 19,
+    "ageAdjust": false,
+    "heightCm": 180,
+    "heightAdjust": true,
+    "unit": "lb",
+    "rest": 120,
+    "tutorialSeen": true,
+    "tutorialVersion": 3,
+    "futureSetting": "preserve"
+  },
+  "rk": {
+    "My <Custom>": {
+      "n": "My <Custom>",
+      "i": 3,
+      "x": 1.1,
+      "extraRank": "keep"
+    },
+    "Bench Press": {
+      "n": "Bench Press",
+      "i": 4,
+      "x": 1.2,
+      "auto": true
+    }
+  },
+  "cur": {
+    "id": 1001,
+    "d": "2026-09-22",
+    "split": "Current",
+    "ex": [
+      {
+        "n": "Bench Press",
+        "sets": [
+          {
+            "kg": 95,
+            "reps": 5,
+            "t": ""
+          }
+        ]
+      }
+    ],
+    "currentExtra": "keep"
+  },
+  "editingId": 1001,
+  "lastBackup": 0,
+  "unknownRoot": "preserve"
+}
