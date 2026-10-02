@@ -1,4 +1,4 @@
-const V='liftlog-v5.5.24-1f1f50bed581',F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','anatomy-map.css','manifest.webmanifest','lift-icon-180-v2.png','apple-touch-icon.png'];
+const V='liftlog-v5.5.24-b62d9a4c4189',F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','anatomy-map.css','manifest.webmanifest','lift-icon-180-v2.png','apple-touch-icon.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(V).then(c=>c.addAll(F))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V).map(x=>caches.delete(x)))).then(()=>clients.claim())));
 self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request,{ignoreSearch:true}).then(r=>r||fetch(e.request))));

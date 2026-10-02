@@ -527,11 +527,16 @@ const bindRuler=wrap=>{if(!wrap||wrap.dataset.bound)return;const el=wrap.querySe
 const bindRulers=()=>document.querySelectorAll('.range-wrap').forEach(bindRuler);
 const syncSlider=(el,v)=>{if(!el)return;const lo=num(el.min),hi=num(el.max);const p=hi>lo?Math.max(0,Math.min(100,(num(v)-lo)/(hi-lo)*100)):0;el.parentElement?.style.setProperty('--pct',p+'%');syncRuler(el,v)};
 const syncPickers=()=>{const w=$('#ws'),r=$('#rs'),wv=$('#wv'),rv=$('#rv'),ri=$('#rp');if(w){w.value=String(dr.kg);if(wv)wv.textContent=fm(dr.kg);syncSlider(w,dr.kg)}if(r){r.value=String(dr.reps);if(rv)rv.textContent=dr.reps;if(ri)ri.value=dr.reps;syncSlider(r,dr.reps)}};
+const defaultSettings=()=>({table:'M',dark:1,motion:0,v:4,age:'',ageAdjust:true,heightCm:'',heightAdjust:true,unit:'kg',rest:90,tutorialSeen:false,tutorialVersion:0});
+const settingFlag=(v,fallback)=>{if(v===true||v===1||v==='1'||v==='true'||v==='yes'||v==='on')return true;if(v===false||v===0||v==='0'||v==='false'||v==='no'||v==='off')return false;return fallback};
+const settingBit=(v,fallback)=>settingFlag(v,!!fallback)?1:0;
+const settingNumber=(v,min,max,integer=false)=>{const n=Number(v);return Number.isFinite(n)&&n>=min&&n<=max&&(integer?Number.isInteger(n):true)?n:null};
+const normalizeSettings=(src,defaults=defaultSettings())=>{const x=src&&typeof src==='object'&&!Array.isArray(src)?src:{};const out={...defaults};for(const [k,v] of Object.entries(x))if(!(k in defaults))out[k]=v;out.table=x.table==='F'||x.table==='M'?x.table:defaults.table;out.dark=settingBit(x.dark,defaults.dark);out.motion=settingBit(x.motion,defaults.motion);out.v=4;const age=settingNumber(x.age,13,100,true);out.age=age==null?'':age;out.ageAdjust=settingFlag(x.ageAdjust,defaults.ageAdjust);const height=settingNumber(x.heightCm,120,230,false);out.heightCm=height==null?'':Math.round(height*2)/2;out.heightAdjust=settingFlag(x.heightAdjust,defaults.heightAdjust);out.unit=x.unit==='lb'||x.unit==='kg'?x.unit:defaults.unit;const restRaw=Number(x.rest);out.rest=!Number.isFinite(restRaw)?defaults.rest:Math.round(Math.max(30,Math.min(600,restRaw))/15)*15;out.tutorialSeen=settingFlag(x.tutorialSeen,defaults.tutorialSeen);const tv=settingNumber(x.tutorialVersion,0,typeof TUTORIAL_VERSION==='number'?TUTORIAL_VERSION:3,true);out.tutorialVersion=tv==null?0:tv;return out};
 const repairState=()=>{
- const d={workouts:[],custom:[],bw:[],set:{table:'M',dark:1,motion:0,v:4,age:'',ageAdjust:true,heightCm:'',heightAdjust:true,unit:'kg',rest:90,tutorialSeen:false,tutorialVersion:0},rk:{},cur:null,editingId:null,lastBackup:0};
+ const d={workouts:[],custom:[],bw:[],set:defaultSettings(),rk:{},cur:null,editingId:null,lastBackup:0};
  if(!S||typeof S!=='object')S=d;
  S.custom=Array.isArray(S.custom)?S.custom:[];S.rk=S.rk&&typeof S.rk==='object'&&!Array.isArray(S.rk)?S.rk:{};
- S.set=S.set&&typeof S.set==='object'&&!Array.isArray(S.set)?Object.assign(d.set,S.set):d.set;
+ S.set=normalizeSettings(S.set,d.set);
  S.bw=Array.isArray(S.bw)?S.bw.filter(b=>b&&typeof b==='object'&&Number.isFinite(num(b.kg))).map(b=>({d:safeDate(b.d),kg:num(b.kg)})).sort((a,b)=>a.d.localeCompare(b.d)):[];
  const normSet=z=>{const q=z&&typeof z==='object'?{...z}:{};q.kg=num(q.kg);q.reps=Math.min(30,Math.max(1,Math.round(num(q.reps)||1)));q.t=typeof q.t==='string'?q.t:'';if(q.bw!=null)q.bw=num(q.bw);if(q.height!=null)q.height=num(q.height);return q};
  const normEx=x=>{const q=x&&typeof x==='object'?{...x}:{};q.n=safeName(q.n);q.sets=Array.isArray(q.sets)?q.sets.filter(Boolean).map(normSet):[];return q};
@@ -590,7 +595,7 @@ const mergeBackupWorkouts=imported=>{const used=new Set(S.workouts.map(w=>Number
 const microTouch=(x,y,b)=>{if(!S?.set?.motion)return;const flare=document.createElement('span');flare.className='tap-flare';flare.style.left=x+'px';flare.style.top=y+'px';document.body.append(flare);const sparks=[];for(let i=0;i<2;i++){const p=document.createElement('span');p.className='tap-spark';p.style.left=x+'px';p.style.top=y+'px';const dx=(i?1:-1)*(5+Math.random()*4),dy=-2-Math.random()*5;p.style.setProperty('--dx',dx+'px');p.style.setProperty('--dy',dy+'px');p.style.setProperty('--delay',(i*8)+'ms');document.body.append(p);sparks.push(p)}if(b){b.classList.remove('tap-glow');void b.offsetWidth;b.classList.add('tap-glow');setTimeout(()=>b.classList.remove('tap-glow'),190)}setTimeout(()=>{flare.remove();sparks.forEach(p=>p.remove())},220)};
 const ripple=e=>{if(!S?.set?.motion)return;const b=e.target.closest('button,.pill');if(!b||b.disabled||b.closest('.range-wrap'))return;if(b.tagName==='BUTTON'&&b.classList.contains('side'))return;const r=document.createElement('span');r.className='ripple';const box=b.getBoundingClientRect(),x=e.clientX-box.left,y=e.clientY-box.top,sz=Math.max(box.width,box.height)*.16;r.style.left=x+'px';r.style.top=y+'px';r.style.width=sz+'px';r.style.height=sz+'px';b.append(r);microTouch(e.clientX,e.clientY,b);setTimeout(()=>r.remove(),240)};
 document.addEventListener('pointerdown',ripple,{passive:true});
-const resetDefaults=()=>({workouts:[],custom:[],bw:[],set:{table:'M',dark:1,motion:0,v:4,age:'',ageAdjust:true,heightCm:'',heightAdjust:true,unit:'kg',rest:90,tutorialSeen:false,tutorialVersion:0},rk:{},cur:null,lastBackup:0});
+const resetDefaults=()=>({workouts:[],custom:[],bw:[],set:defaultSettings(),rk:{},cur:null,lastBackup:0});
 const confirmAction=(title,message,confirmText,action)=>{title=esc(title);message=esc(message);confirmText=esc(confirmText);
  if($('#action-modal'))return;
  const m=document.createElement('div');m.id='action-modal';m.className='action-modal';
@@ -632,7 +637,7 @@ document.addEventListener('change',async e=>{const t=e.target;if(t.id!='imp'||!t
  try{const d=JSON.parse(await t.files[0].text());if(!Array.isArray(d.workouts)||!Array.isArray(d.bw))throw 0;
   const m=confirm('Merge with current data?\nOK = Merge · Cancel = choose Replace');if(!m&&!confirm('Replace ALL current data with this backup?'))return;
   if(m){S.rk={...(d.rk||{}),...S.rk};mergeBackupWorkouts(d.workouts);S.custom.push(...(d.custom||[]).filter(c=>!S.custom.some(o=>o.n==c.n)));S.bw=[...S.bw,...d.bw.filter(b=>!S.bw.some(o=>o.d==b.d&&o.kg==b.kg))].sort((a,b)=>a.d.localeCompare(b.d))}
-  else{S.workouts=d.workouts;S.custom=d.custom||[];S.bw=d.bw;S.set={...S.set,...d.settings};S.rk=d.rk||{};S.cur=null;S.editingId=null}
+  else{S.workouts=d.workouts;S.custom=d.custom||[];S.bw=d.bw;S.set=normalizeSettings({...S.set,...(d.settings||{})});S.rk=d.rk||{};S.cur=null;S.editingId=null}
   S.custom.forEach(addCustom);qolApplyCustomAliases();document.documentElement.dataset.d=S.set.dark;refreshRanks();go();toast('Backup imported · ranks rebuilt')}catch{toast('Not a valid backup file')}});
 document.addEventListener('keydown',e=>{const t=e.target,inp=t.tagName=='INPUT';
  if(e.key=='/'&&!inp){const q=$('#q');if(q){e.preventDefault();q.focus()}}

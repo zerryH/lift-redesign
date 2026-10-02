@@ -20,7 +20,19 @@ function extractConst(name){
   }
   throw new Error('unbalanced '+name);
 }
-const repairFactory=Function('S','num','safeName','safeDate','return ('+extractConst('repairState')+');');
-function run(){const S=JSON.parse(JSON.stringify(fixture));const repairState=repairFactory(S,num,safeName,safeDate);const old=Date.now;Date.now=()=>1790960000000;try{repairState()}finally{Date.now=old}return S}
+const helperNames=['defaultSettings','settingFlag','settingBit','settingNumber','normalizeSettings'];const helperDecls=helperNames.map(extractDecl).join('\n');function extractDecl(name){
+  const marker='const '+name+'=';
+  const start=source.indexOf(marker);assert(start>=0,'missing '+marker);let b=0,p=0,a=0,inS='',esc=false;
+  for(let i=start+marker.length;i<source.length;i++){
+    const ch=source[i];
+    if(inS){if(esc)esc=false;else if(ch==='\\')esc=true;else if(ch===inS)inS='';continue}
+    if(ch==='"'||ch==="'"||ch===String.fromCharCode(96)){inS=ch;continue}
+    if(ch==='{')b++;else if(ch==='}')b--;else if(ch==='(')p++;else if(ch===')')p--;else if(ch==='[')a++;else if(ch===']')a--;
+    if(ch===';'&&b===0&&p===0&&a===0)return source.slice(start,i+1);
+  }
+  throw new Error('unbalanced '+name);
+}
+const repairFactory=Function('S','num','safeName','safeDate','TUTORIAL_VERSION',helperDecls+'\nreturn ('+extractConst('repairState')+');');
+function run(){const S=JSON.parse(JSON.stringify(fixture));const repairState=repairFactory(S,num,safeName,safeDate,3);const old=Date.now;Date.now=()=>1790960000000;try{repairState()}finally{Date.now=old}return S}
 const output=run();
 if(!fs.existsSync(snapshotPath)){fs.writeFileSync(snapshotPath,JSON.stringify(output,null,2)+'\n');console.log('state-compat snapshot created')}else{const expected=JSON.parse(fs.readFileSync(snapshotPath,'utf8'));assert.deepEqual(output,expected,'repairState output changed from compatibility snapshot');console.log('state-compat ok')}
