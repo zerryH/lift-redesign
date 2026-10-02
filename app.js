@@ -1,4 +1,4 @@
-const BUILD_VERSION='5.5.22';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
+const BUILD_VERSION='5.5.23';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
@@ -24,7 +24,7 @@ const localSave=()=>{try{localStorage.setItem('liftlog-state',JSON.stringify(S))
 const dbRead=async()=>{const d=await idb();return await new Promise((r,j)=>{const q=d.transaction('kv').objectStore('kv').get('s');q.onsuccess=()=>r(q.result||null);q.onerror=()=>j(q.error||new Error('IndexedDB read failed'))})};
 const dbGet=async()=>{const l=localGet();if(location.protocol==='file:')return l;try{const d=await dbRead();return l&&(!d||(Number(l.savedAt)||0)>(Number(d.savedAt)||0))?l:(d||l)}catch(e){return l}};
 const save=async()=>{S.savedAt=Date.now();localSave();if(location.protocol==='file:')return;try{const d=await idb();await new Promise((r,j)=>{const tx=d.transaction('kv','readwrite');tx.objectStore('kv').put(S,'s');tx.oncomplete=r;tx.onerror=()=>j(tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>j(tx.error||new Error('IndexedDB write aborted'))})}catch(e){toast('Saved locally; browser storage fallback is active')}};
-const go=()=>{save();render()};
+const go=()=>{try{refreshRanks()}catch(e){console.warn('Lift rank refresh skipped',e)}save();render()};
 const toast=(m,f)=>{const t=document.createElement('div');t.className='toast';t.textContent=m;if(f){t.onclick=f;t.style.animation='f .2s'}document.body.append(t);setTimeout(()=>t.remove(),f?15e3:2700)};
 /* maths */
 const num=v=>parseFloat(String(v).replace(',','.'))||0;
@@ -37,11 +37,25 @@ const ageLabel=a=>{const n=Number(a);return !Number.isFinite(n)||n<13||n>100?'ag
 let bestBW={},bestHeight={};
 const bwAtDate=d=>{const a=(Array.isArray(S.bw)?S.bw:[]).filter(x=>x&&typeof x==='object'&&typeof x.d==='string'&&Number.isFinite(num(x.kg))).sort((x,y)=>String(x.d).localeCompare(String(y.d)));let v=0;for(const x of a){if(String(x.d)<=String(d||''))v=num(x.kg);else break}return v||bw()};
 const rankSetEst=(n,s,b)=>{const r=num(s.reps);if(s.t=='w'||r<1||r>12)return 0;let w=num(s.kg);if(EX[n]?.t=='W')w+=b;return r==1?w:w*(1+r/30)};
+const rankWorkouts=()=>{const editId=S.editingId;const a=(Array.isArray(S.workouts)?S.workouts:[]).filter(w=>!S.cur||editId==null||w.id!==editId);if(S.cur)a.push(S.cur);return a};
 const rankDifficulty=n=>1;
+const historicalBest=(n,excludeId=null)=>{let best=0;for(const w of (Array.isArray(S.workouts)?S.workouts:[])){if(excludeId!=null&&w.id===excludeId)continue;const b=bwAtDate(w.d)||bw();for(const ex of (w.ex||[]))if(ex.n===n)for(const s of (ex.sets||[])){const e=rankSetEst(n,s,b);if(e>best)best=e}}return best};
 const rankScore=(n,e,b,h)=>(e/b)*heightFactor(h); const tier=(n,e,h=bestHeight[n]||num(S.set.heightCm)||175)=>{const t=th(n),b=bestBW[n]||bw();if(!t||!e||!b)return -1;const r=rankScore(n,e,b,h),af=ageFactor(S.set.age);let i=0;t.forEach((v,j)=>{if(r>=v*af)i=j});return i};
-const bests=()=>{const recent={},all={},recentCut=Date.now()-90*864e5,m={};bestBW={};bestHeight={};for(const w of S.workouts){const recentEnough=(new Date(w.d+'T23:59:59Z').getTime()||0)>=recentCut;for(const x of (w.ex||[])){for(const z of (x.sets||[])){const b=num(z.bw)||bwAtDate(w.d),e=rankSetEst(x.n,z,b);if(!e||!b)continue;const h=num(z.height)||num(S.set.heightCm)||175,ratio=rankScore(x.n,e,b,h),target=recentEnough?recent:all,cur=target[x.n];if(!cur||ratio>cur.ratio)target[x.n]={e,b,h,ratio}}}}for(const n of new Set([...Object.keys(all),...Object.keys(recent)])){const z=recent[n]||all[n];if(!z)continue;bestBW[n]=z.b;bestHeight[n]=z.h;m[n]=z.e}return m};
+const bests=()=>{const recent={},all={},recentCut=Date.now()-90*864e5,m={};bestBW={};bestHeight={};for(const w of rankWorkouts()){const recentEnough=(new Date(w.d+'T23:59:59Z').getTime()||0)>=recentCut;for(const x of (w.ex||[])){for(const z of (x.sets||[])){const b=num(z.bw)||bwAtDate(w.d),e=rankSetEst(x.n,z,b);if(!e||!b)continue;const h=num(z.height)||num(S.set.heightCm)||175,ratio=rankScore(x.n,e,b,h),target=recentEnough?recent:all,cur=target[x.n];if(!cur||ratio>cur.ratio)target[x.n]={e,b,h,ratio}}}}for(const n of new Set([...Object.keys(all),...Object.keys(recent)])){const z=recent[n]||all[n];if(!z)continue;bestBW[n]=z.b;bestHeight[n]=z.h;m[n]=z.e}return m};
 const tiers=()=>{const b=bests(),o={};for(const n in b)o[n]=tier(n,b[n]);return o};
-const refreshRanks=(keepManual=false)=>{const b=bests(),body=bw();if(!body)return;const f=S.set.table=='F'?'F':'M';for(const n in b){if(keepManual&&S.rk[n]?.auto===false)continue;const e=b[n],h=bestHeight[n]||num(S.set.heightCm)||175,bb=bestBW[n]||body,i=tier(n,e,h),x=rankScore(n,e,bb,h),t=th(n),adj=t?t.map(v=>v*ageFactor(S.set.age)):[],nx=i>=0?adj[i+1]:undefined;let best=null,be=-1;for(const w of S.workouts)for(const ex of (w.ex||[]))if(ex.n==n)for(const s of (ex.sets||[])){const se=rankSetEst(n,s,num(s.bw)||bwAtDate(w.d));if(se>be){be=se;best=s}}S.rk[n]={n,w:best?.kg??0,r:best?.reps??1,b:bb,u:S.set.unit||'kg',f,i,x,e,pc:i<0?0:i===MAX_RANK?100:Math.max(0,Math.min(100,(x-adj[i])/Math.max(.0001,adj[i+1]-adj[i])*100)),need:i<0||i===MAX_RANK?null:Math.max(0,(nx/heightFactor(h))*bb-e),d:iso(),age:S.set.age??null,h,rawX:e/bb,auto:1,rankVersion:3}}};
+const refreshRanks=(keepManual=false)=>{
+ const b=bests(),body=bw(),seen=new Set(Object.keys(b));
+ if(!body)return;
+ for(const n of Object.keys(S.rk||{}))if(S.rk[n]?.auto!==false&&!seen.has(n))delete S.rk[n];
+ const f=S.set.table=='F'?'F':'M';
+ for(const n in b){
+  if(keepManual&&S.rk[n]?.auto===false)continue;
+  const e=b[n],h=bestHeight[n]||num(S.set.heightCm)||175,bb=bestBW[n]||body,i=tier(n,e,h),x=rankScore(n,e,bb,h),t=th(n),adj=t?t.map(v=>v*ageFactor(S.set.age)):[],nx=i>=0?adj[i+1]:undefined;
+  let best=null,be=-1;
+  for(const w of rankWorkouts())for(const ex of (w.ex||[]))if(ex.n==n)for(const s of (ex.sets||[])){const se=rankSetEst(n,s,num(s.bw)||bwAtDate(w.d));if(se>be){be=se;best=s}}
+  S.rk[n]={n,w:best?.kg??0,r:best?.reps??1,b:bb,u:S.set.unit||'kg',f,i,x,e,pc:i<0?0:i===MAX_RANK?100:Math.max(0,Math.min(100,(x-adj[i])/Math.max(.0001,adj[i+1]-adj[i])*100)),need:i<0||i===MAX_RANK?null:Math.max(0,(nx/heightFactor(h))*bb-e),d:iso(),age:S.set.age??null,h,rawX:e/bb,auto:1,rankVersion:4};
+ }
+};
 const last=n=>{for(let i=S.workouts.length-1;i>=0;i--){const x=S.workouts[i].ex.find(e=>e.n==n);if(x&&x.sets.length){const s=x.sets[x.sets.length-1];return s.kg+' kg x '+s.reps}}return''};
 const rem=()=>{if(!S.workouts.length)return'';const n=S.workouts.filter(w=>w.id>S.lastBackup).length,ref=S.lastBackup||S.workouts[0].id;return n>=10||(n>0&&Date.now()-ref>12096e5)?'<div class=note><small>Time for a backup — Profile → Export backup.</small></div>':''};
 const h=(a,b)=>`<h1><b>${a}</b>${b?' <i>'+b+'</i>':''}</h1>`;
@@ -67,7 +81,7 @@ const muscleTransferWeight=(id,n)=>({'Bench Press':{chest:1,triceps:.42,frontDel
 const TUTORIAL_VERSION=3;
 const tutorialSteps=[
  {view:'today',eyebrow:'WELCOME',title:'Welcome to Lift',body:'Lift is a private, offline workout log. Build a session, record your sets, finish it, and use the saved data to calculate exercise and muscle ranks.',tip:'Your workout and profile stay on this device. No account is required.',where:'Home'},
- {view:'local',eyebrow:'01 · START<',title:'Start a workout',body:'Pick Empty, Push, Pull, Legs, or another split. Every new workout starts clean so you control exactly what gets logged.',tip:'A split is only a starting point — you can change the exercise list at any time.',where:'Home · Today'},
+ {view:'today',eyebrow:'01 · START',title:'Start a workout',body:'Pick Empty, Push, Pull, Legs, or another split. Every new workout starts clean so you control exactly what gets logged.',tip:'A split is only a starting point — you can change the exercise list at any time.',where:'Home · Today'},
  {view:'today',eyebrow:'02 · EXERCISES',title:'Add your exercises',body:'Use Add exercise to search the exercise library, filter it, or create a custom movement. Tap an exercise to put it into the current session.',tip:'You can build the whole exercise list before entering your first set.',where:'Home · Today'},
  {view:'today',eyebrow:'03 · LOGGING',title:'Log every set',body:'Choose the weight and reps, then press Log set. Your set is stored immediately and the workout remains editable until you finish it.',tip:'If you make a mistake, edit or remove the set before finishing the workout.',where:'Home · Today'},
  {view:'history',eyebrow:'04 · HISTORY',title:'Review finished workouts',body:'Finished sessions move into History. Open an old session to review what you did and correct entries when needed.',tip:'History is local, so it works without an internet connection.',where:'History'},
@@ -148,7 +162,7 @@ today(){const c=S.cur,add=`<div class="add exercise-add-bar"><button class="cta"
  const t=EX[x.n].t,[lo,hi,st]=RG(t),P=L[ci-1],N=L[ci+1],note={D:'per dumbbell',W:'added kg (negative = assisted)',M:'approximate, machines vary by gym'}[t]||'';
  if(dr.n!=x.n){const l=lastSet(x.n);dr={n:x.n,kg:l?num(l.kg):t=='W'?0:t=='D'?10:20,reps:l?num(l.reps)||8:8}}
  Object.assign(dr,{lo,hi,st});dr.kg=Math.min(hi,Math.max(lo,dr.kg));dr.reps=Math.min(30,Math.max(1,Math.round(num(dr.reps)||8)));
- let run=0;S.workouts.forEach(w=>w.ex.forEach(y=>{if(y.n==x.n)y.sets.forEach(s=>run=Math.max(run,est(x.n,s)))}));
+ let run=historicalBest(x.n,S.editingId);
  const rows=x.sets.map((s,j)=>{const e=est(x.n,s),pr=e>run;run=Math.max(run,e);return `<div class=srow><span>Set ${j+1}</span><b>${s.kg} kg × ${s.reps}</b><em>${pr?'PR':''}</em><button class="tag ${s.t}" title="Warm-up" data-a=wu data-i=${ci} data-j=${j}>W</button><button data-a=ds data-i=${ci} data-j=${j} aria-label="Delete set">×</button></div>`}).join('');
  return top+`<div class=car>${P?`<button class=side data-a=cp>${P.n}</button>`:'<span class=side></span>'}<div class=mid><small>${EX[x.n].g}</small><b>${x.n}</b></div>${N?`<button class=side data-a=cn>${N.n}</button>`:'<span class=side></span>'}</div>`+
  `<div class=picker><div class=phead><span>WEIGHT</span><div><b id=wv>${fm(dr.kg)}</b><small>kg</small></div></div><small class=ctr>${note}</small><div class=range-wrap><div class=range-window><div class=ruler-track>${rulerTicks(lo,hi,st)}</div><div class=ruler-center></div></div><input id=ws class=range type=range min=${lo} max=${hi} step=${st} value=${dr.kg} aria-label="Weight"></div></div>`+
@@ -230,12 +244,12 @@ fin:()=>{const a=tiers(),done=S.cur;if(S.editingId!=null){const ix=S.workouts.fi
 he:d=>{const w=S.workouts[+d.i];if(!w)return;const open=()=>{ci=0;S.editingId=w.id;S.cur=JSON.parse(JSON.stringify(w));view='today';nav();go()};if(S.cur)confirmAction('Replace workout in progress?','Your current unsaved changes will be discarded. The saved workout stays in History until you finish editing.','Replace',open);else open()},
 hd:d=>{const i=+d.i;confirmAction('Delete workout?','This saved workout will be permanently removed from History.','Delete',()=>{S.workouts.splice(i,1);go()})},
 flt:d=>{flt=d.v;render()},
-height:()=>{const raw=$('#heightCm').value,n=Number(raw);if(raw===''||!Number.isFinite(n)||n<120||n>230)return toast('Enter a height from 120 to 230 cm');S.set.heightCm=Math.round(n*2)/2;Object.values(S.rk).forEach(r=>{const t=R.t[R.alias[r.n]||r.n]?.[r.f=='F'?1:0];if(!t)return;r.h=S.set.heightCm;r.x=(r.rawX??r.x)*heightFactor(S.set.heightCm);const a=t.map(v=>v*ageFactor(S.set.age));let i=0;a.forEach((v,j)=>{if(r.x>=v)i=j});r.i=i;const nx=a[i+1];r.pc=i===MAX_RANK?100:Math.max(0,(r.x-a[i])/(nx-a[i])*100);r.need=i===MAX_RANK?null:(nx/heightFactor(S.set.heightCm))*r.b-r.e});refreshRanks();go();toast('Height saved · ranks updated')},
-age:()=>{const raw=$('#age').value,n=Number(raw);if(raw===''||!Number.isInteger(n)||n<13||n>100)return toast('Enter an age from 13 to 100');S.set.age=n;Object.values(S.rk).forEach(r=>{const t=R.t[R.alias[r.n]||r.n]?.[r.f=='F'?1:0];if(!t)return;const a=t.map(v=>v*ageFactor(n));let i=0;a.forEach((v,j)=>{if(r.x>=v)i=j});r.i=i;const nx=a[i+1];r.pc=i===MAX_RANK?100:Math.max(0,(r.x-a[i])/(nx-a[i])*100);r.need=i===MAX_RANK?null:nx*r.b-r.e;r.age=n});refreshRanks();go();toast('Age saved · ranks updated')},
-bw:()=>{const v=num($('#bw').value);if(v>0){S.bw.push({d:iso(),kg:v});go();toast('Saved')}},
-tbl:d=>{S.set.table=d.v;go()},
-ageAdjust:()=>{S.set.ageAdjust=S.set.ageAdjust===false;Object.values(S.rk).forEach(r=>{r.age=S.set.age||r.age});save();go();toast(S.set.ageAdjust?'Age adjustment on':'Age adjustment off')},
-heightAdjust:()=>{S.set.heightAdjust=S.set.heightAdjust===false;save();go();toast(S.set.heightAdjust?'Height / ROM adjustment on':'Height / ROM adjustment off')},
+height:()=>{const raw=$('#heightCm').value,n=Number(raw);if(raw===''||!Number.isFinite(n)||n<120||n>230)return toast('Enter a height from 120 to 230 cm');S.set.heightCm=Math.round(n*2)/2;refreshRanks();go();toast('Height saved · ranks updated')},
+age:()=>{const raw=$('#age').value,n=Number(raw);if(raw===''||!Number.isInteger(n)||n<13||n>100)return toast('Enter an age from 13 to 100');S.set.age=n;refreshRanks();go();toast('Age saved · ranks updated')},
+bw:()=>{const v=num($('#bw').value);if(v>0){S.bw.push({d:iso(),kg:v});refreshRanks();go();toast('Saved · ranks updated')}},
+tbl:d=>{S.set.table=d.v;refreshRanks();go()},
+ageAdjust:()=>{S.set.ageAdjust=S.set.ageAdjust===false;refreshRanks();save();go();toast(S.set.ageAdjust?'Age adjustment on':'Age adjustment off')},
+heightAdjust:()=>{S.set.heightAdjust=S.set.heightAdjust===false;refreshRanks();save();go();toast(S.set.heightAdjust?'Height / ROM adjustment on':'Height / ROM adjustment off')},
 theme:d=>{S.set.dark=d.v==='dark'?1:0;document.documentElement.dataset.d=S.set.dark;save();go()},
 dk:()=>{S.set.dark=+!S.set.dark;document.documentElement.dataset.d=S.set.dark;save();go()},
 tutorial:()=>tutorialOpen(),
@@ -293,7 +307,7 @@ document.addEventListener('change',async e=>{const t=e.target;if(t.id!='imp'||!t
   const m=confirm('Merge with current data?\nOK = Merge · Cancel = choose Replace');if(!m&&!confirm('Replace ALL current data with this backup?'))return;
   if(m){S.rk={...(d.rk||{}),...S.rk};const ids=new Set(S.workouts.map(w=>w.id));S.workouts.push(...d.workouts.filter(w=>!ids.has(w.id)));S.custom.push(...(d.custom||[]).filter(c=>!S.custom.some(o=>o.n==c.n)));S.bw=[...S.bw,...d.bw.filter(b=>!S.bw.some(o=>o.d==b.d&&o.kg==b.kg))].sort((a,b)=>a.d.localeCompare(b.d))}
   else{S.workouts=d.workouts;S.custom=d.custom||[];S.bw=d.bw;S.set={...S.set,...d.settings};S.rk=d.rk||{}}
-  S.custom.forEach(addCustom);document.documentElement.dataset.d=S.set.dark;go();toast('Backup imported')}catch{toast('Not a valid backup file')}});
+  S.custom.forEach(addCustom);qolApplyCustomAliases();document.documentElement.dataset.d=S.set.dark;refreshRanks();go();toast('Backup imported · ranks rebuilt')}catch{toast('Not a valid backup file')}});
 document.addEventListener('keydown',e=>{const t=e.target,inp=t.tagName=='INPUT';
  if(e.key=='/'&&!inp){const q=$('#q');if(q){e.preventDefault();q.focus()}}
  if((e.ctrlKey||e.metaKey)&&e.key=='z'&&S.cur){e.preventDefault();S.cur.ex[ci]?.sets.pop();go()}
@@ -342,7 +356,7 @@ const qolRender=()=>{qolProfileCard();qolHistoryCard();qolWorkoutBits();if(S.cur
 const qolStart=()=>{qolSetupStaples();qolApplyCustomAliases();const observer=new MutationObserver(()=>requestAnimationFrame(qolRender));observer.observe($('#v'),{childList:true,subtree:true});qolRender();
  const origLog=A.log;A.log=()=>{const note=$('#qol-note')?.value.trim()||'',rpe=num($('#qol-rpe')?.value),before=Date.now();origLog();const z=S.cur?.ex?.[ci]?.sets?.at(-1);if(z){z.note=note||undefined;z.rpe=rpe||undefined;z.bw=bwAtDate(S.cur.d);z.height=num(S.set.heightCm)||undefined;z.loggedAt=before;save()}qolRestStart(S.set.rest||90);qolRender()};
  A.start=A.start;document.addEventListener('input',e=>{const id=e.target.id;if(id==='qol-weight'){dr.kg=Math.min(dr.hi,Math.max(dr.lo,qolKg(e.target.value)));syncPickers()}else if(id==='qol-reps'){dr.reps=Math.min(30,Math.max(1,Math.round(num(e.target.value)||1)));syncPickers()}else if(id==='qol-rest-setting'){S.set.rest=Math.min(600,Math.max(30,Math.round(num(e.target.value)/15)*15));save()}});
- document.addEventListener('change',e=>{const s=e.target;if(s.matches('[data-qol-map]')){const name=s.dataset.qolMap,c=S.custom.find(x=>x.n===name);if(c){c.rank=s.value||'';if(c.rank)R.alias[name]=c.rank;else delete R.alias[name];save();render()}}});
+ document.addEventListener('change',e=>{const s=e.target;if(s.matches('[data-qol-map]')){const name=s.dataset.qolMap,c=S.custom.find(x=>x.n===name);if(c){c.rank=s.value||'';if(c.rank)R.alias[name]=c.rank;else delete R.alias[name];refreshRanks();save();render()}}});
  document.addEventListener('click',e=>{const b=e.target.closest('[data-qol]');if(!b)return;const a=b.dataset.qol;if(a==='progress')qolShowProgress();if(a==='plate')qolShowPlate();if(a==='closeModal'||a==='modalBg'||e.target.classList.contains('qol-modal-bg'))qolCloseModal();if(a==='restPlus')qolState.endAt+=30e3;if(a==='restStop')qolStopRest();if(a==='repeatLast'){const z=qolPrevSet(S.cur?.ex?.[ci]?.n);if(z){dr.kg=num(z.kg);dr.reps=num(z.reps);syncPickers();qolRender()}}if(a==='unit'){S.set.unit=b.dataset.v;save();render()}if(a==='ageAdjust'){S.set.ageAdjust=S.set.ageAdjust===false;Object.values(S.rk).forEach(r=>r.age=S.set.age||r.age);save();render();toast(S.set.ageAdjust?'Age adjustment on':'Age adjustment off')}if(a==='heightAdjust'){S.set.heightAdjust=S.set.heightAdjust===false;save();render();toast(S.set.heightAdjust?'Height / ROM adjustment on':'Height / ROM adjustment off')}if(a==='calcPlates'){const total=qolKg($('#qol-plate-target')?.value),bar=qolKg($('#qol-plate-bar')?.value)||20,r=qolPlatePlan(total,bar);const out=r.plates.length?r.plates.map(x=>`${x.count} × ${x.plate} kg / side`).join('<br>'):'No plates needed';const rem=r.exact?'Exact load':'Closest possible with current plate set';const el=$('#qol-plate-result');if(el)el.innerHTML=`<b>${r.side.toFixed(2)} kg / side</b><br>${out}<br><small>${rem}${r.exact?'':` · ${r.remainder.toFixed(2)} kg left per side`}</small>`}});
  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&qolState.endAt>Date.now())qolAcquireWake()});
 };
