@@ -1,4 +1,4 @@
-const BUILD_VERSION='5.5.6';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
+const BUILD_VERSION='5.5.7';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
@@ -70,7 +70,7 @@ const tutorialSteps=[
 {view:'today',target:'.picker',title:'3 · Log weight and reps',body:'Use the weight ruler and reps control to choose your set. The center marker stays fixed while the ruler moves underneath it. Tap Log set after each completed set.'},
 {view:'history',target:'nav [data-v=history]',title:'4 · History',body:'Finish a workout to save it. History keeps your completed sessions on-device and lets you edit or delete an older session with confirmation.'},
 {view:'ranks',target:'.big',title:'5 · Overall rank',body:'Overall rank is the average of your ranked exercises. Exercise ranks use estimated strength relative to bodyweight, with age and optional height/ROM adjustment applied before the displayed tier.'},
-{view:'ranks',target:'.body-card',title:'6 · Front + back anatomy',body:'The anatomy map now uses two separate 2D models. Front shows anterior muscles; Back shows posterior muscles. The back view filters out front-facing muscles so lats, rear delts, triceps and the posterior chain are easier to see.'},
+{view:'ranks',target:'.body-card',title:'6 · Front + back anatomy',body:'The anatomy map uses one 2D anatomy figure with two views. Front · Anterior shows the front-facing muscles; Back · Posterior switches that same figure to the rear-facing view. Use the buttons above the figure to switch between them and see which muscles are unlocked by your rank.'},
 {view:'ranks',target:'.rank-tools .cta',title:'7 · Get your rank',body:'Enter an exercise, weight, reps, bodyweight and optional height. Get rank calculates the result immediately. Update rank uses the same form and refreshes the displayed rank data instead of leaving stale values behind.'},
 {view:'ranks',target:'.muscle-grid',title:'8 · Compound vs isolation',body:'Muscles do not all inherit the same rank from a compound lift. Primary muscles receive full transfer, while secondary muscles receive a reduced contribution. Isolation lifts stay much more specific, so a Sapphire bench does not automatically make your triceps Sapphire.'},
 {view:'settings',target:'nav [data-v=settings]',title:'9 · Profile and standards',body:'Save age, height and bodyweight in Profile. Choose the Male or Female reference set independently of your workout log. The age and height/ROM adjustments can also be disabled.'},
