@@ -330,8 +330,11 @@ let dbPromise=null;const idb=()=>{if(location.protocol==='file:')return Promise.
 const localGet=()=>{try{return JSON.parse(localStorage.getItem('liftlog-state')||'null')}catch{return null}};
 const localSave=()=>{try{localStorage.setItem('liftlog-state',JSON.stringify(S));return true}catch{return false}};
 const dbRead=async()=>{const d=await idb();return await new Promise((r,j)=>{const q=d.transaction('kv').objectStore('kv').get('s');q.onsuccess=()=>r(q.result||null);q.onerror=()=>j(q.error||new Error('IndexedDB read failed'))})};
+const dbWrite=async value=>{const d=await idb();return await new Promise((r,j)=>{const tx=d.transaction('kv','readwrite');tx.objectStore('kv').put(value,'s');tx.oncomplete=()=>r(true);tx.onerror=()=>j(tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>j(tx.error||new Error('IndexedDB write aborted'))})};
+const dbClear=async()=>{const d=await idb();await new Promise((r,j)=>{const tx=d.transaction('kv','readwrite');tx.objectStore('kv').delete('s');tx.oncomplete=r;tx.onerror=()=>j(tx.error||new Error('IndexedDB delete failed'));tx.onabort=()=>j(tx.error||new Error('IndexedDB delete aborted'))});return (await dbRead())==null};
 const dbGet=async()=>{const l=localGet();if(location.protocol==='file:')return l;try{const d=await dbRead();return l&&(!d||(Number(l.savedAt)||0)>(Number(d.savedAt)||0))?l:(d||l)}catch(e){return l}};
-const save=async()=>{S.savedAt=Date.now();localSave();if(location.protocol==='file:')return;try{const d=await idb();await new Promise((r,j)=>{const tx=d.transaction('kv','readwrite');tx.objectStore('kv').put(S,'s');tx.oncomplete=r;tx.onerror=()=>j(tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>j(tx.error||new Error('IndexedDB write aborted'))})}catch(e){toast('Saved locally; browser storage fallback is active')}};
+const save=async()=>{S.savedAt=Date.now();const localOk=localSave();if(!localOk){toast('Could not save data locally');return false}if(location.protocol==='file:')return true;try{await dbWrite(S);return true}catch(e){toast('Saved locally; browser storage fallback is active');return false}};
+const clearStoredState=async()=>{const localBefore=localStorage.getItem('liftlog-state');if(location.protocol!=='file:'){try{await dbRead()}catch{return false}}try{localStorage.removeItem('liftlog-state');if(localStorage.getItem('liftlog-state')!==null)throw new Error('localStorage reset verification failed')}catch{if(localBefore!==null){try{localStorage.setItem('liftlog-state',localBefore)}catch{}}return false}if(location.protocol==='file:'){try{sessionStorage?.removeItem?.('liftlog-state')}catch{}return true}try{if(!await dbClear())throw new Error('IndexedDB reset verification failed')}catch{if(localBefore!==null){try{localStorage.setItem('liftlog-state',localBefore)}catch{}}return false}try{sessionStorage?.removeItem?.('liftlog-state')}catch{}return true};
 const go=()=>{try{refreshRanks()}catch(e){console.warn('Lift rank refresh skipped',e)}save();render()};
 const toast=(m,f)=>{const t=document.createElement('div');t.className='toast';t.textContent=m;if(f){t.onclick=f;t.style.animation='f .2s'}document.body.append(t);setTimeout(()=>t.remove(),f?15e3:2700)};
 /* maths */
@@ -613,10 +616,9 @@ const confirmReset=()=>{
    if(e.target.closest('[data-reset-confirm]')&&!ok.disabled){
      microTouch(innerWidth/2,innerHeight/2);
      close();
+     const cleared=await clearStoredState();
+     if(!cleared){toast('Reset failed safely — your saved data was not deleted');return}
      S=resetDefaults();
-     try{await save()}catch{}
-     try{localStorage.removeItem('liftlog-state')}catch{}
-     try{sessionStorage.removeItem('liftlog-state')}catch{}
      location.reload();
    }
  });
