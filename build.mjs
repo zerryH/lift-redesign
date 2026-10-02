@@ -1,13 +1,44 @@
 import fs from 'node:fs';
-const app=fs.readFileSync('app.js','utf8');
-const anatomyCss=fs.readFileSync('anatomy-map.css','utf8');
-function build(name){let html=fs.readFileSync(name,'utf8');
- html=html.replace(/<script[^>]+src="\.\/(?:three\.min|DRACOLoader|GLTFLoader)\.js"><\/script>/g,'');
- html=html.replace(/<script id="(?:lift-muscle3d|lift-three-runtime|lift-anatomy-data)">[\s\S]*?<\/script>/g,'');
- const appRe=/(<script[^>]*>)[\s\S]*?(<\/script>)/;if(!appRe.test(html))throw new Error(`No inline app script found in ${name}`);html=html.replace(appRe,(_,open,close)=>open+app+close);
- html=html.replace(/<style id="lift-procedural-3d-style">[\s\S]*?<\/style>/g,'');html=html.replace(/<style id="lift-anatomy-style">[\s\S]*?<\/style>/g,'');const legacyComment=html.indexOf('/* Real WebGL muscle model:');const exerciseComment=html.indexOf('/* Exercise library:',legacyComment);if(legacyComment>=0&&exerciseComment>legacyComment)html=html.slice(0,legacyComment)+html.slice(exerciseComment);const bodyCssStart=html.indexOf('.body-stage{height:470px');const muscleGridStart=html.indexOf('.muscle-grid{',bodyCssStart);if(bodyCssStart>=0&&muscleGridStart>bodyCssStart)html=html.slice(0,bodyCssStart)+html.slice(muscleGridStart);
- html=html.replace('</head>',`<style id="lift-anatomy-map-style">${anatomyCss}</style></head>`);
- fs.writeFileSync(name,html)}
-fs.writeFileSync('anatomy-map.css',anatomyCss);build('index.html');build('lift-local.html');
-let sw=fs.readFileSync('sw.js','utf8');sw=sw.replace(/liftlog-v\d+/, 'liftlog-v'+Date.now());sw=sw.replace(/F=\[[^\]]*\]/,`F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','anatomy-map.css','manifest.webmanifest','lift-icon-v2.svg','lift-icon-180-v2.png','lift-icon-192-v2.png','lift-icon-512-v2.png']`);fs.writeFileSync('sw.js',sw);
-console.log('build ok');
+import crypto from 'node:crypto';
+const BUILD_VERSION = '5.5.24';
+const read = p => fs.readFileSync(p, 'utf8');
+const write = (p, s) => fs.writeFileSync(p, s);
+function validateData(ex, ranks) {
+  if (!Array.isArray(ex.ex) || !Array.isArray(ranks.tiers) || !ranks.t || typeof ranks.t !== 'object') throw new Error('Invalid JSON shape');
+  if (ex.ex.length !== 469 && ex.ex.length !== 471) throw new Error('Unexpected exercise row count: ' + ex.ex.length);
+  if (ranks.tiers.length !== 46 || Object.keys(ranks.t).length !== 460) throw new Error('Unexpected rank config: ' + ranks.tiers.length + ' tiers / ' + Object.keys(ranks.t).length + ' standards');
+  for (const row of ex.ex) if (typeof row !== 'string' || row.split('|').length !== 4) throw new Error('Malformed exercise row: ' + row);
+}
+function injectData(appSource, ex, ranks) {
+  const exRe = /\/\*BEGIN:EXERCISES\*\/[\s\S]*?\/\*END:EXERCISES\*\//;
+  const rankRe = /\/\*BEGIN:RANKS\*\/[\s\S]*?\/\*END:RANKS\*\//;
+  if (!exRe.test(appSource) || !rankRe.test(appSource)) throw new Error('Missing required data markers in app.js');
+  appSource = appSource.replace(exRe, '/*BEGIN:EXERCISES*/' + JSON.stringify(ex) + '/*END:EXERCISES*/');
+  appSource = appSource.replace(rankRe, '/*BEGIN:RANKS*/' + JSON.stringify(ranks) + '/*END:RANKS*/');
+  return appSource;
+}
+function buildHtml(name, appSource, anatomyCss) {
+  let html = read(name);
+  html = html.replace(/<style id="lift-anatomy-map-style">[\s\S]*?<\/style>\s*/g, '');
+  const appRe = /(<script[^>]*>)[\s\S]*?(<\/script>)/;
+  if (!appRe.test(html)) throw new Error('No inline app script found in ' + name);
+  html = html.replace(appRe, (_, open, close) => open + appSource + close);
+  html = html.replace('</head>', '<style id="lift-anatomy-map-style">' + anatomyCss + '</style></head>');
+  return html;
+}
+const ex = JSON.parse(read('exercises.json'));
+const ranks = JSON.parse(read('ranks-config.json'));
+validateData(ex, ranks);
+let app = injectData(read('app.js').replace(/const BUILD_VERSION='[^']+';/, "const BUILD_VERSION='" + BUILD_VERSION + "';"), ex, ranks);
+write('app.js', app);
+const anatomyCss = read('anatomy-map.css');
+for (const name of ['index.html', 'lift-local.html']) write(name, buildHtml(name, app, anatomyCss));
+if (read('index.html') !== read('lift-local.html')) throw new Error('index.html and lift-local.html diverged');
+const hashInput = [app, read('index.html'), read('exercises.json'), read('ranks-config.json'), anatomyCss, read('manifest.webmanifest')].join('\n');
+const shortHash = crypto.createHash('sha256').update(hashInput).digest('hex').slice(0, 12);
+const cacheVersion = 'liftlog-v' + BUILD_VERSION + '-' + shortHash;
+let sw = read('sw.js');
+sw = sw.replace(/const V='[^']+'(?:;)+,F=/, "const V='" + cacheVersion + "',F=");
+sw = sw.replace(/F=\[[^\]]*\]/, "F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','anatomy-map.css','manifest.webmanifest','lift-icon-v2.svg','lift-icon-180-v2.png','lift-icon-192-v2.png','lift-icon-512-v2.png']");
+write('sw.js', sw);
+console.log('build ok · ' + BUILD_VERSION + ' · ' + cacheVersion);
