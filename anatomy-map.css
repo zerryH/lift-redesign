@@ -1,18 +1,14 @@
-/* Clean 2D anterior/posterior muscle map — deliberately no 3D renderer */
-.body-stage{height:520px;display:grid;place-items:center;overflow:hidden;position:relative;background:radial-gradient(circle at 50% 44%,rgba(110,130,175,.08),transparent 70%)}
-.anatomy-figure figcaption{margin-top:4px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:800;color:var(--mu);opacity:.82}
-
-.anatomy-pair{width:min(620px,100%);height:100%;display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:end;justify-items:center;padding:2px 12px 10px}
-.anatomy-figure{margin:0;display:grid;justify-items:center;align-content:end;min-width:0;height:100%;width:100%}
-.anatomy-figure .anatomy-svg{width:min(250px,100%);height:500px;display:block;overflow:visible}
-.anatomy-figure figcaption{margin-top:5px;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;font-weight:800;color:var(--mu);opacity:.82}
+/* Premium 2D anatomy map — detailed individual muscle surfaces, no 3D runtime */
+.body-stage{height:455px;display:grid;place-items:center;overflow:hidden;position:relative;background:radial-gradient(ellipse at 50% 42%,rgba(105,112,180,.11),transparent 68%);border-radius:24px}
+.anatomy-pair{width:min(610px,100%);height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;align-items:center;justify-items:center;padding:4px 12px 2px}
+.anatomy-figure{margin:0;display:grid;justify-items:center;align-content:center;min-width:0;width:100%;height:100%}
+.anatomy-figure .anatomy-svg{width:min(250px,100%);height:424px;display:block;overflow:visible;filter:drop-shadow(0 12px 18px rgba(0,0,0,.24))}
+.anatomy-figure figcaption{margin-top:0;font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:900;color:var(--mu);opacity:.72}
 .anatomy-svg{shape-rendering:geometricPrecision;overflow:visible}
-.anatomy-svg .real-body-base path,.anatomy-svg .real-body-base polygon,.anatomy-svg .real-body-base ellipse,.anatomy-svg .real-body-base circle{fill:#354050!important;fill-opacity:.72!important;stroke:#9ea8b7!important;stroke-width:2.2!important;stroke-linejoin:round}
-.anatomy-svg .real-neck path,.anatomy-svg .real-neck polygon{fill:#4c5768!important;fill-opacity:.8!important;stroke:#9ea8b7!important;stroke-width:2!important}
-.muscle-zone-group{opacity:var(--ma,.9);transition:opacity .18s ease,filter .18s ease}
-.muscle-zone-group path,.muscle-zone-group polygon,.muscle-zone-group ellipse{fill:var(--mc)!important;fill-opacity:1!important;stroke:var(--ms)!important;stroke-width:2.2!important;stroke-linejoin:round;stroke-linecap:round;paint-order:stroke fill}
-.muscle-zone-group.locked{filter:drop-shadow(0 2px 3px rgba(0,0,0,.16))}
-.muscle-zone-group.unlocked{filter:drop-shadow(0 0 5px color-mix(in srgb,var(--mc) 48%,transparent))}
-.muscle-zone-group.unlocked path,.muscle-zone-group.unlocked polygon,.muscle-zone-group.unlocked ellipse{stroke-width:2.8!important}
-@media(max-width:480px){.body-stage{height:520px}.anatomy-pair{gap:8px;padding:0 2px 8px}.anatomy-figure .anatomy-svg{height:488px;width:min(226px,100%)}}
-@media(min-width:640px){.body-stage{height:550px}.anatomy-figure .anatomy-svg{height:525px}.anatomy-pair{width:620px}}
+.anatomy-svg .real-body-base path{fill:#34384b!important;fill-opacity:1!important;stroke:#70778b!important;stroke-width:1.15!important;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.muscle-zone-group{opacity:var(--ma,.98);transition:opacity .18s ease,filter .18s ease}
+.muscle-zone-group path{fill:var(--mc)!important;fill-opacity:1!important;stroke:var(--ms)!important;stroke-width:1.35!important;stroke-linejoin:round;stroke-linecap:round;paint-order:stroke fill;vector-effect:non-scaling-stroke}
+.muscle-zone-group.locked path{fill:#35394c!important;stroke:#6d7488!important;filter:drop-shadow(0 1px 1px rgba(0,0,0,.20))}
+.muscle-zone-group.unlocked path{filter:drop-shadow(0 0 5px color-mix(in srgb,var(--mc) 38%,transparent))}
+@media(max-width:480px){.body-stage{height:450px}.anatomy-pair{gap:0;padding:2px 4px 0}.anatomy-figure .anatomy-svg{height:416px;width:min(225px,100%)}}
+@media(min-width:640px){.body-stage{height:475px}.anatomy-figure .anatomy-svg{height:442px}.anatomy-pair{width:610px}}
