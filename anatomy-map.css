@@ -12,3 +12,48 @@
 .muscle-zone-group.unlocked path{filter:drop-shadow(0 0 5px color-mix(in srgb,var(--mc) 38%,transparent))}
 @media(max-width:480px){.body-stage{height:450px}.anatomy-pair{gap:0;padding:2px 4px 0}.anatomy-figure .anatomy-svg{height:416px;width:min(225px,100%)}}
 @media(min-width:640px){.body-stage{height:475px}.anatomy-figure .anatomy-svg{height:442px}.anatomy-pair{width:610px}}
+
+/* v5.5.15 visibility fix: the embedded detailed asset uses real muscle-zone-group SVGs.
+   Force the SVG and every anatomy layer visible; do not rely on inherited app rules. */
+.anatomy-map-stage .anatomy-svg{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  overflow:visible!important;
+  flex:none!important;
+}
+.anatomy-map-stage .anatomy-svg .real-body-base{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+.anatomy-map-stage .anatomy-svg .real-body-base path{
+  display:inline!important;
+  visibility:visible!important;
+  fill:#4b5263!important;
+  fill-opacity:1!important;
+  stroke:#858c9d!important;
+  stroke-opacity:.9!important;
+  stroke-width:1.2!important;
+}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group path{
+  display:inline!important;
+  visibility:visible!important;
+  fill:var(--mc,#687083)!important;
+  fill-opacity:1!important;
+  stroke:var(--ms,#9299a8)!important;
+  stroke-opacity:.95!important;
+  stroke-width:1.25!important;
+  vector-effect:non-scaling-stroke;
+}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{
+  fill:#596072!important;
+  fill-opacity:1!important;
+  stroke:#858c9d!important;
+  stroke-opacity:.82!important;
+}
