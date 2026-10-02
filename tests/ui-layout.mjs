@@ -14,6 +14,9 @@ assert.match(
   /#v\{[^}]*min-height:0[^}]*overflow-y:auto/,
   'main content must scroll inside its own area instead of underneath the nav'
 );
+assert.doesNotMatch(css, /var\(--ag\)/, 'tutorial styling must use a defined accent variable');
+for (const html of htmls) assert.doesNotMatch(html, /var\(--ag\)/, 'generated tutorial styling must use a defined accent variable');
+
 assert.doesNotMatch(
   css,
   /nav\{position:fixed;bottom:0;/,
