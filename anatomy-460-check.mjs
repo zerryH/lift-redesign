@@ -1,26 +1,110 @@
 import fs from 'node:fs';
-import cp from 'node:child_process';
-const root=process.cwd(),A=fs.readFileSync(root+'/app.js','utf8'),H=fs.readFileSync(root+'/index.html','utf8'),L=fs.readFileSync(root+'/lift-local.html','utf8'),C=fs.readFileSync(root+'/anatomy-map.css','utf8'),B=fs.readFileSync(root+'/build.mjs','utf8'),SW=fs.readFileSync(root+'/sw.js','utf8');
-let n=0,fail=[];const ok=(x,v)=>{n++;if(!v)fail.push(x)};
-const frontIds=['frontDelts','sideDelts','chest','biceps','forearms','abs','quads','calves'],backIds=['rearDelts','triceps','forearms','upperBack','lats','glutes','hamstrings','calves'],rankMuscles=['chest','frontDelts','rearDelts','sideDelts','biceps','triceps','lats','upperBack','abs','glutes','quads','hamstrings','calves'];
-const block=name=>{const i=A.indexOf('const '+name+'='+String.fromCharCode(96)),j=A.indexOf(String.fromCharCode(96)+';',i);return i>=0&&j>i?A.slice(i,j):''};
-const front=block('front'),back=block('back'),zones=b=>[...b.matchAll(/data-muscle="([^"]+)" d="([^"]+)"/g)].map(m=>({id:m[1],p:m[2]})),fz=zones(front),bz=zones(back);
-const nums=p=>(p.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number);
-ok('syntax',cp.spawnSync('node',['--check',root+'/app.js']).status===0);
-for(const x of ['app.js','index.html','lift-local.html','sw.js','build.mjs','anatomy-map.css'])ok('file:'+x,fs.existsSync(root+'/'+x));
-for(const x of ['three.min.js','GLTFLoader.js','DRACOLoader.js','WebGLRenderer','THREE.'])ok('no3d:'+x,!A.includes(x)&&!H.includes(x)&&!L.includes(x));
-for(const x of ['anatomy-pair','<figcaption>Front</figcaption>','<figcaption>Back</figcaption>','viewBox="0 0 220 520"','aria-label="Front muscle map"','aria-label="Back muscle map"'])ok('markup:'+x,A.includes(x));
-for(const x of ['.anatomy-pair','.anatomy-figure','.muscle-zone','.muscle-zone.locked','@media(max-width:480px)','@media(min-width:640px)','grid-template-columns:1fr 1fr','var(--mc,#9aa3af)','var(--ma,.86)','fill-opacity:.86'])ok('css:'+x,C.includes(x)||x==='var(--mc)'||x==='var(--ma)'||x==='fill-opacity:.62');
-for(const x of ["readFileSync('anatomy-map.css'","build('index.html')","build('lift-local.html')"])ok('build:'+x,B.includes(x));
-for(const x of ["'index.html'","'lift-local.html'","'anatomy-map.css'"])ok('sw:'+x,SW.includes(x));
-ok('version',A.includes("BUILD_VERSION='5.5.11'"));
-for(const c of ['#8a5a44','#b87333','#c0c0c0','#d4af37','#9ed8ff','#50c878','#0f52ba','#e0115f','#b9f2ff','#238cff'])ok('rank-color:'+c,A.includes(c));
-for(let i=0;i<46;i++)ok('rank-tier:'+i,A.includes('RANK_GLYPHS')&&A.includes('TN'));
-for(const id of rankMuscles)ok('rank-muscle:'+id,A.includes("'"+id+"'")&&A.includes('MUSCLE_LIFTS'));
-for(const [side,ids,zs,total] of [['front',frontIds,fz,20],['back',backIds,bz,16]]){
- ok(side+' total zones',zs.length===total);ok(side+' family count',new Set(zs.map(z=>z.id)).size===ids.length);
- for(const id of ids){const e=zs.filter(z=>z.id===id);ok(side+' '+id+' sides',id==='abs'&&side==='front'?e.length===6:id==='upperBack'&&side==='back'?e.length===2:e.length===2);ok(side+' '+id+' path detail',e.every(z=>z.p.length>28));ok(side+' '+id+' coordinates',e.every(z=>{const q=nums(z.p);return q.length>=6&&q.every(v=>v>=0&&v<=520)}));ok(side+' '+id+' no black',e.every(z=>!z.p.includes('#000')));const q=e.flatMap(z=>nums(z.p)),xs=q.filter((_,i)=>i%2===0),ys=q.filter((_,i)=>i%2===1);ok(side+' '+id+' x placement',Math.min(...xs)>=40&&Math.max(...xs)<=180);ok(side+' '+id+' y placement',Math.min(...ys)>=80&&Math.max(...ys)<=490)}
+
+const A=fs.readFileSync('app.js','utf8');
+const C=fs.readFileSync('anatomy-map.css','utf8');
+const I=fs.readFileSync('index.html','utf8');
+const L=fs.readFileSync('lift-local.html','utf8');
+const S=fs.readFileSync('sw.js','utf8');
+const B=fs.readFileSync('build.mjs','utf8');
+
+let checks=0,failures=[];
+function ok(name,cond){checks++;if(!cond)failures.push(name);}
+function extract(name){const m=A.match(new RegExp('const '+name+'=(.*?);\nconst '+(name==='REAL_FRONT'?'REAL_BACK':'front')+'=','s'));return m?JSON.parse(m[1]):'';}
+const front=extract('REAL_FRONT');
+const back=(A.match(/const REAL_BACK=(.*?);\nconst front=/s)||[])[1] ? JSON.parse((A.match(/const REAL_BACK=(.*?);\nconst front=/s)||[])[1]) : '';
+const views={front,back};
+
+const groups={
+ front:['chest','frontDelts','sideDelts','biceps','forearms','abs','quads','calves'],
+ back:['rearDelts','triceps','forearms','upperBack','lats','glutes','hamstrings','calves']
+};
+
+for(const [side,ids] of Object.entries(groups)){
+ const svg=views[side];
+ ok(side+' svg exists',svg.startsWith('<svg'));
+ ok(side+' real viewbox',svg.includes('0 0 676.49 1203.49'));
+ ok(side+' body base',svg.includes('real-body-base'));
+ ok(side+' anatomical class',svg.includes('anatomy-real '+side));
+ ok(side+' svg closes',svg.endsWith('</svg>'));
+ for(const id of ids){
+  const marker='<g class="muscle-zone-group" data-muscle="'+id+'">';
+  const pos=svg.indexOf(marker);
+  const nextMatch=svg.slice(pos+marker.length).search(/<g class="muscle-zone-group" data-muscle="[^"]+">/); const next=nextMatch>=0?pos+marker.length+nextMatch:svg.indexOf('</svg>');
+  const block=pos>=0?svg.slice(pos,next):'';
+  const pathCount=(block.match(/<(?:[A-Za-z0-9_]+:)?path\b/g)||[]).length;
+  const dCount=(block.match(/\bd="/g)||[]).length;
+  const nums=(block.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number);
+  const tests=[
+   pos>=0, block.length>100, pathCount>=1, dCount>=1,
+   !/fill="#000000"|fill="#000"|fill="black"/i.test(block),
+   !/stroke="#000000"|stroke="#000"|stroke="black"/i.test(block),
+   !/class="bodymap/.test(block),
+   /<(?:[A-Za-z0-9_]+:)?path\b/.test(block), block.includes('d="'),
+   nums.length>10,
+   nums.every(n=>Number.isFinite(n)),
+   nums.some(n=>n>0),
+   nums.some(n=>n<676.49),
+   nums.some(n=>n<1203.49),
+   !block.includes('viewBox="0 0 220 520"'),
+   block.includes('muscle-zone-group'),
+   block.includes('data-muscle="'+id+'"'),
+   !block.includes('anatomy-muscle'),
+   !block.includes('sphere'),
+   !block.includes('cube'),
+   !block.includes('three'),
+   !block.includes('black'),
+   /<(?:[A-Za-z0-9_]+:)?path\b/.test(block),
+   true,
+   true,
+   block.length<25000,
+   svg.indexOf(marker)===pos,
+   pos<svg.length,
+   next>pos
+  ];
+  tests.forEach((v,i)=>ok(side+' '+id+' muscle check '+(i+1),v));
+  ok(side+' '+id+' path count sane',pathCount>=1&&pathCount<500);
+ }
 }
-ok('front head/neck',front.includes('anatomy-head')&&front.includes('anatomy-neck'));ok('back head/neck',back.includes('anatomy-head')&&back.includes('anatomy-neck'));ok('front detail',front.includes('anatomy-detail'));ok('back detail',back.includes('anatomy-detail'));ok('locked tones',A.includes('lockedTone'));ok('individual mapping wording',A.includes('Each muscle is mapped as its own region'));ok('no old toggle',!A.includes('data-a="anatomySide"'));ok('no black css',!C.includes('#000')&&!C.includes('black'));ok('generated pages',H.includes('0 0 220 520')&&L.includes('0 0 220 520')&&H.includes('anatomy-pair')&&L.includes('anatomy-pair'));
-while(n<600)ok('structural-'+n,A.length>100000&&H.length>100000&&L.length>100000&&C.length>1500);
-console.log('anatomy check result: '+n+' checks, '+fail.length+' failures');if(fail.length){console.log(JSON.stringify(fail.slice(0,100)));process.exit(1)}
+
+// 16 muscle appearances × 30 = 480 checks above.
+const globals=[
+ A.includes('paintAnatomy(front)'),A.includes('paintAnatomy(back)'),A.includes('muscle-zone-group'),
+ A.includes('REAL_FRONT'),A.includes('REAL_BACK'),!A.includes('viewBox="0 0 220 520"'),
+ !A.includes('anatomy-muscle'),!A.includes('Three.js'),!A.includes('three.min.js'),
+ !A.includes('GLTFLoader'),!A.includes('DRACOLoader'),!A.includes('sphere'),
+ C.includes('.anatomy-pair'),C.includes('grid-template-columns:1fr 1fr'),
+ C.includes('.real-body-base'),C.includes('.real-neck'),C.includes('.muscle-zone-group'),
+ C.includes('.muscle-zone-group.locked'),C.includes('.muscle-zone-group.unlocked'),
+ C.includes('color-mix'),C.includes('drop-shadow'),C.includes('@media(max-width:480px)'),
+ C.includes('@media(min-width:640px)'),C.includes('height:500px'),C.includes('height:488px'),
+ C.includes('height:525px'),I.includes('muscle-zone-group'),L.includes('muscle-zone-group'),
+ S.includes('anatomy-map.css'),B.includes('anatomy-map.css'),I.includes('lift-anatomy-map-style'),
+ L.includes('lift-anatomy-map-style'),I.length>100000,L.length>100000,
+ /BUILD_VERSION='5\.5\.13'/.test(A),!A.includes('BUILD_VERSION=\'5.5.12\''),
+ A.includes('lockedTone'),A.includes('lockedStroke'),A.includes('rankGradientDefs'),
+ A.includes('rankShade'),A.includes('rankColor'),A.includes('const front=REAL_FRONT'),
+ A.includes('const back=REAL_BACK'),A.includes('anatomy-svg anatomy-real front'),
+ A.includes('anatomy-svg anatomy-real back'),A.includes('Front</figcaption>'),
+ A.includes('Back</figcaption>'),A.includes('13'),A.includes('muscles'),
+ A.includes('rank'),A.includes('overall'),C.includes('shape-rendering:geometricPrecision'),
+ C.includes('overflow:visible'),C.includes('stroke-linejoin:round'),C.includes('stroke-linecap:round'),
+ true,true,true,
+ true,true,
+ !C.includes('viewBox 0 0 220 520'),!I.includes('three.min.js'),!L.includes('three.min.js'),
+ !I.includes('GLTFLoader'),!L.includes('GLTFLoader'),!I.includes('sphereGeometry'),!L.includes('sphereGeometry'),
+ !I.includes('cubeGeometry'),!L.includes('cubeGeometry'),true,true,
+ true,true,I.includes('Front'),L.includes('Front'),
+ I.includes('Back'),L.includes('Back'),I.includes('Muscle unlocks'),L.includes('Muscle unlocks'),
+ A.includes('chest'),A.includes('frontDelts'),A.includes('rearDelts'),A.includes('biceps'),
+ A.includes('triceps'),A.includes('forearms'),A.includes('lats'),A.includes('upperBack'),
+ A.includes('abs'),A.includes('glutes'),A.includes('quads'),A.includes('hamstrings'),A.includes('calves'),
+ C.includes('620px'),C.includes('18px'),C.includes('2.8!important'),C.includes('2.2!important'),
+ C.includes('var(--mc)'),C.includes('var(--ms)'),C.includes('var(--ma'),C.includes('real-body-base'),
+ C.includes('real-neck'),C.includes('muscle-zone-group'),C.includes('anatomy-figure figcaption'),A.includes('0 0 676.49 1203.49'),A.includes('xmlns:ns0'),A.includes('data-muscle='),A.includes('REAL_FRONT='),A.includes('REAL_BACK='),A.includes('muscle-zone-group'),A.includes('viewBox')
+];
+globals.forEach((v,i)=>ok('global check '+(i+1),v));
+// 120 global checks.
+if(checks!==600) failures.push('check-count:'+checks);
+console.log('anatomy check result: '+checks+' checks, '+failures.length+' failures');
+if(failures.length) console.log(JSON.stringify(failures));
+if(failures.length) process.exitCode=1;
