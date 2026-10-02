@@ -15,16 +15,10 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./lift-icon-v2.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "./lift-icon-512-v2.png",
-      "sizes": "512x512",
+      "src": "./lift-icon-180-v2.png",
+      "sizes": "180x180",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }

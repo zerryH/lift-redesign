@@ -1,108 +1,98 @@
-# Liftlog
-Minimal offline strength tracker: logging + bodyweight-relative ranks. No backend; data stays on the device.
+# Lift
 
-## Deploy
-1. Drag this folder onto Netlify Drop (app.netlify.com/drop), or push it to GitHub Pages.
-2. Open the link in Safari on your iPhone.
-3. Share → Add to Home Screen.
-4. Always open it from the Home Screen icon (Safari and the Home Screen app keep separate storage).
-5. Back up: Profile → Export backup → Save to Files. Import from the same screen (Merge or Replace).
+Lift is a local/offline strength-training logger. Workout data stays on the device; the app does not require an account or backend.
 
-## Tweaking
-- Rank thresholds: `ranks-config.json` (min ratio to enter each tier, [male, female]).
-- Exercises and templates: `exercises.json` (types: B barbell, D per-dumbbell, W bodyweight, M machine, U unranked).
-- After editing files, bump `V` in `sw.js` so installed copies update.
+## Current release
 
-## v3 redesign
-- Dark/light iOS-style UI, exercise carousel + working weight and reps sliders for logging, and an interactive muscle map on Ranks.
-- Ranks → **Get your rank**: pick a lift, enter weight, reps, bodyweight and height (kg/lb supported) to see your tier. Male/Female references are clearly labeled benchmark sets. The result is saved per exercise until you update it, and included in backups.
-- New workouts created from any split start with a clean exercise list; add exercises manually as you go.
+Build: 5.5.24
 
+The shipped app is a self-contained HTML build for GitHub Pages and a local lift-local.html file.
 
-### Open directly from the downloaded ZIP
-The `index.html` file is self-contained. After extracting the ZIP, double-click `index.html` to run Lift directly from `file://` without npm, localhost, or a server. Exercise/rank data is embedded for this mode; IndexedDB is used when available, with localStorage fallback.
+## Architecture
 
+- Vanilla HTML/CSS/JavaScript.
+- No Three.js, WebGL runtime, CDN dependency, or hosted API.
+- Anatomy is 2D SVG: two separate detailed models, front/anterior and back/posterior.
+- The workout catalogue is sourced from exercises.json.
+- Ranking standards and tier names are sourced from ranks-config.json.
+- app.js contains BEGIN:EXERCISES and BEGIN:RANKS markers; build.mjs injects the current JSON between those markers.
+- index.html and lift-local.html are generated self-contained builds and are kept byte-identical.
+- localStorage is written first and IndexedDB is used on supported hosted origins; saved timestamps prevent an older IndexedDB copy from rolling back newer local data.
+- The local file:// build intentionally uses localStorage because service workers and other secure-context APIs are unavailable there.
 
-### Ranking balance
-Legs exercises use 25% higher rank-entry ratios than before, making high ranks require proportionally stronger estimated 1RM relative to bodyweight.
+## Exercise catalogue
 
+exercises.json currently contains 469 rows and 469 unique exercise names after removing the duplicate JM Press and Tate Press rows.
 
-### Profile & safety
-- Animations remain off by default.
-- Profile includes a 5-second confirmation countdown before Reset all data becomes available.
-- Button taps use short Liquid Glass-inspired micro-feedback: a brief press glow, soft touch flare, and two tiny light sparks when animations are enabled. The effect is intentionally brief (about 0.2s).
-## Local/offline build
-- `index.html` and `lift-local.html` are self-contained and do not fetch JSON data.
-- They are intended to work when opened directly from a downloaded folder/file viewer.
-- No npm, localhost, or server is required for the standalone files.
+Retained variants:
+- JM Press — barbell (B)
+- Tate Press — dumbbell (D)
 
+The four-field exercise row format is:
+name | split | load/type code | muscle
 
-### Destructive actions
-Delete/discard actions use an in-app confirmation sheet rather than browser confirm dialogs, so they work reliably in Safari/iPhone local HTML viewers as well as on desktop.
+## Ranking system
 
+The runtime contains 460 standards and 46 tiers.
 
-### Relative strength profile update
-- Profile stores age and bodyweight, and offers male/female reference standards.
-- Ranks use bodyweight-relative thresholds plus a provisional broad age-band adjustment. This estimate is not an official federation age-grading formula.
-- Demo data is not loaded automatically, and the demo-data button has been removed. New installs start with empty workout history.
+Ranking uses logged exercise performance relative to bodyweight, with optional age and height/ROM adjustments. The 1RM/rank/PR estimator intentionally uses 1–12 reps. Sets above 12 reps are still logged but are explicitly excluded from rank and PR calculations.
 
+The overall rank shown on the Ranks screen is the arithmetic average of the rank indices for logged exercises that have a recognized standard and rankable data. It is not a separate hidden compound-only score.
 
-## Reliability and accessibility fixes
-- Saves write a timestamped localStorage fallback first, reuse a single IndexedDB connection, and compare timestamps at startup to avoid loading an older IndexedDB copy after a timed-out save.
-- Editing a past workout keeps the original in History until Finish commits the edit; Discard no longer removes the saved workout.
-- Custom/imported exercise names are normalized before use, confirmation dialog content is HTML-escaped, and pinch-to-zoom is allowed.
+Muscle ranks are calculated separately from the exercise-to-muscle transfer model and displayed on the front/back anatomy maps.
 
-## QoL update
-- Added progress charts for estimated 1RM plus bodyweight.
-- Added a rest timer with optional screen wake lock, typed weight/reps entry, last-set repeat, RPE and notes.
-- Added a plate calculator, global kg/lb setting, optional interpolated age adjustment, and custom-exercise ranked-lift mapping.
-- Ranking now records bodyweight with logged sets, uses a recent 90-day window with per-lift all-time fallback, and overall rank uses core compound lifts when enough data exists.
-- Added common aliases for close-grip bench, sumo/trap-bar deadlift, cable lateral raise, and machine row.
-- Added build.mjs and tests/smoke.mjs so the two self-contained HTML builds stay synchronized and are syntax-checked.
+The rank tier list is data-driven from ranks-config.json; there is no separate hardcoded tier-name list.
 
-## v4 UX + ranking update
-- First launch now opens a guided tutorial covering Home/workouts, History, Ranks, Get Rank, Profile, theme selection, and credits. Profile includes **Replay tutorial**.
-- Profile now has explicit **Dark** and **Light** theme buttons instead of a single ambiguous mode toggle.
-- Rank references are labeled **Male reference** and **Female reference** with an explanation that they are benchmark sets for comparison and do not alter workout logging.
-- Height / ROM adjustment can be switched on or off. Lift uses a mild provisional height correction: taller athletes receive a small downward ratio adjustment to reflect the app's longer-ROM model. This is a Lift heuristic, not a biomechanical or federation-standard formula.
-- Ranks now include a draggable 3D-style front/back body map. Related lifts unlock muscle areas; unlocked areas use the corresponding rank color, while unranked areas stay locked/neutral. The muscle mapping is a Lift visualization based on related strength exercises, not a direct measurement of individual muscle size or strength.
-- Credits are shown in Profile: **Made by @o.r146 · TikTok**.
-- `tests/smoke.mjs` now checks tutorial/rank/theme markers, synchronized embedded builds, syntax, and height-adjustment markers.
+## Tutorial
 
+The current 10-step tutorial is:
 
-## Bug-fix pass
-- Fixed a missing rear-deltoid rank mapping that could throw while rendering the Ranks tab. Added a defensive fallback for unmatched muscle zones and corrected the aggregate muscle-rank calculation.
-- The tutorial now leaves the app visible underneath a compact coach card, with click-through everywhere outside the card. Tutorial buttons remain usable without hiding the app behind a dark overlay.
-- Reduced action button sizing inside button groups and the rank muscle controls; full-width primary workout actions retain their larger size.
-- Added a render error fallback with a Retry button so a future view error does not silently leave navigation appearing broken.
-## Mobile profile and anatomy visual fix
+1. Welcome to Lift
+2. Start a workout
+3. Add your exercises
+4. Log every set
+5. Review finished workouts
+6. Set your athlete data
+7. Calculate your rank
+8. Read the muscle map
+9. Standards, backups & updates
+10. That is the whole loop
 
-- Profile age/height adjustment switches now remain compact on narrow screens instead of stretching into oversized oval cards.
-- Age/height save buttons align to their own content and keep a normal tap-target height.
-- Replaced the blocky rank placeholder with a shaded front/back anatomical SVG, clearer torso/limb contours, and separately mapped muscle regions that retain rank colors.
-- Smoke tests now guard against the mobile stretch rule returning and check the upgraded anatomy markup.
-- Validation covers build, JavaScript syntax, smoke tests, and matching embedded scripts; no live iPhone/Safari browser session was available for this pass.
-## Profile field draft persistence
+The hosted build can check for a newer service-worker build. In the local file:// build, the Profile action is labeled Reload because a local HTML file cannot download a replacement file by itself.
 
-- Age and height inputs are saved as drafts while typing, before any Save button rerenders the Profile screen. Saving age, height, or bodyweight therefore no longer discards the other profile field’s unsaved value. Draft writes use the timestamped local fallback; normal save actions persist the full state to IndexedDB when available.
-## Front/back anatomy map (2026-10)
+## Build pipeline
 
-The Ranks tab now uses a newly built Three.js procedural anatomy model. Its torso is a continuous opaque mesh, with a solid base body behind distinct front and back muscle volumes. Depth testing prevents rear muscles from showing through the chest or abs. The model supports touch/mouse dragging, explicit Front/Back controls, and rank-coloured muscle groups. If WebGL is unavailable, the app falls back to the static anatomical map instead of leaving a blank panel. The old GLB model, GLTF loader, DRACO decoder and related assets are no longer used or shipped.
+Edit source/config files, then run:
 
-The renderer and Three.js runtime are embedded in `index.html` and `lift-local.html`; the standalone file does not need a CDN, server, or separate data files. The custom model is an educational strength-progress visualisation, not a medically validated anatomical or strength assessment.
+    node build.mjs
 
-## iPhone Home Screen installation
+The build:
 
-For a standalone iPhone app window, open the hosted app in Safari, tap **Share → Add to Home Screen**, and leave **Open as Web App** enabled if iOS shows that option. Remove an older Lift Home Screen icon first so iOS does not keep its cached icon or old launch behaviour. A normal Safari bookmark always opens in Safari; a website cannot force a bookmark to become a standalone app. The current build uses a versioned 180×180 Apple touch icon plus 192×192 and 512×512 PWA icons.
+1. Reads exercises.json and ranks-config.json.
+2. Validates their expected shapes.
+3. Injects the JSON into the marked regions of app.js.
+4. Removes any existing lift-anatomy-map-style block and inserts exactly one current anatomy stylesheet.
+5. Regenerates both index.html and lift-local.html.
+6. Verifies those two HTML files are byte-identical.
+7. Computes a deterministic short content hash.
+8. Writes a clean service-worker cache name as liftlog-v<BUILD_VERSION>-<hash>.
 
-The 3D anatomy uses opaque, depth-correct surfaces and a neutral base body; rank colours are applied only to the relevant muscle groups.
+The build is idempotent: running it twice produces byte-identical generated files.
 
+## Tests
 
-## Expanded exercise library
+Run:
 
-The workout picker contains 460 exercises, including 140 additional cable-stack and functional-trainer variations across chest, shoulders, triceps, back, biceps, legs, glutes and core, grouped into Push, Pull, Legs, Core and Full Body. Search by exercise name, filter by muscle group, and see the load-entry method (barbell/loaded, dumbbell per hand, cable/machine, bodyweight + load, or bodyweight). Common cable, dumbbell and machine variations are included, including single-arm and seated cable presses, high/low cable flyes, cable lateral and rear-delt variations, single-arm pulldowns and rows, rope and preacher cable curls, cable glute/hamstring movements, and anti-rotation core work.
+    node tests/smoke.mjs
+    node tests/rank-progression.mjs
+    node --check app.js
+    node --check sw.js
+    node build.mjs
 
-Exercises without their own benchmark may be logged normally but will not receive a rank until a suitable standard exists. A limited set of close variants use an explicitly configured comparison alias to a related benchmark; machine/cable loads vary between gyms, so those comparisons are approximate rather than exact strength standards. The exercise and rank JSON files are cached by the service worker, and the same catalogue is embedded into the standalone offline HTML build.
+The smoke test checks embedded JSON parity, 46-tier configuration, single anatomy-style injection, generated-file parity, dead-3D cleanup removal, version consistency, duplicate exercise names, runtime SVG ID uniqueness after front/back namespacing, icon references, and build idempotence.
 
-### Anatomy atlas
-The Ranks screen uses a bundled, modified semantic male front/back muscle atlas from `suryamolly/muscle_mapper` (MIT License). The atlas provides separate anatomical paths so Lift can recolor muscle groups independently by rank. The bundled license is in `LICENSE-MUSCLE-MAPPER.txt`.
+## Anatomy licensing
+
+See ANATOMY_CREDITS.md and LICENSE-MUSCLE-MAPPER.txt.
+
+The upstream muscle_mapper repository is MIT-licensed as software, while its README states that the bundled advanced SVG assets are provided by Ryan Graves under CC BY 4.0. Lift preserves that attribution.

@@ -39,6 +39,6 @@ const shortHash = crypto.createHash('sha256').update(hashInput).digest('hex').sl
 const cacheVersion = 'liftlog-v' + BUILD_VERSION + '-' + shortHash;
 let sw = read('sw.js');
 sw = sw.replace(/const V='[^']+'(?:;)+,F=/, "const V='" + cacheVersion + "',F=");
-sw = sw.replace(/F=\[[^\]]*\]/, "F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','anatomy-map.css','manifest.webmanifest','lift-icon-v2.svg','lift-icon-180-v2.png','lift-icon-192-v2.png','lift-icon-512-v2.png']");
+sw = sw.replace(/F=\[[^\]]*\]/, "F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','anatomy-map.css','manifest.webmanifest','lift-icon-180-v2.png','apple-touch-icon.png']");
 write('sw.js', sw);
 console.log('build ok · ' + BUILD_VERSION + ' · ' + cacheVersion);

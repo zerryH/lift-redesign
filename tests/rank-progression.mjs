@@ -6,7 +6,7 @@ assert.equal(cfg.tiers.length,46);
 assert.equal(Object.keys(cfg.t).length,460);
 assert.match(app,/let TN=\[\]; let MAX_RANK=-1;/);
 assert.match(app,/TN=Array\.isArray\(R\.tiers\)\?R\.tiers\.slice\(\):\[\];MAX_RANK=TN\.length-1/);
-assert.match(app,/const rankMetrics=\(i,x,adj,b,h,diff=1\)/);
+assert.match(app,/const rankMetrics=\(i,x,adj,b,h,diff=1,e=x\)/);
 assert.match(app,/if\(i>=MAX_RANK\)return\{pc:100,need:null,next:null,max:true\}/);
 for(const [name,sexes] of Object.entries(cfg.t)){
   for(const sex of sexes){

@@ -1,17 +1,14 @@
-MIT License
+ANATOMY ASSET LICENSE NOTICE
 
-Copyright (c) 2026 Surya Mouly
+The bundled advanced anatomy SVG assets used by Lift are attributed to Ryan Graves and are licensed under the Creative Commons Attribution 4.0 International license (CC BY 4.0).
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Source repository:
+https://github.com/suryamolly/muscle_mapper
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Asset attribution:
+Advanced anatomy SVGs provided by Ryan Graves.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+CC BY 4.0 license:
+https://creativecommons.org/licenses/by/4.0/
+
+Important: the upstream muscle_mapper repository is MIT-licensed as a software project, but its README separately states that the advanced SVG assets are CC BY 4.0. This notice records the asset-specific license that applies to the anatomy SVGs bundled by Lift.
