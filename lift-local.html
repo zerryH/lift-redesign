@@ -251,7 +251,7 @@ html.tutorial-open,body.tutorial-open{overflow:hidden!important}
 @media(max-width:480px){.body-stage{height:450px}.anatomy-pair{gap:0;padding:2px 4px 0}.anatomy-figure .anatomy-svg{height:416px;width:min(225px,100%)}}
 @media(min-width:640px){.body-stage{height:475px}.anatomy-figure .anatomy-svg{height:442px}.anatomy-pair{width:610px}}
 
-/* v5.5.25 visibility fix: the embedded detailed asset uses real muscle-zone-group SVGs.
+/* v5.5.26 visibility fix: the embedded detailed asset uses real muscle-zone-group SVGs.
    Force the SVG and every anatomy layer visible; do not rely on inherited app rules. */
 .anatomy-map-stage .anatomy-svg{
   display:block!important;
@@ -296,17 +296,17 @@ html.tutorial-open,body.tutorial-open{overflow:hidden!important}
   stroke-opacity:.82!important;
 }
 
-/* v5.5.25: rank state is applied directly to each anatomical zone. */
+/* v5.5.26: rank state is applied directly to each anatomical zone. */
 .anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path{fill:var(--mc)!important;fill-opacity:1!important;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--mc) 42%,transparent))}
 .anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{fill:#596072!important;fill-opacity:1!important;filter:none!important}
 
-/* v5.5.25: compact rank icons with explicit rank-color rendering. */
+/* v5.5.26: compact rank icons with explicit rank-color rendering. */
 .rank-icon{--rank-icon-size:28px;display:inline-flex!important;width:var(--rank-icon-size)!important;height:var(--rank-icon-size)!important;min-width:var(--rank-icon-size)!important;max-width:var(--rank-icon-size)!important;flex:0 0 var(--rank-icon-size)!important;align-items:center!important;justify-content:center!important;position:relative!important;vertical-align:middle!important;color:var(--c)!important;line-height:1!important}
 .rank-icon svg{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;overflow:visible!important}
 .rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent)!important;stroke:var(--c)!important;stroke-width:1.7!important;stroke-linejoin:round!important}
 .rank-icon b{position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;font-size:9px!important;line-height:1!important;font-weight:900!important;color:var(--c)!important;pointer-events:none!important}
 .overall-rank-title .rank-icon{--rank-icon-size:34px}.rank-result-title .rank-icon{--rank-icon-size:30px}.rank-badge .rank-icon{--rank-icon-size:26px}
-</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.25';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
+</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.26';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
@@ -551,7 +551,7 @@ const render=()=>{const root=$('#v');try{repairState();if(!root)throw new Error(
 const nav=()=>{$('#n').innerHTML='<span class=wm><b>Lift</b>log <small class=build-version>'+BUILD_LABEL+'</small></span>'+Object.keys(IC).map(k=>`<button class="${view==k?'on':''}" data-a=tab data-v=${k}><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg><small>${LB[k]}</small></button>`).join('')};
 /* actions */
 const addN=n=>{n=String(n||'').trim();if(!n)return;if(!EX[n]){const t='B',c='Custom';S.custom.push({n,t,c});EX[n]={g:'Custom',t,c}}ci=S.cur.ex.push({n,sets:[]})-1;exercisePickerClose();go()};
-const updateApp=async b=>{if(b?.disabled)return;b.disabled=true;const local=location.protocol==='file:';b.textContent=local?'Reloading…':'Checking for updates…';try{if(local||!('serviceWorker' in navigator)){location.reload();return}let reg=await navigator.serviceWorker.getRegistration();if(!reg)reg=await navigator.serviceWorker.register('sw.js?v='+BUILD_VERSION,{updateViaCache:'none'});if(reg.waiting){reg.waiting.postMessage('skip');toast('Update installed — refreshing…');setTimeout(()=>location.reload(),100);return}let found=false;let timer=null;const wait=new Promise(resolve=>{const finish=v=>{if(timer)clearTimeout(timer);resolve(v)};reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed'){found=true;w.postMessage('skip');finish(true)}})},{once:true});timer=setTimeout(()=>finish(false),6000)});await reg.update();if(reg.waiting){reg.waiting.postMessage('skip');toast('Update installed — refreshing…');setTimeout(()=>location.reload(),100);return}await wait;if(found){toast('Update installed — refreshing…');setTimeout(()=>location.reload(),250)}else{toast('Already up to date — refreshing…');setTimeout(()=>location.reload(),350)}}catch(e){console.error('Lift update check failed',e);toast('Update check failed — refreshing current version');setTimeout(()=>location.reload(),500)}};
+const updateApp=async b=>{if(b?.disabled)return;b.disabled=true;const local=location.protocol==='file:';b.textContent=local?'Reloading…':'Checking for updates…';try{if(local||!('serviceWorker' in navigator)){location.reload();return}const checkUrl='sw.js?check='+Date.now();let reg=await navigator.serviceWorker.register(checkUrl,{updateViaCache:'none'});if(reg.waiting){reg.waiting.postMessage('skip');toast('Update installed — refreshing…');setTimeout(()=>location.reload(),100);return}let found=false,timer=null;const waitForInstall=()=>new Promise(resolve=>{let done=false;const finish=v=>{if(done)return;done=true;if(timer)clearTimeout(timer);resolve(v)};const watch=w=>{if(!w)return false;w.addEventListener('statechange',()=>{if(w.state==='installed'){found=true;w.postMessage('skip');finish(true)}});if(w.state==='installed'){found=true;w.postMessage('skip');finish(true)}return true};if(!watch(reg.installing))reg.addEventListener('updatefound',()=>watch(reg.installing),{once:true});timer=setTimeout(()=>finish(false),8000)});const waiting=waitForInstall();if(!reg.installing)await reg.update();if(reg.waiting){reg.waiting.postMessage('skip');toast('Update installed — refreshing…');setTimeout(()=>location.reload(),100);return}await waiting;if(found){toast('Update installed — refreshing…');setTimeout(()=>location.reload(),250)}else{toast('Already up to date — refreshing…');setTimeout(()=>location.reload(),350)}}catch(e){console.error('Lift update check failed',e);toast('Update check failed — refreshing current version');setTimeout(()=>location.reload(),500)}};
 const A={
 update:updateApp,
 log:()=>{S.cur.ex[ci].sets.push({kg:dr.kg,reps:dr.reps,t:''});go()},
