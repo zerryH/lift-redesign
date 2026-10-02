@@ -10,6 +10,3 @@
 .muscle-zone.locked{fill:#909aa7;opacity:.28;filter:none;stroke:#dfe5ec;stroke-opacity:.28}
 @media(max-width:480px){.body-stage{height:445px}.anatomy-pair{gap:0;padding:0 0 8px}.anatomy-figure .anatomy-svg{height:405px;width:min(185px,100%)}}
 @media(min-width:640px){.anatomy-figure .anatomy-svg{height:425px}.anatomy-pair{width:500px}}
-
-/* Semantic anatomy atlas */
-.semantic-anatomy{display:block;width:100%;height:100%;overflow:visible}.semantic-anatomy .anatomy-underlayer{fill:#9aa3af;fill-opacity:.10;stroke:#f5f7fb;stroke-opacity:.72;stroke-width:2}.semantic-anatomy .anatomy-muscle{fill:currentColor;stroke:#fff;stroke-opacity:.18;stroke-width:1;paint-order:stroke;transition:opacity .2s,filter .2s}.semantic-anatomy .anatomy-muscle[style*="opacity:0.96"]{filter:drop-shadow(0 0 4px currentColor)}.semantic-anatomy .anatomy-muscle[style*="opacity:0.28"]{fill:#9aa3af;stroke-opacity:.32}
