@@ -43,7 +43,7 @@ write('app.js', app);
 const anatomyCss = read('anatomy-map.css');
 for (const name of ['index.html', 'lift-local.html']) write(name, buildHtml(name, app, anatomyCss));
 if (read('index.html') !== read('lift-local.html')) throw new Error('index.html and lift-local.html diverged');
-const hashInput = [app, read('index.html'), read('exercises.json'), read('ranks-config.json'), anatomyCss, read('manifest.webmanifest')].join('\n');
+const hashInput = [app, read('index.html'), read('exercises.json'), read('ranks-config.json'), anatomyCss, read('manifest.webmanifest'), fs.readFileSync('lift-icon-180-v2.png').toString('base64'), fs.readFileSync('apple-touch-icon.png').toString('base64')].join('\n');
 const shortHash = crypto.createHash('sha256').update(hashInput).digest('hex').slice(0, 12);
 const cacheVersion = 'liftlog-v' + BUILD_VERSION + '-' + shortHash;
 let sw = read('sw.js');
