@@ -1,4 +1,4 @@
-const BUILD_VERSION='5.5.21';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
+const BUILD_VERSION='5.5.22';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
@@ -64,26 +64,63 @@ const MUSCLE_LABEL={chest:'Chest',rearDelts:'Rear delts',frontDelts:'Front delts
 const MUSCLE_ORDER=['chest','frontDelts','rearDelts','sideDelts','biceps','triceps','lats','upperBack','abs','glutes','quads','hamstrings','calves'];
 const muscleTransferWeight=(id,n)=>({'Bench Press':{chest:1,triceps:.42,frontDelts:.3},'Overhead Press':{frontDelts:1,sideDelts:.5,triceps:.35},'Pull-Up':{lats:1,biceps:.4,upperBack:.35},'Barbell Row':{upperBack:1,lats:.72,biceps:.32,rearDelts:.32},'Squat':{quads:1,glutes:.58,hamstrings:.3,abs:.2,calves:.08},'Deadlift':{hamstrings:1,glutes:.7,upperBack:.35,lats:.22,abs:.2,calves:.06},'Romanian Deadlift':{hamstrings:1,glutes:.65}}[n]?.[id]??1);const muscleStates=(b,B)=>MUSCLE_ORDER.map(id=>{const lifts=MUSCLE_LIFTS[id],items=lifts.map(n=>{const e=b[n]||0;if(!e||!B)return null;const i=tier(n,e,bestHeight[n]||num(S.set.heightCm)||175),w=muscleTransferWeight(id,n);return i>=0?{i,w}:null}).filter(Boolean);if(!items.length)return{id,label:MUSCLE_LABEL[id],i:-1,lifts,proxy:['abs','calves'].includes(id)};const ws=items.reduce((a,x)=>a+x.w,0),i=Math.round(items.reduce((a,x)=>a+x.i*x.w,0)/Math.max(.0001,ws));return{id,label:MUSCLE_LABEL[id],i,lifts,proxy:['abs','calves'].includes(id)}});
 
-const TUTORIAL_VERSION=2;
+const TUTORIAL_VERSION=3;
 const tutorialSteps=[
- {view:'today',target:'nav [data-v=today]',eyebrow:'START HERE',title:'Welcome to Lift',body:'Lift is your offline workout log. Build a session, record your sets, finish it, and use the saved data to calculate exercise and muscle ranks.',tip:'Everything stays on this device. No account or server is required.'},
- {view:'today',target:'.chips',eyebrow:'01 · WORKOUTS',title:'Start with a clean workout',body:'Choose Empty, Push, Pull, or Legs. A new split starts empty — you decide exactly what belongs in the session.',tip:'Nothing is silently preloaded into your workout.'},
- {view:'today',target:'.exercise-add-bar',eyebrow:'02 · EXERCISES',title:'Build your exercise list',body:'Open Add exercise to search the library, filter by category, or create a custom movement. Tap a movement to add it to the current workout.',tip:'You can add several exercises before logging any sets.'},
- {view:'today',target:'.picker',eyebrow:'03 · LOGGING',title:'Log every set',body:'Set your weight and reps, then tap Log set. The weight and reps controls are designed around a fixed center marker so the selected value stays easy to read.',tip:'Edit the set before moving on if you entered the wrong number.'},
- {view:'history',target:'nav [data-v=history]',eyebrow:'04 · HISTORY',title:'Your sessions are saved',body:'Finish a workout to move it into History. From there you can review past sessions and use the edit or delete controls when you need to correct an old entry.',tip:'History is stored locally and remains available offline.'},
- {view:'settings',target:'nav [data-v=settings]',eyebrow:'05 · PROFILE',title:'Set your athlete data',body:'Save your age, height, and bodyweight in Profile. These values are used by the ranking system and can be changed later without changing your workout history.',tip:'Bodyweight is required for relative-strength ranks.'},
- {view:'ranks',target:'.rank-tools .cta',eyebrow:'06 · RANKING',title:'Get your rank',body:'Open Ranks and use Get your rank to calculate an exercise result from the lift, reps, bodyweight, and optional height. Update rank uses the same calculation and refreshes the result.',tip:'Your rank is a strength benchmark, not a prediction of future progress.'},
- {view:'ranks',target:'.body-card',eyebrow:'07 · MUSCLES',title:'Read the anatomy map',body:'The map has two separate models: anterior/front and posterior/back. The 13 Lift muscle groups are mapped to anatomical surfaces on the appropriate side. When a group has a rank, its surfaces take that rank color.',tip:'The head is neutral anatomy only — it is not a ranked muscle group.'},
- {view:'ranks',target:'.muscle-grid',eyebrow:'08 · TRANSFER',title:'Understand muscle unlocks',body:'Compound lifts can contribute to several muscles, but not equally. Primary muscles receive more transfer; secondary muscles receive less. Isolation movements stay more specific.',tip:'For example, a bench press contributes most to chest, with smaller transfer to triceps and front delts.'},
- {view:'settings',target:'.standard-choice',eyebrow:'09 · STANDARDS',title:'Control your comparison',body:'Choose the reference standard in Profile. Age adjustment and height / range-of-motion adjustment can also be switched independently.',tip:'These settings change the comparison model, not the weights saved in your workouts.'},
- {view:'settings',target:'.theme-choices',eyebrow:'10 · FINISH',title:'You are ready',body:'Appearance, motion, backup, and the tutorial are all available from Profile. Replay this guide whenever you want a refresher.',tip:'The basic loop is simple: log → finish → rank → train → repeat.'}
+ {view:'today',eyebrow:'WELCOME',title:'Welcome to Lift',body:'Lift is a private, offline workout log. Build a session, record your sets, finish it, and use the saved data to calculate exercise and muscle ranks.',tip:'Your workout and profile stay on this device. No account is required.',where:'Home'},
+ {view:'local',eyebrow:'01 · START<',title:'Start a workout',body:'Pick Empty, Push, Pull, Legs, or another split. Every new workout starts clean so you control exactly what gets logged.',tip:'A split is only a starting point — you can change the exercise list at any time.',where:'Home · Today'},
+ {view:'today',eyebrow:'02 · EXERCISES',title:'Add your exercises',body:'Use Add exercise to search the exercise library, filter it, or create a custom movement. Tap an exercise to put it into the current session.',tip:'You can build the whole exercise list before entering your first set.',where:'Home · Today'},
+ {view:'today',eyebrow:'03 · LOGGING',title:'Log every set',body:'Choose the weight and reps, then press Log set. Your set is stored immediately and the workout remains editable until you finish it.',tip:'If you make a mistake, edit or remove the set before finishing the workout.',where:'Home · Today'},
+ {view:'history',eyebrow:'04 · HISTORY',title:'Review finished workouts',body:'Finished sessions move into History. Open an old session to review what you did and correct entries when needed.',tip:'History is local, so it works without an internet connection.',where:'History'},
+ {view:'settings',eyebrow:'05 · PROFILE',title:'Set your athlete data',body:'Profile stores your age, height, bodyweight, benchmark reference, appearance, backups, and update controls.',tip:'Age, bodyweight, and height can affect ranking calculations; changing them does not rewrite your saved workout weights.',where:'Profile'},
+ {view:'ranks',eyebrow:'06 · RANKS',title:'Calculate your rank',body:'Open Ranks and use Get your rank. Enter the lift, weight, reps, bodyweight, and height when available. The result is saved and the muscle ranks refresh.',tip:'Update rank recalculates the saved result — it does not create a second workout entry.',where:'Ranks'},
+ {view:'ranks',eyebrow:'07 · ANATOMY',title:'Read the muscle map',body:'Ranks also show two separate anatomy models: front/anterior and back/posterior. Ranked muscle groups use their rank color; neutral anatomy stays unranked.',tip:'The head and neck are anatomy only. They are deliberately not ranked muscle groups.',where:'Ranks · Anatomy'},
+ {view:'settings',eyebrow:'08 · CONTROLS',title:'Standards, backups & updates',body:'Profile lets you choose the comparison reference, turn age or height adjustment on or off, export a backup, and check for the newest published Lift build.',tip:'Use Check for updates after a new release. Lift will install the newest service-worker build and refresh.',where:'Profile'},
+ {view:'settings',eyebrow:'09 · DONE',title:'That is the whole loop',body:'Log a workout → finish it → review History → calculate ranks → train again. Replay this guide any time from Profile.',tip:'Your saved workout data is separate from the benchmark settings and app version.',where:'Profile'}
 ];
-let tutorialIndex=0,tutorialFocus=null;
-const tutorialClear=()=>{document.querySelectorAll('.tutorial-focus').forEach(e=>e.classList.remove('tutorial-focus'));$('#tutorial-layer')?.remove();tutorialFocus=null};
-const tutorialRender=()=>{const st=tutorialSteps[tutorialIndex];if(!st){tutorialClose(true);return}if(view!==st.view){view=st.view;nav();render()}setTimeout(()=>{tutorialClear();const t=document.querySelector(st.target);if(t){t.classList.add('tutorial-focus');tutorialFocus=t}const pct=((tutorialIndex+1)/tutorialSteps.length)*100;const layer=document.createElement('div');layer.id='tutorial-layer';layer.className='tutorial-layer';layer.innerHTML='<div class="tutorial-shell" role="dialog" aria-modal="true" aria-label="Lift tutorial"><div class="tutorial-progress"><span style="width:'+pct+'%"></span></div><div class="tutorial-head"><div><small class="tutorial-eyebrow">'+st.eyebrow+'</small><span class="tutorial-count">'+(tutorialIndex+1)+' / '+tutorialSteps.length+'</span></div><button class="tutorial-close" data-tut="skip" aria-label="Skip tutorial">×</button></div><div class="tutorial-body"><h2>'+st.title+'</h2><p>'+st.body+'</p><div class="tutorial-tip"><b>TIP</b><span>'+st.tip+'</span></div></div><div class="tutorial-footer"><button class="tutorial-back" data-tut="back" '+(tutorialIndex===0?'disabled':'')+'>Back</button><button class="tutorial-skip" data-tut="skip">Skip</button><button class="tutorial-next" data-tut="next">'+(tutorialIndex===tutorialSteps.length-1?'Finish':'Continue')+' <span>→</span></button></div></div>';document.body.append(layer)},40)};
+let tutorialIndex=0;
+const tutorialClear=()=>{$('#tutorial-layer')?.remove();document.body.classList.remove('tutorial-open')};
+const tutorialRender=()=>{
+ const st=tutorialSteps[tutorialIndex];
+ if(!st){tutorialClose(true);return}
+ if(view!==st.view){view=st.view;nav();render()}
+ setTimeout(()=>{
+   tutorialClear();
+   document.body.classList.add('tutorial-open');
+   const pct=((tutorialIndex+1)/tutorialSteps.length)*100;
+   const layer=document.createElement('div');
+   layer.id='tutorial-layer';
+   layer.className='tutorial-layer';
+   layer.innerHTML=`<div class="tutorial-shell" role="dialog" aria-modal="true" aria-label="Lift tutorial">
+     <div class="tutorial-progress"><span style="width:${pct}%"></span></div>
+     <div class="tutorial-head">
+       <div><small class="tutorial-eyebrowr>${st.eyebrow}</small><span class="tutorial-count">${tutorialIndex+1} / ${tutorialSteps.length}</span></div>
+       <button class="tutorial-close" data-tut="skip" aria-label="Close tutorial">×</button>
+     </div>
+     <div class="tutorial-location"><span>WHERE</span><b>${st.where}</b></div>
+     <div class="tutorial-body"><h2>${st.title}</h2><p>${st.body}</p><div class="tutorial-tip"><b>TIP</b><span>${st.tip}</span></div></div>
+     <div class="tutorial-footer">
+       <button class="tutorial-back" data-tut="back" ${tutorialIndex===0?'disabled':''}>Back</button>
+       <button class="tutorial-skip" data-tut="skip">Skip</button>
+       <button class="tutorial-next" data-tut="next">${tutorialIndex===tutorialSteps.length-1?'Finish':'Continue'} <span>→</span></button>
+     </div>
+   </div>`;
+   document.body.append(layer);
+ },30)
+};
 const tutorialOpen=()=>{tutorialIndex=0;tutorialRender()};
-const tutorialClose=mark=>{tutorialClear();if(mark){S.set.tutorialSeen=true;S.set.tutorialVersion=TUTORIAL_VERSION;save();view='today';nav();render()}};
-document.addEventListener('click',e=>{const b=e.target.closest('[data-tut]');if(!b)return;if(b.dataset.tut==='skip'){tutorialClose(true);return}if(b.dataset.tut==='back'){tutorialIndex=Math.max(0,tutorialIndex-1);tutorialRender();return}if(b.dataset.tut==='next'){tutorialIndex++;tutorialRender()}});
+const tutorialClose=mark=>{
+ tutorialClear();
+ if(mark){S.set.tutorialSeen=true;S.set.tutorialVersion=TUTORIAL_VERSION;save();view='today';nav();render()}
+};
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-tut]');
+ if(!b)return;
+ if(b.dataset.tut==='skip'){tutorialClose(true);return}
+ if(b.dataset.tut==='back'){tutorialIndex=Max.max(0,tutorialIndex-1);tutorialRender();return}
+ if(b.dataset.tut==='next'){tutorialIndex++;tutorialRender()}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('tutorial-layer'))tutorialClose(true)});
+
 /* static anterior + posterior anatomy map */
 /* views */
 
@@ -173,6 +210,7 @@ const nav=()=>{$('#n').innerHTML='<span class=wm><b>Lift</b>log <small class=bui
 const addN=n=>{n=String(n||'').trim();if(!n)return;if(!EX[n]){const t='B',c='Custom';S.custom.push({n,t,c});EX[n]={g:'Custom',t,c}}ci=S.cur.ex.push({n,sets:[]})-1;exercisePickerClose();go()};
 const updateApp=async b=>{if(b?.disabled)return;b.disabled=true;b.textContent='Checking for updates…';try{if(location.protocol==='file:'||!('serviceWorker' in navigator)){location.reload();return}let reg=await navigator.serviceWorker.getRegistration();if(!reg)reg=await navigator.serviceWorker.register('sw.js?v='+BUILD_VERSION,{updateViaCache:'none'});let found=false;let timer=null;const wait=new Promise(resolve=>{const finish=v=>{if(timer)clearTimeout(timer);resolve(v)};reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed'){found=true;w.postMessage('skip');finish(true)}})},{once:true});timer=setTimeout(()=>finish(false),6000)});await reg.update();if(reg.waiting){found=true;reg.waiting.postMessage('skip')}await wait;if(found){toast('Update installed — refreshing…');setTimeout(()=>location.reload(),250)}else{toast('Already up to date — refreshing…');setTimeout(()=>location.reload(),350)}}catch(e){console.error('Lift update check failed',e);toast('Update check failed — refreshing current version');setTimeout(()=>location.reload(),500)}};
 const A={
+update:updateApp,
 log:()=>{S.cur.ex[ci].sets.push({kg:dr.kg,reps:dr.reps,t:''});go()},
 cp:()=>{ci=Math.max(0,ci-1);render()},cn:()=>{ci++;render()},
 rm:()=>{dr.reps=Math.max(1,dr.reps-1);syncPickers()},rpl:()=>{dr.reps=Math.min(30,dr.reps+1);syncPickers()},
