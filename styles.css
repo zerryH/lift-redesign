@@ -1,19 +1,19 @@
 :root{--bg:#0d0915;--cd:#171121;--fg:#f7f3ff;--mu:#857b91;--ln:#2a2035;--ac:#756bff;--ac2:#52a7ff}
 [data-d="0"]{--bg:#f6f4fa;--cd:#fff;--fg:#17131f;--mu:#7d778a;--ln:#e4e0ec;--ac:#6758f5;--ac2:#2787ee}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;overscroll-behavior:none;touch-action:manipulation}
-body{background:var(--bg);color:var(--fg);font:400 15px/1.45 "Avenir Next","Segoe UI",system-ui,sans-serif;-webkit-user-select:none;user-select:none}
+html,body{margin:0;min-height:100%;height:100%;overscroll-behavior:none;touch-action:manipulation}
+body{background:var(--bg);color:var(--fg);font:400 15px/1.45 "Avenir Next","Segoe UI",system-ui,sans-serif;-webkit-user-select:none;user-select:none;height:100vh;height:100dvh;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden}
 input{-webkit-user-select:text;user-select:text;font:inherit;font-size:16px;color:var(--fg)}
 button{font-family:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--ac2);outline-offset:2px}
-#v{max-width:640px;margin:0 auto;padding:max(env(safe-area-inset-top),20px) 20px calc(96px + env(safe-area-inset-bottom));position:relative;z-index:1}
+#v{max-width:640px;width:100%;min-height:0;height:100%;margin:0 auto;padding:max(env(safe-area-inset-top),20px) 20px 24px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;z-index:1;grid-row:1}
 @keyframes f{from{opacity:0;transform:translateY(6px)}}
 h1{font-size:30px;font-weight:300;line-height:1.1;margin:24px 0 14px;letter-spacing:-.5px}h1 b{font-weight:800}h1 i{font-style:normal}
 small,.q{color:var(--mu);font-size:12px}.q{margin:22px 0 6px}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:color-mix(in srgb,var(--cd) 78%,transparent);border-top:1px solid color-mix(in srgb,var(--ln) 84%,transparent);padding-bottom:env(safe-area-inset-bottom);z-index:5;backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);box-shadow:0 -10px 35px rgba(0,0,0,.08)}
+nav{position:static;grid-row:2;display:flex;background:color-mix(in srgb,var(--cd) 78%,transparent);border-top:1px solid color-mix(in srgb,var(--ln) 84%,transparent);padding-bottom:env(safe-area-inset-bottom);z-index:5;backdrop-filter:blur(22px) saturate(150%);-webkit-backdrop-filter:blur(22px) saturate(150%);box-shadow:0 -10px 35px rgba(0,0,0,.08)}
 nav button{flex:1;min-height:58px;background:none;border:0;color:var(--mu);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer}
 nav button.on{color:var(--ac)}nav svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}nav small{font-size:10px;color:inherit}.wm{display:none}
-@media(min-width:800px){nav{top:0;bottom:auto;border-top:0;border-bottom:1px solid var(--ln);padding:0 24px;justify-content:center}nav button{flex:0 0 90px;min-height:60px}.wm{display:block;position:absolute;left:24px;top:18px;font-weight:300}.wm b{font-weight:800}#v{padding-top:90px}}
+@media(min-width:800px){body{grid-template-rows:auto minmax(0,1fr)}nav{grid-row:1;position:relative;border-top:0;border-bottom:1px solid var(--ln);padding:0 24px;justify-content:center}nav button{flex:0 0 90px;min-height:60px}.wm{display:block;position:absolute;left:24px;top:18px;font-weight:300}.wm b{font-weight:800}#v{grid-row:2;padding-top:30px;padding-bottom:24px}}
 .pill{min-height:44px;padding:0 20px;border-radius:999px;background:color-mix(in srgb,var(--cd) 82%,transparent);color:var(--fg);border:1px solid color-mix(in srgb,var(--ln) 84%,transparent);font-weight:600;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;position:relative;overflow:hidden;isolation:isolate;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 6px 18px rgba(0,0,0,.08);backdrop-filter:blur(16px) saturate(145%);-webkit-backdrop-filter:blur(16px) saturate(145%)}
 .pill.dark{background:linear-gradient(180deg,color-mix(in srgb,var(--ac) 90%,#fff 10%),var(--ac));border-color:color-mix(in srgb,var(--ac) 80%,#fff 20%);color:#fff;box-shadow:0 8px 24px color-mix(in srgb,var(--ac) 28%,transparent),inset 0 1px 0 rgba(255,255,255,.18)}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
