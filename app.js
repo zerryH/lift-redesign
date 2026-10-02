@@ -1,4 +1,4 @@
-const BUILD_VERSION='5.5.3';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
+const BUILD_VERSION='5.5.4';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
@@ -28,14 +28,14 @@ const go=()=>{save();render()};
 const toast=(m,f)=>{const t=document.createElement('div');t.className='toast';t.textContent=m;if(f){t.onclick=f;t.style.animation='f .2s'}document.body.append(t);setTimeout(()=>t.remove(),f?15e3:2700)};
 /* maths */
 const num=v=>parseFloat(String(v).replace(',','.'))||0;
-const bw=()=>S.bw.length?S.bw[S.bw.length-1].kg:0;
+const bw=()=>S.bw.length?num(S.bw[S.bw.length-1].kg):0;
 const est=(n,s)=>{const r=num(s.reps);if(s.t=='w'||r<1||r>12)return 0;let w=num(s.kg);if(EX[n]?.t=='W')w+=bw();const e=r==1?w:w*(1+r/30);return e>0?e:0};
 const th=n=>{const c=R.t[R.alias[n]||n];return c&&c[S.set.table=='F'?1:0]};
 const qolAgeFactor=(a,en=true)=>{if(!en)return 1;const n=Number(a);if(!Number.isFinite(n)||n<13||n>100)return 1;const p=[[13,.90],[17,.90],[20,1],[40,1],[50,.95],[60,.90],[70,.85],[80,.80],[100,.80]];for(let i=1;i<p.length;i++){if(n<=p[i][0]){const [x0,y0]=p[i-1],[x1,y1]=p[i];const t=(n-x0)/(x1-x0);return y0+(y1-y0)*t}}return .80};
 const heightFactor=h=>{if(S?.set?.heightAdjust===false)return 1;const n=Number(h);if(!Number.isFinite(n)||n<120||n>230)return 1;return Math.max(.95,Math.min(1.05,Math.pow(175/n,.15)))};const heightLabel=h=>{const n=Number(h);return !Number.isFinite(n)||n<120||n>230?'height not set':Math.round(n)+' cm'};const ageFactor=a=>qolAgeFactor(a,S?.set?.ageAdjust!==false);
 const ageLabel=a=>{const n=Number(a);return !Number.isFinite(n)||n<13||n>100?'age not set':n<=17?'13–17':n<=19?'18–19':n<=39?'20–39':n<=49?'40–49':n<=59?'50–59':n<=69?'60–69':'70+'};
 let bestBW={},bestHeight={};
-const bwAtDate=d=>{const a=[...S.bw].sort((x,y)=>x.d.localeCompare(y.d));let v=0;for(const x of a){if(x.d<=d)v=num(x.kg);else break}return v||bw()};
+const bwAtDate=d=>{const a=(Array.isArray(S.bw)?S.bw:[]).filter(x=>x&&typeof x==='object'&&typeof x.d==='string'&&Number.isFinite(num(x.kg))).sort((x,y)=>String(x.d).localeCompare(String(y.d)));let v=0;for(const x of a){if(String(x.d)<=String(d||''))v=num(x.kg);else break}return v||bw()};
 const rankSetEst=(n,s,b)=>{const r=num(s.reps);if(s.t=='w'||r<1||r>12)return 0;let w=num(s.kg);if(EX[n]?.t=='W')w+=b;return r==1?w:w*(1+r/30)};
 const rankScore=(n,e,b,h)=>(e/b)*heightFactor(h); const tier=(n,e,h=bestHeight[n]||num(S.set.heightCm)||175)=>{const t=th(n),b=bestBW[n]||bw();if(!t||!e||!b)return -1;const r=rankScore(n,e,b,h),af=ageFactor(S.set.age);let i=0;t.forEach((v,j)=>{if(r>=v*af)i=j});return i};
 const bests=()=>{const recent={},all={},recentCut=Date.now()-90*864e5,m={};bestBW={};bestHeight={};for(const w of S.workouts){const recentEnough=(new Date(w.d+'T23:59:59Z').getTime()||0)>=recentCut;for(const x of (w.ex||[])){for(const z of (x.sets||[])){const b=num(z.bw)||bwAtDate(w.d),e=rankSetEst(x.n,z,b);if(!e||!b)continue;const h=num(z.height)||num(S.set.heightCm)||175,ratio=rankScore(x.n,e,b,h),target=recentEnough?recent:all,cur=target[x.n];if(!cur||ratio>cur.ratio)target[x.n]={e,b,h,ratio}}}}for(const n of new Set([...Object.keys(all),...Object.keys(recent)])){const z=recent[n]||all[n];if(!z)continue;bestBW[n]=z.b;bestHeight[n]=z.h;m[n]=z.e}return m};
@@ -143,7 +143,7 @@ const syncPickers=()=>{const w=$('#ws'),r=$('#rs'),wv=$('#wv'),rv=$('#rv'),ri=$(
 const repairState=()=>{
  const d={workouts:[],custom:[],bw:[],set:{table:'M',dark:1,motion:0,v:4,age:'',ageAdjust:true,heightCm:'',heightAdjust:true,unit:'kg',rest:90,tutorialSeen:false},rk:{},cur:null,editingId:null,lastBackup:0};
  if(!S||typeof S!=='object')S=d;
- S.workouts=Array.isArray(S.workouts)?S.workouts:[];S.custom=Array.isArray(S.custom)?S.custom:[];S.bw=Array.isArray(S.bw)?S.bw:[];S.rk=S.rk&&typeof S.rk==='object'&&!Array.isArray(S.rk)?S.rk:{};
+ S.workouts=Array.isArray(S.workouts)?S.workouts:[];S.custom=Array.isArray(S.custom)?S.custom:[];S.bw=Array.isArray(S.bw)?S.bw.filter(b=>b&&typeof b==='object'&&typeof b.d==='string'&&Number.isFinite(num(b.kg))).map(b=>({d:String(b.d).slice(0,10),kg:num(b.kg)})).sort((a,b)=>a.d.localeCompare(b.d)):[];S.rk=S.rk&&typeof S.rk==='object'&&!Array.isArray(S.rk)?S.rk:{};
  S.set=S.set&&typeof S.set==='object'&&!Array.isArray(S.set)?Object.assign(d.set,S.set):d.set;
  if(S.cur&&typeof S.cur==='object'){S.cur.ex=Array.isArray(S.cur.ex)?S.cur.ex:[];}else S.cur=null;
  if(!Number.isFinite(Number(S.lastBackup)))S.lastBackup=0;
@@ -153,7 +153,7 @@ const repairState=()=>{
  if(S.cur)S.cur.ex=S.cur.ex.filter(x=>x&&typeof x==='object').map(x=>({...x,n:safeName(x.n)})).filter(x=>x.n);
  return S;
 };
-const render=()=>{const root=$('#v');try{repairState();if(!root)throw new Error('App view root is missing');if(typeof V[view]!=='function')throw new Error('Unknown view: '+view);root.innerHTML=V[view]();root.style.animation='none';root.offsetWidth;root.style.animation='';syncPickers();bindRulers()}catch(err){console.error('Lift render failed in '+view,err);root.innerHTML=`<section class=note role=alert><b>Could not load ${esc(view)}.</b><p>The app is still running. Try again; your saved data has not been reset.</p><button class=pill data-a=retryRender>Repair &amp; retry</button></section>`;}};
+const render=()=>{const root=$('#v');try{repairState();if(!root)throw new Error('App view root is missing');if(typeof V[view]!=='function')throw new Error('Unknown view: '+view);root.innerHTML=V[view]();root.style.animation='none';root.offsetWidth;root.style.animation='';syncPickers();bindRulers()}catch(err){console.error('Lift render failed in '+view,err);root.innerHTML=`<section class=note role=alert><b>Could not load ${esc(view)}.</b><p>The app is still running. Try again; your saved data has not been reset.</p><button class=pill data-a=retryRender type=button>Repair &amp; retry</button></section>`;const rb=root.querySelector('[data-a=retryRender]');if(rb)rb.addEventListener('click',()=>A.retryRender());}};
 const nav=()=>{$('#n').innerHTML='<span class=wm><b>Lift</b>log <small class=build-version>'+BUILD_LABEL+'</small></span>'+Object.keys(IC).map(k=>`<button class="${view==k?'on':''}" data-a=tab data-v=${k}><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg><small>${LB[k]}</small></button>`).join('')};
 /* actions */
 const addN=n=>{n=String(n||'').trim();if(!n)return;if(!EX[n]){const t='B',c='Custom';S.custom.push({n,t,c});EX[n]={g:'Custom',t,c}}ci=S.cur.ex.push({n,sets:[]})-1;exercisePickerClose();go()};
@@ -186,7 +186,7 @@ heightAdjust:()=>{S.set.heightAdjust=S.set.heightAdjust===false;save();go();toas
 theme:d=>{S.set.dark=d.v==='dark'?1:0;document.documentElement.dataset.d=S.set.dark;save();go()},
 dk:()=>{S.set.dark=+!S.set.dark;document.documentElement.dataset.d=S.set.dark;save();go()},
 tutorial:()=>tutorialOpen(),
-retryRender:async()=>{try{repairState();S.rk=Object.fromEntries(Object.entries(S.rk).filter(([n,r])=>r&&typeof r==='object'&&Number.isFinite(Number(r.i))&&Number.isFinite(Number(r.x))));refreshRanks(true);await save();nav();render();toast('State repaired · ranks ready')}catch(err){console.error('Lift repair failed',err);S.rk={};try{await save()}catch{};nav();render();toast('Rank data repaired · try again')}},
+retryRender:async()=>{try{repairState();S.bw=(Array.isArray(S.bw)?S.bw:[]).filter(b=>b&&typeof b==='object'&&typeof b.d==='string'&&Number.isFinite(num(b.kg))).map(b=>({d:String(b.d).slice(0,10),kg:num(b.kg)})).sort((a,b)=>a.d.localeCompare(b.d));S.rk=Object.fromEntries(Object.entries(S.rk).filter(([n,r])=>r&&typeof r==='object'&&Number.isFinite(Number(r.i))&&Number.isFinite(Number(r.x))));refreshRanks(true);await save();nav();render();toast('State repaired · ranks ready')}catch(err){console.error('Lift repair failed',err);S.rk={};try{await save()}catch{};nav();render();toast('Rank data repaired · try again')}},
 anim:()=>{S.set.motion=+!S.set.motion;document.documentElement.dataset.motion=S.set.motion?'1':'0';go()},
 reset:()=>confirmReset(),
 exp:async()=>{const j=JSON.stringify({app:'liftlog',version:1,date:iso(),workouts:S.workouts,custom:S.custom,bw:S.bw,settings:S.set,rk:S.rk}),f=new File([j],`lift-backup-${iso()}.json`,{type:'application/json'});
