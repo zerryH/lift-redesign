@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-const BUILD_VERSION = '5.5.27';
+const BUILD_VERSION = '5.5.28';
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => fs.writeFileSync(p, s);
 function validateData(ex, ranks) {
@@ -43,11 +43,11 @@ write('app.js', app);
 const anatomyCss = read('anatomy-map.css');
 for (const name of ['index.html', 'lift-local.html']) write(name, buildHtml(name, app, anatomyCss));
 if (read('index.html') !== read('lift-local.html')) throw new Error('index.html and lift-local.html diverged');
-const hashInput = [app, read('index.html'), read('exercises.json'), read('ranks-config.json'), anatomyCss, read('manifest.webmanifest'), fs.readFileSync('lift-icon-photo.png').toString('base64'), fs.readFileSync('apple-touch-icon-photo.png').toString('base64')].join('\n');
+const hashInput = [app, read('index.html'), read('exercises.json'), read('ranks-config.json'), anatomyCss, read('manifest.webmanifest'), fs.readFileSync('lift-icon-photo-fit.png').toString('base64'), fs.readFileSync('apple-touch-icon-photo-fit.png').toString('base64')].join('\n');
 const shortHash = crypto.createHash('sha256').update(hashInput).digest('hex').slice(0, 12);
 const cacheVersion = 'liftlog-v' + BUILD_VERSION + '-' + shortHash;
 let sw = read('sw.js');
 sw = sw.replace(/const V='[^']+',F=/, "const V='" + cacheVersion + "',F=");
-sw = sw.replace(/F=\[[^\]]*\]/, "F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','anatomy-map.css','manifest.webmanifest','lift-icon-photo.png','apple-touch-icon-photo.png']");
+sw = sw.replace(/F=\[[^\]]*\]/, "F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','anatomy-map.css','manifest.webmanifest','lift-icon-photo-fit.png','apple-touch-icon-photo-fit.png']");
 write('sw.js', sw);
 console.log('build ok · ' + BUILD_VERSION + ' · ' + cacheVersion);

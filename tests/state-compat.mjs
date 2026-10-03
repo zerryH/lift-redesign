@@ -6,7 +6,7 @@ const fixture=JSON.parse(fs.readFileSync(new URL('./fixtures/old-state.json',imp
 const snapshotPath=new URL('./fixtures/old-state.snapshot.json',import.meta.url);
 const num=v=>parseFloat(String(v).replace(',','.'))||0;
 const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
-const iso=()=>new Date().toISOString().slice(0,10);
+const iso=()=>new Date(1790960000000).toISOString().slice(0,10);
 const safeDate=v=>{const s=String(v??'').slice(0,10),m=/^\d{4}-\d{2}-\d{2}$/.test(s),t=m?Date.parse(s+'T00:00:00Z'):NaN;return m&&Number.isFinite(t)&&new Date(t).toISOString().slice(0,10)===s?s:iso()};
 function extractConst(name){
   const marker='const '+name+'=()=>{';

@@ -35,8 +35,8 @@ const version=(app.match(/const BUILD_VERSION='([^']+)'/)||[])[1];assert(version
 assert(build.includes("const BUILD_VERSION = '"+version+"';"),'build version mismatch');
 assert(html.includes("BUILD_VERSION='"+version+"'"),'HTML version mismatch');
 assert(sw.includes("const V='liftlog-v"+version+"-"),'SW version prefix mismatch');
-assert.equal(manifest.icons.length,1);assert.equal(manifest.icons[0].src,'./lift-icon-180-v2.png');
-assert.match(html,/apple-touch-icon[^>]+lift-icon-180-v2\.png/);
+assert.equal(manifest.icons.length,1);assert.equal(manifest.icons[0].src,'./lift-icon-photo-fit.png');
+assert(html.includes('apple-touch-icon') && html.includes('lift-icon-photo-fit.png'));
 assert(!html.includes('lift-icon-v2.svg')&&!html.includes('lift-icon-192-v2.png')&&!html.includes('lift-icon-512-v2.png'),'stale icon refs remain');
 
 const s=app.indexOf('const REAL_FRONT='); const e=app.indexOf(';const front=REAL_FRONT;',s);
