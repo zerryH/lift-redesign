@@ -1,9 +1,14 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-
 const sw=fs.readFileSync('sw.js','utf8');
-const install=sw.match(/self\.addEventListener\(['"]install['"][\s\S]*?\nself\.addEventListener\(['"]activate['"]/);
+const install=sw.match(/self\.addEventListener\(['"]install['"][\s\S]*?self\.addEventListener\(['"]activate['"]/);
 assert(install,'service-worker install handler is missing');
-assert.match(install[0],/self\.skipWaiting\(\)/,'service-worker install must call skipWaiting so stale clients do not keep the old worker active');
-
-console.log('force-update ok · service worker install calls skipWaiting');
+assert(!/skipWaiting\(\)/.test(install[0]),'new workers must stay waiting until the user explicitly activates the update');
+assert(/c\.addAll\(F\)/.test(install[0]),'new worker must fully stage the offline app before activation');
+assert(/clients\.claim\(\)/.test(sw),'activated worker must claim clients');
+assert(/SKIP_WAITING/.test(sw),'worker must support explicit user-approved activation');
+assert(/e\.data==='skip'/.test(sw),'worker must retain legacy skip-message compatibility for older installed builds');
+assert(/startsWith\(CACHE_PREFIX\)/.test(sw),'cache cleanup must stay scoped to Lift caches');
+assert(!/caches\.keys\(\)\.then\(k=>Promise\.all\(k\.filter\(x=>x!==V\)/.test(sw),'worker must not delete unrelated origin caches');
+assert(!/sw\.js/.test((sw.match(/const V='[^']+',F=\[[^\]]*\]/)||[])[0]||''),'service worker source must never precache itself');
+console.log('force-update ok · staged worker + scoped cache cleanup + explicit activation');

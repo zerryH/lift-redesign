@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const sw=fs.readFileSync('sw.js','utf8');
+assert(sw.includes("r.method!=='GET'"),'worker must not intercept non-GET requests');
+assert(sw.includes("new URL(r.url).origin!==self.location.origin"),'worker must not intercept cross-origin requests');
+assert(sw.includes("caches.match(r,{ignoreSearch:true})"),'precache lookup should tolerate start-url query parameters');
+assert(!/cache\.put\(/.test(sw),'worker must not dynamically persist arbitrary runtime responses');
+assert(!/fetch\(r\)\.then\([^)]*cache/.test(sw),'worker must not dynamically persist arbitrary runtime responses');
+assert(!/sendBeacon|XMLHttpRequest|fetch\([^)]*https?:\/\//.test(sw),'worker must not add telemetry or third-party network endpoints');
+console.log('privacy/cache boundary checks passed');

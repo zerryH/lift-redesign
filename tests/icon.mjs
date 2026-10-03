@@ -13,7 +13,9 @@ assert.equal(fs.readFileSync(files[0]).toString('base64'),fs.readFileSync(files[
 const manifest=JSON.parse(fs.readFileSync('manifest.webmanifest','utf8'));
 assert.deepEqual(manifest.icons,[{src:'./lift-icon-photo-fit.png',sizes:'180x180',type:'image/png',purpose:'any maskable'}]);
 const sw=fs.readFileSync('sw.js','utf8');
-assert.match(sw,/const V='liftlog-v5\.5\.28-[0-9a-f]{12}'/);
+const version=(fs.readFileSync('app.js','utf8').match(/const BUILD_VERSION='([^']+)'/)||[])[1];
+assert(version,'missing app version');
+assert.match(sw,new RegExp("const V='liftlog-v"+version+"-[0-9a-f]{12}'"));
 assert.match(sw,/lift-icon-photo-fit\.png/); assert.match(sw,/apple-touch-icon-photo-fit\.png/);
 assert.ok(fs.readFileSync('index.html','utf8').includes('lift-icon-photo-fit.png'))
 console.log('icon ok · supplied photo is wired and service worker is valid');
