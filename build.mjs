@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-const BUILD_VERSION = '5.5.35';
+const BUILD_VERSION = '5.5.36';
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => fs.writeFileSync(p, s);
 function validateData(ex, ranks) {
