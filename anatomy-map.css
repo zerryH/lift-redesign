@@ -13,7 +13,7 @@
 @media(max-width:480px){.body-stage{height:450px}.anatomy-pair{gap:0;padding:2px 4px 0}.anatomy-figure .anatomy-svg{height:416px;width:min(225px,100%)}}
 @media(min-width:640px){.body-stage{height:475px}.anatomy-figure .anatomy-svg{height:442px}.anatomy-pair{width:610px}}
 
-/* v5.5.25 visibility fix: the embedded detailed asset uses real muscle-zone-group SVGs.
+/* v5.5.26 visibility fix: the embedded detailed asset uses real muscle-zone-group SVGs.
    Force the SVG and every anatomy layer visible; do not rely on inherited app rules. */
 .anatomy-map-stage .anatomy-svg{
   display:block!important;
@@ -58,11 +58,11 @@
   stroke-opacity:.82!important;
 }
 
-/* v5.5.25: rank state is applied directly to each anatomical zone. */
+/* v5.5.26: rank state is applied directly to each anatomical zone. */
 .anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path{fill:var(--mc)!important;fill-opacity:1!important;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--mc) 42%,transparent))}
 .anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{fill:#596072!important;fill-opacity:1!important;filter:none!important}
 
-/* v5.5.25: compact rank icons with explicit rank-color rendering. */
+/* v5.5.26: compact rank icons with explicit rank-color rendering. */
 .rank-icon{--rank-icon-size:28px;display:inline-flex!important;width:var(--rank-icon-size)!important;height:var(--rank-icon-size)!important;min-width:var(--rank-icon-size)!important;max-width:var(--rank-icon-size)!important;flex:0 0 var(--rank-icon-size)!important;align-items:center!important;justify-content:center!important;position:relative!important;vertical-align:middle!important;color:var(--c)!important;line-height:1!important}
 .rank-icon svg{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;overflow:visible!important}
 .rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent)!important;stroke:var(--c)!important;stroke-width:1.7!important;stroke-linejoin:round!important}
