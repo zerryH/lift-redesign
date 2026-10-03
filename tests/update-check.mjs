@@ -1,11 +1,13 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const s=fs.readFileSync('app.js','utf8');
-assert(s.includes("const BUILD_VERSION='5.5.30';"));
+assert(s.includes("const BUILD_VERSION='5.5.31';"));
 assert(s.includes("Update available — tap to reload"));
-assert(s.includes("navigator.serviceWorker.getRegistration()"));
-assert(s.includes("navigator.serviceWorker.register('sw.js',{updateViaCache:'none'})"));
+assert(s.includes("navigator.serviceWorker.getRegistration(scope)"));
+assert(s.includes("navigator.serviceWorker.register(workerUrl,{updateViaCache:'none'})"));
 assert(s.includes("w.postMessage('skip')"));
+assert(s.includes("await reg.unregister()"));
+assert(s.includes("sw.js?force=5.5.31"));
 assert(!s.includes("sw.js?check="));
 assert(!s.includes("sw.js?v='+BUILD_VERSION"));
 assert(!s.includes("setTimeout(()=>location.reload(),250)"));
