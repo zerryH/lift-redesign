@@ -1,0 +1,5 @@
+import fs from 'node:fs'; import assert from 'node:assert/strict';
+const a=fs.readFileSync('app.js','utf8'),h=fs.readFileSync('index.html','utf8'),l=fs.readFileSync('lift-local.html','utf8'),s=fs.readFileSync('styles.css','utf8');
+assert.match(a,/const BUILD_VERSION='5\.5\.36'/); assert.match(a,/const installGuideDevice=/); assert.match(a,/installGuide:\(\)=>installGuideOpen\(\)/); assert.match(a,/installGuideSeen/);
+assert.match(a,/Open as Web App/); assert.match(h,/offline web-app installation guide/); assert.match(l,/offline web-app installation guide/); assert.match(s,/offline web-app installation guide/);
+assert.match(a,/display-mode: standalone/); assert.match(a,/iPad\|iPhone\|iPod/); assert.match(a,/Android/); console.log('install-guide regression: PASS');

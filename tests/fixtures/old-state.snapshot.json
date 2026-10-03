@@ -115,6 +115,7 @@
     "rest": 120,
     "tutorialSeen": true,
     "tutorialVersion": 3,
+    "installGuideSeen": false,
     "futureSetting": "preserve"
   },
   "rk": {
