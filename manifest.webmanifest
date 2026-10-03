@@ -15,7 +15,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./lift-icon-photo.png",
+      "src": "./lift-icon-photo-fit.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any maskable"
