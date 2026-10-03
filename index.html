@@ -315,7 +315,7 @@ html.tutorial-open,body.tutorial-open{overflow:hidden!important}
 .rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent)!important;stroke:var(--c)!important;stroke-width:1.7!important;stroke-linejoin:round!important}
 .rank-icon b{position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;font-size:9px!important;line-height:1!important;font-weight:900!important;color:var(--c)!important;pointer-events:none!important}
 .overall-rank-title .rank-icon{--rank-icon-size:34px}.rank-result-title .rank-icon{--rank-icon-size:30px}.rank-badge .rank-icon{--rank-icon-size:26px}
-</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.36';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
+</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.37';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
@@ -495,7 +495,7 @@ const installGuideOpen=()=>{
  ];
  const icons={share:'<span class="ig-share">↑</span>',plus:'＋',menu:'⋮',add:'✓'};
  layer.innerHTML='<div class="install-guide-card" role="dialog" aria-modal="true" aria-label="Install Lift">'+
-  '<div class="ig-top"><div><span class="ig-eyebrow">GET THE APP</span><h2>'+title+'</h2><p>Lift stays offline and your workout data stays on this device.</p></div><button class="ig-close" data-ig="close" aria-label="Close">×</button></div>'+
+  '<div class="ig-top"><div><span class="ig-eyebrow">GET THE APP</span><h2>'+title+'</h2><p>Lift stays offline and your workout data stays on this device.</p>'+(ios?'<p class="ig-warning" role="note">iPhone/iPad: use Safari for the web-app install. Chrome is not supported for this install flow.</p>':'')+'</div><button class="ig-close" data-ig="close" aria-label="Close">×</button></div>'+
   '<div class="ig-visual"><div class="ig-browser"><div class="ig-browser-top"><span></span><span></span><span></span><b>'+((ios||android)?'Safari / Chrome':'Browser')+'</b></div><div class="ig-browser-content"><strong>Lift<span>log</span></strong><small>Private · Offline · Local</small></div><div class="ig-browser-toolbar">'+(ios?'<span>◀</span><span>▶</span><span class="ig-share-target">↑</span><span>□</span><span>＋</span>':android?'<span>←</span><span>↗</span><span class="ig-menu-target">⋮</span>':'<span>←</span><span>→</span><span class="ig-install-target">⊕</span><span>⋮</span>')+'</div></div><div class="ig-arrow">↓</div></div>'+
   '<div class="ig-steps">'+steps.map(s=>'<div class="ig-step"><div class="ig-step-num">'+s[0]+'</div><div class="ig-step-copy"><b>'+s[1]+'</b><small>'+s[2]+'</small></div><div class="ig-step-icon">'+icons[s[3]]+'</div></div>').join('')+'</div>'+
   '<div class="ig-foot"><span>Works without an account or internet after installation.</span><button class="cta" data-ig="done">Got it</button></div>'+
