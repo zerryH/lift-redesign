@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const s=fs.readFileSync('app.js','utf8');
+assert(!s.includes('Max.max('),'tutorial back must use the standard Math.max');
+assert(s.includes('tutorialIndex=Math.max(0,tutorialIndex-1)'),'tutorial back must clamp with Math.max');
+assert(s.includes("if(t.id==='age'||t.id==='heightCm'){S.set[t.id==='age'?'age':'heightCm']=t.value;save()}"),'settings input must use the canonical serialized save path');
+assert(s.includes("if(a==='ageAdjust'){Object.values(S.rk).forEach(r=>r.age=S.set.age||r.age);setRankingControl({ageAdjust:S.set.ageAdjust===false});"),'age-adjust toggle must mutate rank metadata before persistence');
+assert(s.includes('const url=URL.createObjectURL(f);a.href=url;'),'backup download must create a revocable object URL');
+assert(s.includes('setTimeout(()=>URL.revokeObjectURL(url),0);'),'backup download must revoke its object URL');
+console.log('second audit regression guards passed');
