@@ -15,7 +15,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "./lift-icon-180-v2.png",
+      "src": "./lift-icon-ios-v3.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any maskable"

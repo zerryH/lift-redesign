@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import assert from 'node:assert/strict';
 
 const targetSha = 'fb66a2489c30de42ab1a00bad0cd213f7b0c502e680b2651eecd84cd64333200';
-const files = ['lift-icon-180-v2.png','apple-touch-icon.png'];
+const files = ['lift-icon-ios-v3.png','apple-touch-icon-v3.png'];
 for (const file of files) {
   const b = fs.readFileSync(file);
   assert.equal(b.subarray(0,8).toString('hex'),'89504e470d0a1a0a',file+' must be a PNG');
@@ -13,7 +13,7 @@ for (const file of files) {
 }
 assert.equal(fs.readFileSync(files[0]).toString('base64'),fs.readFileSync(files[1]).toString('base64'),'iOS touch icon and PWA icon must be identical');
 const manifest=JSON.parse(fs.readFileSync('manifest.webmanifest','utf8'));
-assert.deepEqual(manifest.icons,[{src:'./lift-icon-180-v2.png',sizes:'180x180',type:'image/png',purpose:'any maskable'}]);
+assert.deepEqual(manifest.icons,[{src:'./lift-icon-ios-v3.png',sizes:'180x180',type:'image/png',purpose:'any maskable'}]);
 const buildHashInput = [fs.readFileSync('app.js','utf8'),fs.readFileSync('index.html','utf8'),fs.readFileSync('exercises.json','utf8'),fs.readFileSync('ranks-config.json','utf8'),fs.readFileSync('anatomy-map.css','utf8'),fs.readFileSync('manifest.webmanifest','utf8'),...files.map(f=>fs.readFileSync(f).toString('base64'))].join('\n');
 const expectedCache = crypto.createHash('sha256').update(buildHashInput).digest('hex').slice(0,12);
 const sw = fs.readFileSync('sw.js','utf8');
