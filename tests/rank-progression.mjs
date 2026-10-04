@@ -10,7 +10,7 @@ assert.match(app,/TN=Array\.isArray\(R\.tiers\)\?R\.tiers\.slice\(\):\[\];MAX_RA
 assert.match(app,/rankListOpen=\(\)=>/);
 assert.match(app,/data-a=rankList/);
 assert.match(app,/class="rank-info-button"/);
-assert.match(app,/Every rank from Wood I to Blue Gem/);
+assert.match(app,/All ranks/);
 assert.match(app,/const rankMetrics=\(i,x,adj,b,h,diff=1,e=x\)/);
 assert.match(app,/if\(i>=MAX_RANK\)return\{pc:100,need:null,next:null,max:true\}/);
 for(const [name,sexes] of Object.entries(cfg.t)){
@@ -54,3 +54,9 @@ console.log('rank info Safari styling regression passed');
 
 assert.ok(app.includes('role=\"button\" tabindex=\"0\" data-a=rankList')); assert.ok(app.includes("keydown")); console.log('native-button regression passed');
 
+
+assert.doesNotMatch(app,/normalized BW/);
+assert.doesNotMatch(app,/rank-guide-intro/);
+assert.doesNotMatch(app,/rank-guide-note/);
+assert.ok(app.includes('<b>${name}</b></div>'));
+console.log('rank guide rows contain only icon + rank name');
