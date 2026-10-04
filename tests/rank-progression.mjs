@@ -53,3 +53,4 @@ assert.ok(css.includes('-webkit-appearance:none!important'));
 console.log('rank info Safari styling regression passed');
 
 assert.ok(app.includes('role=\"button\" tabindex=\"0\" data-a=rankList')); assert.ok(app.includes("keydown")); console.log('native-button regression passed');
+
