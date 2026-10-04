@@ -1,1 +1,14 @@
-__REAL_TEST__
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('app.js','utf8');
+const css=fs.readFileSync('styles.css','utf8');
+assert.match(app,/const TUTORIAL_VERSION=3;/);
+assert.match(app,/tutorialSteps=/);
+assert.match(app,/tutorial-spotlight/);
+assert.match(app,/Profile setup/);
+assert.match(app,/Credits/);
+assert.match(app,/installGuideOpen\(\)/);
+assert.doesNotMatch(css,/tutorial-layer[^\n]*backdrop-filter:blur/);
+assert.match(css,/tutorial-layer\{[^}]*backdrop-filter:none/);
+assert.match(css,/tutorial-spotlight/);
+console.log('tutorial v3 regression passed');
