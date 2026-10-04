@@ -46,3 +46,8 @@ assert.ok(app.includes('class=\"rank-heading\"'));
 assert.ok(app.includes('class=\"rank-info-button\"'));
 assert.ok(css.includes('.rank-heading{position:relative'));
 console.log('rank info placement regression passed');
+
+assert.ok(css.includes('authoritative Safari-safe rank info control'));
+assert.ok(css.includes('background:transparent!important'));
+assert.ok(css.includes('-webkit-appearance:none!important'));
+console.log('rank info Safari styling regression passed');

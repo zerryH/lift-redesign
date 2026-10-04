@@ -72,8 +72,7 @@ nav button.on{color:var(--ac)}nav svg{width:24px;height:24px;stroke:currentColor
 .res{margin-top:6px;padding:16px;border-radius:20px;border:1px solid var(--c);background:color-mix(in srgb,var(--c) 12%,transparent);text-align:center}.res b{display:block;font-size:40px;font-weight:800;color:var(--c);line-height:1.15}.res span{display:block;color:var(--mu)}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);background:color-mix(in srgb,var(--fg) 92%,transparent);color:var(--bg);padding:12px 22px;border-radius:99px;font-weight:650;z-index:9;white-space:nowrap;box-shadow:0 14px 36px rgba(0,0,0,.22);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 @keyframes o{to{opacity:0}}
-.note{background:var(--cd);border-radius:16px;padding:12px 16px;margin:8px 0}
-  .rank-list-launch{display:inline-flex;align-items:center;margin:0 0 10px}.rank-info-button{width:30px;height:30px;display:grid;place-items:center;padding:0;border:1px solid var(--ln);border-radius:50%;background:transparent;color:var(--mu);font:700 14px/1 inherit;cursor:pointer;transition:color .18s ease,border-color .18s ease,transform .18s ease}.rank-info-button:active{transform:scale(.94)}.rank-info-button:hover{color:var(--fg);border-color:color-mix(in srgb,var(--ac) 45%,var(--ln))}.rank-list-modal{position:fixed!important;inset:0!important;z-index:5000!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;padding:12px 10px max(12px,env(safe-area-inset-bottom))!important;background:rgba(5,3,10,.8)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;overflow:hidden!important;pointer-events:auto!important}.rank-list-backdrop{position:absolute;inset:0}.rank-list-card{position:relative;width:min(520px,100%)!important;max-height:min(70vh,640px)!important;overflow:hidden!important;padding:10px!important;border-radius:28px!important;background:var(--cd)!important;border:1px solid color-mix(in srgb,var(--ac) 32%,var(--ln) 68%)!important;box-shadow:0 24px 80px rgba(0,0,0,.58),0 1px 0 rgba(255,255,255,.05) inset!important;color:var(--fg)!important;display:flex!important;flex-direction:column!important}.rank-list-progress{height:4px;flex:0 0 auto;margin:2px 4px 12px;border-radius:99px;background:color-mix(in srgb,var(--mu) 18%,transparent);overflow:hidden}.rank-list-progress span{display:block;width:100%;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--ac),var(--ac2))}.rank-list-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0 6px 12px;flex:0 0 auto}.rank-list-head h2{margin:4px 0 7px;font-size:27px;line-height:1.08}.rank-list-head p{margin:0;color:var(--mu);font-size:14px;line-height:1.45}.rank-list-kicker{font-size:10px;font-weight:900;letter-spacing:.14em;color:var(--ac2)}.rank-list-close{width:38px!important;height:38px!important;flex:0 0 38px;padding:0!important;border:1px solid var(--ln)!important;border-radius:50%!important;background:transparent!important;color:var(--fg)!important;font-size:24px!important;line-height:1!important}.rank-list-note{flex:0 0 auto;margin:0 6px 12px;padding:10px 11px;border-radius:15px;background:color-mix(in srgb,var(--ac) 8%,transparent);border:1px solid color-mix(in srgb,var(--ac) 18%,var(--ln) 82%);color:var(--mu);font-size:11px;line-height:1.42}.rank-list-grid{min-height:0;overflow-y:auto!important;overflow-x:hidden;padding:1px 6px 8px;display:grid;grid-template-columns:1fr 1fr;gap:7px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}.rank-list-item{display:flex;align-items:center;gap:9px;min-width:0;padding:8px 9px;border:1px solid color-mix(in srgb,var(--c) 26%,var(--ln));border-radius:13px;background:color-mix(in srgb,var(--c) 8%,transparent)}.rank-list-icon{flex:0 0 auto}.rank-list-icon .rank-icon{width:30px;height:30px}.rank-list-copy{min-width:0}.rank-list-copy b{display:block;font-size:11px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rank-list-copy small{display:block;margin-top:2px;color:var(--mu);font-size:9px;line-height:1.2;white-space:nowrap}.rank-list-open{overflow:hidden!important}.rank-list-open #app{overflow:hidden!important}@media(max-width:430px){.rank-list-card{max-height:70vh!important;border-radius:25px!important;padding:10px!important}.rank-list-head h2{font-size:24px}.rank-list-head p{font-size:13px}.rank-list-grid{grid-template-columns:1fr;padding-left:5px;padding-right:5px}.rank-list-item{padding:8px 10px}}
+.note{background:var(--cd);border-radius:16px;padding:12px 16px;margin:8px 0}.rank-list-modal{position:fixed!important;inset:0!important;z-index:5000!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;padding:12px 10px max(12px,env(safe-area-inset-bottom))!important;background:rgba(5,3,10,.8)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;overflow:hidden!important;pointer-events:auto!important}.rank-list-backdrop{position:absolute;inset:0}.rank-list-card{position:relative;width:min(520px,100%)!important;max-height:min(70vh,640px)!important;overflow:hidden!important;padding:10px!important;border-radius:28px!important;background:var(--cd)!important;border:1px solid color-mix(in srgb,var(--ac) 32%,var(--ln) 68%)!important;box-shadow:0 24px 80px rgba(0,0,0,.58),0 1px 0 rgba(255,255,255,.05) inset!important;color:var(--fg)!important;display:flex!important;flex-direction:column!important}.rank-list-progress{height:4px;flex:0 0 auto;margin:2px 4px 12px;border-radius:99px;background:color-mix(in srgb,var(--mu) 18%,transparent);overflow:hidden}.rank-list-progress span{display:block;width:100%;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--ac),var(--ac2))}.rank-list-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0 6px 12px;flex:0 0 auto}.rank-list-head h2{margin:4px 0 7px;font-size:27px;line-height:1.08}.rank-list-head p{margin:0;color:var(--mu);font-size:14px;line-height:1.45}.rank-list-kicker{font-size:10px;font-weight:900;letter-spacing:.14em;color:var(--ac2)}.rank-list-close{width:38px!important;height:38px!important;flex:0 0 38px;padding:0!important;border:1px solid var(--ln)!important;border-radius:50%!important;background:transparent!important;color:var(--fg)!important;font-size:24px!important;line-height:1!important}.rank-list-note{flex:0 0 auto;margin:0 6px 12px;padding:10px 11px;border-radius:15px;background:color-mix(in srgb,var(--ac) 8%,transparent);border:1px solid color-mix(in srgb,var(--ac) 18%,var(--ln) 82%);color:var(--mu);font-size:11px;line-height:1.42}.rank-list-grid{min-height:0;overflow-y:auto!important;overflow-x:hidden;padding:1px 6px 8px;display:grid;grid-template-columns:1fr 1fr;gap:7px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}.rank-list-item{display:flex;align-items:center;gap:9px;min-width:0;padding:8px 9px;border:1px solid color-mix(in srgb,var(--c) 26%,var(--ln));border-radius:13px;background:color-mix(in srgb,var(--c) 8%,transparent)}.rank-list-icon{flex:0 0 auto}.rank-list-icon .rank-icon{width:30px;height:30px}.rank-list-copy{min-width:0}.rank-list-copy b{display:block;font-size:11px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rank-list-copy small{display:block;margin-top:2px;color:var(--mu);font-size:9px;line-height:1.2;white-space:nowrap}.rank-list-open{overflow:hidden!important}.rank-list-open #app{overflow:hidden!important}@media(max-width:430px){.rank-list-card{max-height:70vh!important;border-radius:25px!important;padding:10px!important}.rank-list-head h2{font-size:24px}.rank-list-head p{font-size:13px}.rank-list-grid{grid-template-columns:1fr;padding-left:5px;padding-right:5px}.rank-list-item{padding:8px 10px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 
 
@@ -174,18 +173,9 @@ html.tutorial-open,body.tutorial-open{overflow:hidden!important}
 @media(max-width:500px){.install-guide-card{padding:16px;border-radius:25px}.ig-top h2{font-size:23px}.ig-visual{margin-top:14px}.ig-browser-content{height:65px}.ig-step{grid-template-columns:30px 1fr 34px;padding:10px 8px}.ig-step-copy b{font-size:13px}}
 
 
-/* v5.5.42 rank guide: tutorial-style bottom sheet */
+
 html.rank-list-open,body.rank-list-open{overflow:hidden!important}
 body.rank-list-open{touch-action:none!important}
-.rank-info-button{
- width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;
- display:grid!important;place-items:center!important;padding:0!important;
- border:1px solid rgba(255,255,255,.18)!important;border-radius:50%!important;
- background:rgba(255,255,255,.07)!important;color:var(--fg)!important;
- font:800 14px/1 Arial,sans-serif!important;opacity:1!important;visibility:visible!important;
- box-shadow:0 4px 18px rgba(0,0,0,.16)!important;cursor:pointer!important
-}
-.rank-info-button:active{transform:scale(.94)}
 .rank-list-modal{
  position:fixed!important;inset:0!important;z-index:100000!important;
  width:100vw!important;height:100dvh!important;min-height:100vh!important;
@@ -252,46 +242,26 @@ body.rank-list-open{touch-action:none!important}
 .rank-guide-copy{min-width:0;display:flex;align-items:baseline;justify-content:space-between;gap:12px;width:100%}
 .rank-guide-copy b{font-size:14px;line-height:1.2;white-space:nowrap}
 .rank-guide-copy small{color:var(--mu);font-size:11px;white-space:nowrap}
-.rank-info-button{width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;display:grid!important;place-items:center!important;padding:0!important;border:1px solid var(--ln)!important;border-radius:50%!important;background:color-mix(in srgb,var(--fg) 6%,transparent)!important;color:var(--fg)!important;font:600 16px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif!important;opacity:1!important;visibility:visible!important}
-.rank-info-button:active{transform:scale(.94)}
 @media(max-width:430px){.rank-guide-card{height:90dvh!important;max-height:90dvh!important;padding-left:15px!important;padding-right:15px!important}.rank-guide-card .hd h2{font-size:28px}.rank-guide-intro{font-size:13px}.rank-guide-row{min-height:53px;padding:8px 10px}.rank-guide-copy b{font-size:13px}.rank-guide-copy small{font-size:10px}}
-
-/* v5.5.44: one authoritative minimal rank info control */
-.rank-list-launch{display:flex!important;align-items:center!important;width:38px!important;height:38px!important;margin:0 0 10px!important}
-button.rank-info-button{
-  appearance:none!important;-webkit-appearance:none!important;
-  box-sizing:border-box!important;width:36px!important;height:36px!important;
-  min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;
-  margin:0!important;padding:0!important;display:grid!important;place-items:center!important;
-  flex:0 0 36px!important;border:1px solid color-mix(in srgb,var(--fg) 22%,var(--ln) 78%)!important;
-  border-radius:50%!important;background:color-mix(in srgb,var(--fg) 5%,transparent)!important;
-  color:var(--fg)!important;box-shadow:none!important;opacity:1!important;visibility:visible!important;
-  font-size:0!important;line-height:0!important;cursor:pointer!important;
-}
 .rank-info-glyph{
   display:grid!important;place-items:center!important;width:18px!important;height:18px!important;
   color:var(--fg)!important;font:700 13px/18px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif!important;
   text-align:center!important;opacity:.82!important;transform:translateY(-.2px)!important;
 }
-button.rank-info-button:hover{background:color-mix(in srgb,var(--fg) 9%,transparent)!important;border-color:color-mix(in srgb,var(--fg) 32%,var(--ln) 68%)!important;color:var(--fg)!important}
-button.rank-info-button:active{transform:scale(.94)!important;background:color-mix(in srgb,var(--fg) 11%,transparent)!important}
 
-/* v5.5.45: rank info belongs in the heading, top-right, with no wrapper/pill */
+
 .rank-heading{position:relative;display:block;width:100%;margin:0;padding:0}
 .rank-heading h1{margin:24px 0 14px!important;padding-right:48px}
-.rank-heading>.rank-info-button{
-  position:absolute!important;top:20px!important;right:0!important;
-  width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;
-  max-width:28px!important;max-height:28px!important;
-  margin:0!important;padding:0!important;box-sizing:border-box!important;
-  display:grid!important;place-items:center!important;
-  appearance:none!important;-webkit-appearance:none!important;
-  border:1px solid rgba(255,255,255,.16)!important;border-radius:50%!important;
-  background:transparent!important;background-color:transparent!important;
-  color:var(--mu)!important;box-shadow:none!important;
-  font-size:0!important;line-height:0!important;opacity:1!important;visibility:visible!important;
-  flex:none!important;transform:none!important;
-}
-.rank-heading>.rank-info-button:hover{background:rgba(255,255,255,.04)!important;color:var(--fg)!important;border-color:rgba(255,255,255,.25)!important}
-.rank-heading>.rank-info-button:active{background:rgba(255,255,255,.07)!important;transform:scale(.94)!important}
-.rank-heading .rank-info-glyph{display:block!important;width:auto!important;height:auto!important;color:currentColor!important;font:600 13px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif!important;opacity:.8!important;transform:none!important}
+
+
+.rank-heading{position:relative;display:block;width:100%;margin:0;padding:0}
+.rank-heading h1{margin:24px 0 14px!important;padding-right:44px!important}
+
+/* v5.5.46: authoritative Safari-safe rank info control */
+.rank-heading{position:relative;display:block;width:100%;margin:0;padding:0}
+.rank-heading h1{margin:24px 0 14px!important;padding-right:44px!important}
+.rank-heading>.rank-info-button{position:absolute!important;top:22px!important;right:0!important;width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important;max-width:24px!important;max-height:24px!important;margin:0!important;padding:0!important;box-sizing:border-box!important;display:grid!important;place-items:center!important;appearance:none!important;-webkit-appearance:none!important;-webkit-border-radius:50%!important;border:1px solid rgba(255,255,255,.20)!important;border-radius:50%!important;background:transparent!important;background-image:none!important;background-color:transparent!important;color:rgba(247,243,255,.72)!important;box-shadow:none!important;-webkit-box-shadow:none!important;outline:none!important;font-size:0!important;line-height:0!important;opacity:1!important;visibility:visible!important;flex:none!important;transform:none!important;-webkit-tap-highlight-color:transparent!important}
+.rank-heading>.rank-info-button::before{content:none!important}
+.rank-heading>.rank-info-button:focus{outline:none!important;box-shadow:none!important}
+.rank-heading>.rank-info-button:active{background:rgba(255,255,255,.05)!important;transform:scale(.94)!important}
+.rank-heading .rank-info-glyph{display:block!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;color:currentColor!important;font:600 12px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif!important;opacity:.82!important;transform:none!important}
