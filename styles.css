@@ -269,3 +269,23 @@ body.rank-list-open{touch-action:none!important}
 /* v5.5.48 final rank info glyph */
 .rank-heading>.rank-info-button{width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important;max-width:26px!important;max-height:26px!important;border:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;-webkit-box-shadow:none!important;color:rgba(247,243,255,.76)!important}
 .rank-heading .rank-info-glyph{display:block!important;width:26px!important;height:26px!important;margin:0!important;padding:0!important;color:currentColor!important;font:400 21px/26px -apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif!important;letter-spacing:0!important;text-align:center!important;opacity:1!important;transform:none!important}
+
+
+/* v5.5.50: compact label for the rank guide control */
+.rank-heading>.rank-info-button{
+  width:auto!important;height:28px!important;min-width:0!important;min-height:28px!important;
+  max-width:none!important;max-height:28px!important;padding:0 2px!important;gap:6px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  border:0!important;background:transparent!important;background-image:none!important;
+  color:rgba(247,243,255,.76)!important;
+}
+.rank-heading .rank-info-glyph{flex:0 0 26px!important;width:26px!important;height:26px!important;font-size:21px!important;line-height:26px!important}
+.rank-heading .rank-info-label{
+  display:block!important;color:rgba(247,243,255,.58)!important;
+  font:500 12px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif!important;
+  letter-spacing:.01em!important;white-space:nowrap!important;
+}
+.rank-heading>.rank-info-button:hover .rank-info-label,
+.rank-heading>.rank-info-button:focus-visible .rank-info-label{color:rgba(247,243,255,.78)!important}
+.rank-heading>.rank-info-button:active{background:rgba(255,255,255,.04)!important;transform:scale(.98)!important}
+@media(max-width:430px){.rank-heading>.rank-info-button{gap:5px!important}.rank-heading .rank-info-label{font-size:11px!important}}
