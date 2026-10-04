@@ -4,7 +4,7 @@ Lift is a local/offline strength-training logger. Workout data stays on the devi
 
 ## Current release
 
-Build: 5.5.28
+Build: 5.5.55
 
 The shipped app is a self-contained HTML build for GitHub Pages and a local lift-local.html file.
 
