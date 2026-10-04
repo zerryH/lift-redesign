@@ -1,0 +1,25 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const src=fs.readFileSync(new URL('../ranking-engine.js',import.meta.url),'utf8');
+const ctx={console};vm.runInNewContext(src,ctx);
+const E=ctx.LiftRankingEngine;
+const R=JSON.parse(fs.readFileSync(new URL('../ranks-config.json',import.meta.url),'utf8'));
+const C=R.ranking;
+const set=(kg,reps,t='')=>({kg,reps,t});
+const score=(name,kg,reps,bw,sex='M',height=178,age=25)=>{
+ const e=E.estimate1RM(set(kg,reps),R.exerciseMeta[name],bw,C);
+ return E.adjustedScore(e,bw,sex,height,age,R.exerciseMeta[name],C);
+};
+assert.equal(E.estimate1RM(set(100,1),R.exerciseMeta['Bench Press'],75,C),100);
+assert.equal(E.estimate1RM(set(100,13),R.exerciseMeta['Bench Press'],75,C),0);
+assert.ok(R.t['Bench Press'][0][45] < R.t['Leg Press'][0][45]);
+assert.notDeepEqual(R.t['Bench Press'][0],R.t['Bench Press'][1]);
+assert.ok(score('Bench Press',120,1,75,'M') > score('Bench Press',120,1,75,'F'));
+assert.ok(score('Bench Press',100,1,60,'M') > score('Bench Press',100,1,120,'M'));
+assert.ok(score('Bench Press',100,1,75,'M',178,50) > score('Bench Press',100,1,75,'M',178,25));
+assert.ok(score('Bench Press',100,1,75,'M',190,25) > score('Bench Press',100,1,75,'M',165,25));
+assert.equal(E.effectiveLoad(set(10,1),R.exerciseMeta['Dumbbell Bench Press'],75),20);
+assert.equal(E.effectiveLoad(set(20,1),R.exerciseMeta['Pull-Up'],75),95);
+assert.equal(E.effectiveLoad(set(20,1),R.exerciseMeta['Assisted Pull-Up Machine'],75),55);
+console.log('ranking engine regression tests passed');
