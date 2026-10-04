@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const s=fs.readFileSync('app.js','utf8');
-assert(s.includes("const BUILD_VERSION='5.5.48';"));
+assert(s.includes("const BUILD_VERSION='5.5.49';"));
 assert(s.includes("const SW_SCRIPT='sw.js'"));
 assert(s.includes("navigator.serviceWorker.getRegistration(SW_SCOPE)"));
 assert(s.includes("navigator.serviceWorker.register(SW_SCRIPT,{scope:SW_SCOPE,updateViaCache:'none'})"));
@@ -21,3 +21,5 @@ assert(!s.includes('const found=await new Promise(resolve=>'));
 assert(s.includes('await reg.update();if(reg.waiting)promptSWUpdate(reg.waiting);'));
 assert(s.includes("reg.addEventListener('updatefound',()=>watchInstalling(),{once:true})"));
 console.log('fast event-driven update check regression passed');
+
+const a=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8'); assert.ok(a.includes("cache:'no-store'")); assert.ok(a.includes("SW_SCRIPT+'?check='+stamp")); console.log('cache-busted SW check regression passed');
