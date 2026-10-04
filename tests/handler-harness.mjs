@@ -17,8 +17,11 @@ const run=async initial=>{
 const base={savedAt:1790959000000,workouts:[{id:1,d:'2026-09-20',split:'Push',ex:[{n:'Bench Press',sets:[{kg:100,reps:5,t:''}]}]}],custom:[],bw:[{d:'2026-09-20',kg:80}],set:{table:'M',dark:1,motion:0,v:4,age:'',ageAdjust:true,heightCm:'',heightAdjust:true,unit:'kg',rest:90,tutorialSeen:true,tutorialVersion:3},rk:{},cur:null,editingId:null,lastBackup:0};
 const h=await run(base);
 assert.doesNotReject(()=>{h.A.gr({v:'Bench Press'});return h.A.calc()},'Get/Update Rank must execute without nx ReferenceError');
-assert.equal(h.tier('Bench Press',80*.19,175),-1,'below first threshold must be Unranked');
-assert.equal(h.tier('Bench Press',80*.20,175),0,'first threshold must enter tier 0');
+const firstBench=h.R.t['Bench Press'][0][0];
+
+assert.equal(h.tier('Bench Press',firstBench-.1,178),-1,'below first threshold must be Unranked');
+const firstBenchFor80=firstBench*Math.pow(80/75,0.67);
+assert.equal(h.tier('Bench Press',firstBenchFor80,178),0,'first threshold must enter tier 0 after allometric normalization');
 const weighted={kg:20,reps:8,t:'',bw:70};
 const h2=await run({...base,workouts:[],bw:[{d:'2026-09-20',kg:70}]});
 h2.EX['Weighted Dip']={g:'Push',t:'W'}; const before=h2.est('Weighted Dip',weighted); h2.S.bw.push({d:'2026-09-21',kg:80}); const after=h2.est('Weighted Dip',weighted);
