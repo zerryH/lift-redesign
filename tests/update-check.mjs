@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const s=fs.readFileSync('app.js','utf8');
-assert(s.includes("const BUILD_VERSION='5.5.40';"));
+assert(s.includes("const BUILD_VERSION='5.5.41';"));
 assert(s.includes("const SW_SCRIPT='sw.js'"));
 assert(s.includes("navigator.serviceWorker.getRegistration(SW_SCOPE)"));
 assert(s.includes("navigator.serviceWorker.register(SW_SCRIPT,{scope:SW_SCOPE,updateViaCache:'none'})"));
@@ -16,3 +16,8 @@ assert(!s.includes("sw.js?check="));
 assert(!s.includes("sw.js?v='+BUILD_VERSION"));
 assert(!s.includes("setTimeout(()=>location.reload(),250"));
 console.log('update privacy/offline/staged-activation regression test passed');
+
+assert(!s.includes('const found=await new Promise(resolve=>'));
+assert(s.includes('await reg.update();if(reg.waiting)promptSWUpdate(reg.waiting);'));
+assert(s.includes("reg.addEventListener('updatefound',()=>watchInstalling(),{once:true})"));
+console.log('fast event-driven update check regression passed');
