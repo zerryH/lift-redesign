@@ -10,11 +10,6 @@ assert.match(app,/TN=Array\.isArray\(R\.tiers\)\?R\.tiers\.slice\(\):\[\];MAX_RA
 assert.match(app,/rankListOpen=\(\)=>/);
 assert.match(app,/data-a=rankList/);
 assert.match(app,/class="rank-info-button"/);
-assert.match(app,/rank-list-open/);
-assert.match(css,/\.rank-list-modal\{[\s\S]*z-index:100000/);
-assert.match(css,/\.rank-list-card\{[\s\S]*background:color-mix\(in srgb,var\(--cd\) 84%,transparent\)/);
-assert.match(css,/\.rank-list-grid\{[\s\S]*touch-action:pan-y/);
-assert.match(css,/\.rank-info-button\{[\s\S]*visibility:visible/);
 assert.match(app,/Every rank from Wood I to Blue Gem/);
 assert.match(app,/const rankMetrics=\(i,x,adj,b,h,diff=1,e=x\)/);
 assert.match(app,/if\(i>=MAX_RANK\)return\{pc:100,need:null,next:null,max:true\}/);
@@ -36,5 +31,10 @@ for(const [name,sexes] of Object.entries(cfg.t)){
 console.log('rank progression ok · 460 standards × 46 tiers');
 
 assert.match(app,/aria-controls="rank-list-modal"/);
-assert.match(app,/document.documentElement.classList.add\('rank-list-open'\)/);
 console.log('rank guide sheet regression passed');
+
+assert.ok(app.includes("className='sheet rank-guide-sheet'")); 
+assert.ok(app.includes('ⓘ')); 
+assert.ok(app.includes('class="rank-guide-list"')); 
+assert.ok(css.includes('.rank-guide-list{min-height:0;flex:1 1 auto;overflow-y:auto')); 
+console.log('tutorial-style rank guide regression passed');

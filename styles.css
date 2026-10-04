@@ -233,3 +233,25 @@ body.rank-list-open{touch-action:none!important}
  .rank-list-head p{font-size:13px!important}
  .rank-list-grid{grid-template-columns:1fr!important}
 }
+
+/* v5.5.43: rank guide is a single tutorial-style bottom sheet, not a page/tab */
+.rank-guide-sheet{z-index:10000!important;isolation:isolate!important}
+.rank-guide-sheet .bd{background:rgba(5,3,10,.62)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
+.rank-guide-card{height:min(88dvh,900px)!important;max-height:88dvh!important;overflow:hidden!important;padding:14px 18px calc(18px + env(safe-area-inset-bottom))!important;background:color-mix(in srgb,var(--cd) 82%,transparent)!important;border-color:color-mix(in srgb,var(--ac) 28%,var(--ln) 72%)!important;box-shadow:0 -24px 80px rgba(0,0,0,.38)!important}
+.rank-guide-grip{width:38px;height:4px;margin:0 auto 14px;border-radius:99px;background:color-mix(in srgb,var(--fg) 22%,transparent)}
+.rank-guide-card .hd{padding:0!important;flex:0 0 auto}
+.rank-guide-card .hd h2{margin:3px 0 0;font-size:30px;line-height:1.05}
+.rank-guide-card .hd button{width:44px;height:44px;min-width:44px!important;min-height:44px!important;border:1px solid var(--ln)!important;border-radius:50%!important;background:color-mix(in srgb,var(--fg) 5%,transparent)!important;color:var(--fg)!important}
+.rank-guide-kicker{display:block;color:var(--ac2);font-size:10px;font-weight:850;letter-spacing:.14em}
+.rank-guide-intro{flex:0 0 auto;margin:9px 0 12px;color:var(--mu);font-size:14px;line-height:1.45}
+.rank-guide-note{flex:0 0 auto;margin:0 0 12px;padding:11px 12px;border:1px solid color-mix(in srgb,var(--ac) 16%,var(--ln) 84%);border-radius:15px;background:color-mix(in srgb,var(--ac) 7%,transparent);color:var(--mu);font-size:11px;line-height:1.45}
+.rank-guide-list{min-height:0;flex:1 1 auto;overflow-y:auto!important;overflow-x:hidden;padding:2px 3px 14px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:thin;display:flex;flex-direction:column;gap:7px}
+.rank-guide-row{display:flex;align-items:center;gap:11px;flex:0 0 auto;min-height:56px;padding:9px 11px;border:1px solid color-mix(in srgb,var(--c) 24%,var(--ln) 76%);border-radius:15px;background:color-mix(in srgb,var(--c) 8%,transparent)}
+.rank-guide-icon{width:34px;height:34px;display:grid;place-items:center;flex:0 0 34px}
+.rank-guide-icon .rank-icon{width:32px;height:32px}
+.rank-guide-copy{min-width:0;display:flex;align-items:baseline;justify-content:space-between;gap:12px;width:100%}
+.rank-guide-copy b{font-size:14px;line-height:1.2;white-space:nowrap}
+.rank-guide-copy small{color:var(--mu);font-size:11px;white-space:nowrap}
+.rank-info-button{width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;display:grid!important;place-items:center!important;padding:0!important;border:1px solid var(--ln)!important;border-radius:50%!important;background:color-mix(in srgb,var(--fg) 6%,transparent)!important;color:var(--fg)!important;font:600 16px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif!important;opacity:1!important;visibility:visible!important}
+.rank-info-button:active{transform:scale(.94)}
+@media(max-width:430px){.rank-guide-card{height:90dvh!important;max-height:90dvh!important;padding-left:15px!important;padding-right:15px!important}.rank-guide-card .hd h2{font-size:28px}.rank-guide-intro{font-size:13px}.rank-guide-row{min-height:53px;padding:8px 10px}.rank-guide-copy b{font-size:13px}.rank-guide-copy small{font-size:10px}}
