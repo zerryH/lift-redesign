@@ -255,3 +255,23 @@ body.rank-list-open{touch-action:none!important}
 .rank-info-button{width:34px!important;height:34px!important;min-width:34px!important;min-height:34px!important;display:grid!important;place-items:center!important;padding:0!important;border:1px solid var(--ln)!important;border-radius:50%!important;background:color-mix(in srgb,var(--fg) 6%,transparent)!important;color:var(--fg)!important;font:600 16px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif!important;opacity:1!important;visibility:visible!important}
 .rank-info-button:active{transform:scale(.94)}
 @media(max-width:430px){.rank-guide-card{height:90dvh!important;max-height:90dvh!important;padding-left:15px!important;padding-right:15px!important}.rank-guide-card .hd h2{font-size:28px}.rank-guide-intro{font-size:13px}.rank-guide-row{min-height:53px;padding:8px 10px}.rank-guide-copy b{font-size:13px}.rank-guide-copy small{font-size:10px}}
+
+/* v5.5.44: one authoritative minimal rank info control */
+.rank-list-launch{display:flex!important;align-items:center!important;width:38px!important;height:38px!important;margin:0 0 10px!important}
+button.rank-info-button{
+  appearance:none!important;-webkit-appearance:none!important;
+  box-sizing:border-box!important;width:36px!important;height:36px!important;
+  min-width:36px!important;min-height:36px!important;max-width:36px!important;max-height:36px!important;
+  margin:0!important;padding:0!important;display:grid!important;place-items:center!important;
+  flex:0 0 36px!important;border:1px solid color-mix(in srgb,var(--fg) 22%,var(--ln) 78%)!important;
+  border-radius:50%!important;background:color-mix(in srgb,var(--fg) 5%,transparent)!important;
+  color:var(--fg)!important;box-shadow:none!important;opacity:1!important;visibility:visible!important;
+  font-size:0!important;line-height:0!important;cursor:pointer!important;
+}
+.rank-info-glyph{
+  display:grid!important;place-items:center!important;width:18px!important;height:18px!important;
+  color:var(--fg)!important;font:700 13px/18px -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif!important;
+  text-align:center!important;opacity:.82!important;transform:translateY(-.2px)!important;
+}
+button.rank-info-button:hover{background:color-mix(in srgb,var(--fg) 9%,transparent)!important;border-color:color-mix(in srgb,var(--fg) 32%,var(--ln) 68%)!important;color:var(--fg)!important}
+button.rank-info-button:active{transform:scale(.94)!important;background:color-mix(in srgb,var(--fg) 11%,transparent)!important}
