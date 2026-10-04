@@ -1,4 +1,4 @@
-const BUILD_VERSION='5.5.42';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
+const BUILD_VERSION='5.5.43';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
@@ -230,7 +230,7 @@ ranks(){const B=bw(),b=bests(),rows=B?Object.keys(EX).filter(th).map(n=>{const e
  const avg=a=>a.length?a.reduce((s,x)=>s+(Number.isFinite(x.ti)?x.ti:(Number.isFinite(x.i)?x.i:0)),0)/a.length:-1,nm=v=>v<0?'Unranked':TN[Math.round(v)],col=v=>v<0?'#66617a':rankColor(Math.round(v)),gv=g=>avg(d.filter(x=>x.g==g)),o=avg(d);
  const muscles=muscleStates(b,B),overall=muscles.filter(x=>x.i>=0),muscleAvg=overall.length?avg(overall):o,overallRank=o;
  const rankRequirements=Object.values(R.t||{})[0]?.[0]||[];
- const rankLadderButton='<div class="rank-list-launch"><button type="button" class="rank-info-button" data-a=rankList aria-haspopup="dialog" aria-controls="rank-list-modal" aria-label="View rank progression">i</button></div>';
+ const rankLadderButton='<div class="rank-list-launch"><button type="button" class="rank-info-button" data-a=rankList aria-haspopup="dialog" aria-controls="rank-list-modal" aria-label="Open rank guide">ⓘ</button></div>';
 
  const ck=Object.keys(S.rk).filter(n=>{const r=S.rk[n];return r&&typeof r==='object'&&Number.isFinite(Number(r.i))&&Number.isFinite(Number(r.x))&&Number.isFinite(Number(r.pc??0))});
  const row=x=>{const adj=x.t.map(v=>v*ageFactor(S.set.age)),rb=bestBW[x.n]||B,hx=bestHeight[x.n]||num(S.set.heightCm)||175,rm=rankMetrics(x.ti,x.r,adj,rb,hx,rankDifficulty(x.n),x.e),txt=x.ti<0?'Unranked':rm.max?'Max rank':`${Math.max(0,rm.need??0).toFixed(1)} kg to ${TN[x.ti+1]}`,pc=rm.pc;
@@ -337,23 +337,22 @@ document.addEventListener('pointerdown',ripple,{passive:true});
 const resetDefaults=()=>({workouts:[],custom:[],bw:[],set:defaultSettings(),rk:{},cur:null,lastBackup:0});
 const rankListOpen=()=>{
  if($('#rank-list-modal'))return;
- document.documentElement.classList.add('rank-list-open');
- document.body.classList.add('rank-list-open');
- const m=document.createElement('div');m.id='rank-list-modal';m.className='rank-list-modal';
+ const m=document.createElement('div');m.id='rank-list-modal';m.className='sheet rank-guide-sheet';
  const requirements=Object.values(R.t||{})[0]?.[0]||[];
  const rows=TN.map((name,i)=>{
-   const req=Number(requirements[i]);
-   const requirement=Number.isFinite(req)?req.toFixed(2)+'× normalized BW':i===MAX_RANK?'3.00× normalized BW':'Benchmark';
-   return '<div class="rank-list-item" style="--c:'+rankColor(i)+'"><span class="rank-list-icon">'+rankIcon(i)+'</span><span class="rank-list-copy"><b>'+name+'</b><small>'+requirement+'</small></span></div>'
+  const req=Number(requirements[i]);
+  const requirement=Number.isFinite(req)?req.toFixed(2)+'× normalized BW':'Benchmark';
+  return `<div class="rank-guide-row" style="--c:${rankColor(i)}"><span class="rank-guide-icon">${rankIcon(i)}</span><div class="rank-guide-copy"><b>${name}</b><small>${requirement}</small></div></div>`;
  }).join('');
- m.innerHTML='<div class="rank-list-backdrop"></div><section class="rank-list-card" role="dialog" aria-modal="true" aria-labelledby="rank-list-title"><div class="rank-list-progress"><span></span></div><div class="rank-list-head"><div><div class="rank-list-kicker">RANK GUIDE</div><h2 id="rank-list-title">Rank progression</h2><p>Every rank from Wood I to Blue Gem, including all five sub-ranks.</p></div><button class="rank-list-close" data-rank-list-close aria-label="Close rank guide">×</button></div><div class="rank-list-note">Requirements use Lift normalized strength scale. The exact lift-specific benchmark is applied by the rank calculator.</div><div class="rank-list-grid">'+rows+'</div></section>';
+ m.innerHTML=`<div class="bd" data-rank-guide-close></div><section class="sb rank-guide-card" role="dialog" aria-modal="true" aria-labelledby="rank-guide-title"><div class="rank-guide-grip"></div><div class="hd"><div><small class="rank-guide-kicker">RANK GUIDE</small><h2 id="rank-guide-title">All ranks</h2></div><button type="button" data-rank-guide-close aria-label="Close rank guide">×</button></div><p class="rank-guide-intro">Every rank from Wood I to Blue Gem, including all five sub-ranks.</p><div class="rank-guide-note">Requirements use Lift's normalized strength scale. Your exercise-specific benchmark is applied by the rank calculator.</div><div class="rank-guide-list" tabindex="0">${rows}</div></section>`;
  document.body.append(m);
- const close=()=>{m.remove();document.documentElement.classList.remove('rank-list-open');document.body.classList.remove('rank-list-open');document.removeEventListener('keydown',onKey)};
+ const close=()=>{m.remove();document.removeEventListener('keydown',onKey)};
  const onKey=e=>{if(e.key==='Escape')close()};
- m.addEventListener('click',e=>{if(e.target.classList.contains('rank-list-backdrop')||e.target.closest('[data-rank-list-close]'))close()});
+ m.addEventListener('click',e=>{if(e.target.closest('[data-rank-guide-close]'))close()});
  document.addEventListener('keydown',onKey);
- setTimeout(()=>m.querySelector('.rank-list-grid')?.focus?.(),0);
-};const confirmAction=(title,message,confirmText,action)=>{title=esc(title);message=esc(message);confirmText=esc(confirmText);
+ setTimeout(()=>m.querySelector('.rank-guide-list')?.focus(),0);
+};
+const confirmAction=(title,message,confirmText,action)=>{title=esc(title);message=esc(message);confirmText=esc(confirmText);
  if($('#action-modal'))return;
  const m=document.createElement('div');m.id='action-modal';m.className='action-modal';
  m.innerHTML=`<div class=action-backdrop></div><div class=action-card role=dialog aria-modal=true><div class=action-kicker>CONFIRM</div><h2>${title}</h2><p>${message}</p><div class=action-actions><button class=pill data-action-cancel>Cancel</button><button class="pill danger" data-action-confirm>${confirmText}</button></div></div>`;
