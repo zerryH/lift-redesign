@@ -34,7 +34,10 @@ assert.match(app,/aria-controls="rank-list-modal"/);
 console.log('rank guide sheet regression passed');
 
 assert.ok(app.includes("className='sheet rank-guide-sheet'")); 
-assert.ok(app.includes('ⓘ')); 
 assert.ok(app.includes('class="rank-guide-list"')); 
 assert.ok(css.includes('.rank-guide-list{min-height:0;flex:1 1 auto;overflow-y:auto')); 
 console.log('tutorial-style rank guide regression passed');
+
+assert.ok(app.includes('rank-info-glyph'));
+assert.ok(css.includes('.rank-info-glyph'));
+console.log('rank info control regression passed');

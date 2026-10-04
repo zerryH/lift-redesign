@@ -1,4 +1,4 @@
-const BUILD_VERSION='5.5.43';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
+const BUILD_VERSION='5.5.44';const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
@@ -230,7 +230,7 @@ ranks(){const B=bw(),b=bests(),rows=B?Object.keys(EX).filter(th).map(n=>{const e
  const avg=a=>a.length?a.reduce((s,x)=>s+(Number.isFinite(x.ti)?x.ti:(Number.isFinite(x.i)?x.i:0)),0)/a.length:-1,nm=v=>v<0?'Unranked':TN[Math.round(v)],col=v=>v<0?'#66617a':rankColor(Math.round(v)),gv=g=>avg(d.filter(x=>x.g==g)),o=avg(d);
  const muscles=muscleStates(b,B),overall=muscles.filter(x=>x.i>=0),muscleAvg=overall.length?avg(overall):o,overallRank=o;
  const rankRequirements=Object.values(R.t||{})[0]?.[0]||[];
- const rankLadderButton='<div class="rank-list-launch"><button type="button" class="rank-info-button" data-a=rankList aria-haspopup="dialog" aria-controls="rank-list-modal" aria-label="Open rank guide">ⓘ</button></div>';
+ const rankLadderButton='<div class="rank-list-launch"><button type="button" class="rank-info-button" data-a=rankList aria-haspopup="dialog" aria-controls="rank-list-modal" aria-label="Open rank guide"><span class="rank-info-glyph" aria-hidden="true">i</span></button></div>';
 
  const ck=Object.keys(S.rk).filter(n=>{const r=S.rk[n];return r&&typeof r==='object'&&Number.isFinite(Number(r.i))&&Number.isFinite(Number(r.x))&&Number.isFinite(Number(r.pc??0))});
  const row=x=>{const adj=x.t.map(v=>v*ageFactor(S.set.age)),rb=bestBW[x.n]||B,hx=bestHeight[x.n]||num(S.set.heightCm)||175,rm=rankMetrics(x.ti,x.r,adj,rb,hx,rankDifficulty(x.n),x.e),txt=x.ti<0?'Unranked':rm.max?'Max rank':`${Math.max(0,rm.need??0).toFixed(1)} kg to ${TN[x.ti+1]}`,pc=rm.pc;
