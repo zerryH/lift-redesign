@@ -55,7 +55,7 @@ console.log('rank info Safari styling regression passed');
 assert.ok(app.includes('role=\"button\" tabindex=\"0\" data-a=rankList')); assert.ok(app.includes("keydown")); console.log('native-button regression passed');
 
 
-assert.doesNotMatch(app,/normalized BW/);
+assert.doesNotMatch(app,/normalized BW/); assert.doesNotMatch(app,/\$\{r\.x\.toFixed\(2\)\}x bodyweight/);
 assert.doesNotMatch(app,/rank-guide-intro/);
 assert.doesNotMatch(app,/rank-guide-note/);
 assert.ok(app.includes('<b>${name}</b></div>'));
