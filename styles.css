@@ -265,3 +265,7 @@ body.rank-list-open{touch-action:none!important}
 .rank-heading>.rank-info-button:focus{outline:none!important;box-shadow:none!important}
 .rank-heading>.rank-info-button:active{background:rgba(255,255,255,.05)!important;transform:scale(.94)!important}
 .rank-heading .rank-info-glyph{display:block!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;color:currentColor!important;font:600 12px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif!important;opacity:.82!important;transform:none!important}
+
+/* v5.5.48 final rank info glyph */
+.rank-heading>.rank-info-button{width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important;max-width:26px!important;max-height:26px!important;border:0!important;background:transparent!important;background-image:none!important;box-shadow:none!important;-webkit-box-shadow:none!important;color:rgba(247,243,255,.76)!important}
+.rank-heading .rank-info-glyph{display:block!important;width:26px!important;height:26px!important;margin:0!important;padding:0!important;color:currentColor!important;font:400 21px/26px -apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",sans-serif!important;letter-spacing:0!important;text-align:center!important;opacity:1!important;transform:none!important}
