@@ -1,4 +1,4 @@
-const BUILD_VERSION='5.5.54';
+const BUILD_VERSION='5.5.55';
 /*BEGIN:RANKING_ENGINE*//* Lift ranking engine — pure metric calculations; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;const lerp=(a,b,t)=>a+(b-a)*t;const interp=(p,x)=>{if(!p?.length)return 1;if(x<=p[0][0])return p[0][1];for(let i=1;i<p.length;i++){if(x<=p[i][0]){const[x0,y0]=p[i-1],[x1,y1]=p[i];return lerp(y0,y1,(x-x0)/(x1-x0))}}return p[p.length-1][1]};const ageMultiplier=(age,c)=>{if(age===null||age===undefined||age==='')return 1;const a=finite(age,NaN);return Number.isFinite(a)&&a>=13?Math.min(c.ageCap??1.2,interp(c.ageCurve,a)):1};const heightMultiplier=(h,sex,rom,c)=>{const n=finite(h,NaN),ref=finite(c.referenceHeightCm?.[sex],NaN);if(!Number.isFinite(n)||!Number.isFinite(ref)||n<=0)return 1;const k=finite(c.height?.kByRom?.[rom],0);return Math.max(c.height?.capMin??.9,Math.min(c.height?.capMax??1.1,Math.pow(n/ref,k)))};const repReliability=(r,c)=>interp(c.repReliability,finite(r,1));const effectiveLoad=(s,e,b)=>{const bw=finite(b),w=finite(s?.kg),mode=e?.loadMode||'normal',m=finite(e?.loadMultiplier,1);if(mode==='assisted')return Math.max(0,bw-w);if(mode==='bodyweight')return Math.max(0,bw+w);return Math.max(0,w*m)};const estimate1RM=(s,e,b,c)=>{const r=Math.round(finite(s?.reps));if(s?.t==='w'||r<1||r>finite(c.epleyMaxReps,12))return 0;const load=effectiveLoad(s,e,b);if(load<=0)return 0;const x=r===1?load:load*(1+r/30);return x*repReliability(r,c)};const adjustedScore=(e,b,sex,h,age,ex,c)=>{const bw=finite(b),ref=finite(c.referenceBodyweightKg?.[sex]);if(e<=0||bw<=0||ref<=0)return 0;return e*Math.pow(ref/bw,finite(c.allometricExponent,.67))*ageMultiplier(age,c)*heightMultiplier(h,sex,ex?.rom,c)};const rankIndex=(score,t)=>{if(!Array.isArray(t)||!Number.isFinite(score)||score<=0)return -1;let i=-1;for(let j=0;j<t.length;j++)if(score>=t[j])i=j;return i};const thresholds=(c,n,sex)=>c.t?.[c.alias?.[n]||n]?.[sex==='F'?1:0]||null;return{interp,ageMultiplier,heightMultiplier,repReliability,effectiveLoad,estimate1RM,adjustedScore,rankIndex,thresholds}})();/*END:RANKING_ENGINE*/const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
@@ -80,61 +80,65 @@ const MUSCLE_ORDER=['chest','frontDelts','rearDelts','sideDelts','biceps','trice
 const muscleTransferWeight=(id,n)=>({'Bench Press':{chest:1,triceps:.42,frontDelts:.3},'Overhead Press':{frontDelts:1,sideDelts:.5,triceps:.35},'Pull-Up':{lats:1,biceps:.4,upperBack:.35},'Barbell Row':{upperBack:1,lats:.72,biceps:.32,rearDelts:.32},'Squat':{quads:1,glutes:.58,hamstrings:.3,abs:.2,calves:.08},'Deadlift':{hamstrings:1,glutes:.7,upperBack:.35,lats:.22,abs:.2,calves:.06},'Romanian Deadlift':{hamstrings:1,glutes:.65}}[n]?.[id]??1);const muscleStates=(b,B)=>MUSCLE_ORDER.map(id=>{const lifts=MUSCLE_LIFTS[id],items=lifts.map(n=>{const e=b[n]||0;if(!e||!B)return null;const i=tier(n,e,bestHeight[n]||num(S.set.heightCm)||175),w=muscleTransferWeight(id,n);return i>=0?{i,w}:null}).filter(Boolean);if(!items.length)return{id,label:MUSCLE_LABEL[id],i:-1,lifts,proxy:['abs','calves'].includes(id)};const ws=items.reduce((a,x)=>a+x.w,0),i=Math.round(items.reduce((a,x)=>a+x.i*x.w,0)/Math.max(.0001,ws));return{id,label:MUSCLE_LABEL[id],i,lifts,proxy:['abs','calves'].includes(id)}});
 
 const TUTORIAL_VERSION=3;
+/* Tutorial v3: real UI walkthrough with a light dim + spotlight. The layer never
+   intercepts the highlighted UI, so users can actually perform the action. */
 const tutorialSteps=[
- {view:'today',eyebrow:'WELCOME',title:'Welcome to Lift',body:'Lift is a private, offline workout log. Build a session, record your sets, finish it, and use the saved data to calculate exercise and muscle ranks.',tip:'Your workout and profile stay on this device. No account is required.',where:'Home'},
- {view:'today',eyebrow:'01 · START',title:'Start a workout',body:'Pick Empty, Push, Pull, Legs, or another split. Every new workout starts clean so you control exactly what gets logged.',tip:'A split is only a starting point — you can change the exercise list at any time.',where:'Home · Today'},
- {view:'today',eyebrow:'02 · EXERCISES',title:'Add your exercises',body:'Use Add exercise to search the exercise library, filter it, or create a custom movement. Tap an exercise to put it into the current session.',tip:'You can build the whole exercise list before entering your first set.',where:'Home · Today'},
- {view:'today',eyebrow:'03 · LOGGING',title:'Log every set',body:'Choose the weight and reps, then press Log set. Your set is stored immediately and the workout remains editable until you finish it.',tip:'If you make a mistake, edit or remove the set before finishing the workout.',where:'Home · Today'},
- {view:'history',eyebrow:'04 · HISTORY',title:'Review finished workouts',body:'Finished sessions move into History. Open an old session to review what you did and correct entries when needed.',tip:'History is local, so it works without an internet connection.',where:'History'},
- {view:'settings',eyebrow:'05 · PROFILE',title:'Set your athlete data',body:'Profile stores your age, height, bodyweight, benchmark reference, appearance, backups, and update controls.',tip:'Age, bodyweight, and height can affect ranking calculations; changing them does not rewrite your saved workout weights.',where:'Profile'},
- {view:'ranks',eyebrow:'06 · RANKS',title:'Calculate your rank',body:'Open Ranks and use Get your rank. Enter the lift, weight, reps, bodyweight, and height when available. The result is saved and the muscle ranks refresh.',tip:'Update rank recalculates the saved result — it does not create a second workout entry.',where:'Ranks'},
- {view:'ranks',eyebrow:'07 · ANATOMY',title:'Read the muscle map',body:'Ranks also show two separate anatomy models: front/anterior and back/posterior. Ranked muscle groups use their rank color; neutral anatomy stays unranked.',tip:'The head and neck are anatomy only. They are deliberately not ranked muscle groups.',where:'Ranks · Anatomy'},
- {view:'settings',eyebrow:'08 · CONTROLS',title:'Standards, backups & updates',body:'Profile lets you choose the comparison reference, turn age or height adjustment on or off, export a backup, and check for the newest published Lift build.',tip:'Use Check for updates after a new release. Lift will install the newest service-worker build and refresh.',where:'Profile'},
- {view:'settings',eyebrow:'09 · DONE',title:'That is the whole loop',body:'Log a workout → finish it → review History → calculate ranks → train again. Replay this guide any time from Profile.',tip:'Your saved workout data is separate from the benchmark settings and app version.',where:'Profile'}
+ {view:'today',title:'Welcome to Lift',body:'A private, offline workout tracker. This walkthrough uses the real Lift interface so you can try the important parts as you learn them.',tip:'You can use Next to read, or tap the highlighted control to try it.',target:null},
+ {view:'today',title:'1 · Create a workout',body:'Start with a split. Empty is the cleanest option if you want to build your own workout from scratch.',tip:'Try it: tap Empty, then continue.',target:()=>document.querySelector('[data-a="start"]')},
+ {view:'today',title:'2 · Add an exercise',body:'Use Browse exercise library to search the full catalogue and add a movement to your workout.',tip:'Try it: add any exercise you know. The picker closes after you choose one.',target:()=>document.querySelector('.exercise-add-bar [data-a="openx"]')||document.querySelector('[data-a="start"]')},
+ {view:'today',title:'3 · Log weight + reps',body:'Enter the weight and reps for your set, then tap Log set. The set appears immediately under the exercise.',tip:'Try it: log one set. You can edit or remove it before finishing.',target:()=>document.querySelector('[data-a="log"]')||document.querySelector('.exercise-add-bar [data-a="openx"]')||document.querySelector('[data-a="start"]')},
+ {view:'today',title:'4 · Save the workout',body:'When you are done, Finish workout moves the session into History. Discard removes the current unsaved session instead.',tip:'Try it when you want. You can always make another workout later.',target:()=>document.querySelector('[data-a="fin"]')||document.querySelector('[data-a="log"]')||document.querySelector('[data-a="start"]')},
+ {view:'history',title:'5 · History',body:'Finished workouts live here. Open a workout to review it and edit a saved session when you need to correct something.',tip:'History is stored locally on this device and works offline.',target:()=>document.querySelector('#n [data-v="history"]')},
+ {view:'ranks',title:'6 · Ranks',body:'Ranks are calculated from your logged performance using each exercise’s own standards. Open Get your rank to check a specific movement.',tip:'Your bodyweight, reference sex, age and height can affect the comparison.',target:()=>document.querySelector('[data-a="gr"]')||document.querySelector('#n [data-v="ranks"]')},
+ {view:'ranks',title:'7 · Rank per exercise',body:'After a lift is ranked, its row shows that exercise’s rank and progress toward the next tier. Update recalculates it with the current ranking rules.',tip:'Each exercise has its own ladder — bench, squat, curls and machines do not share one generic multiplier.',target:()=>document.querySelector('.rank-tools [data-a="gr"]')||document.querySelector('[data-a="gr"]')},
+ {view:'ranks',title:'8 · Anatomy',body:'The Ranks page also shows separate front and back muscle maps. Ranked muscles use their rank color; unranked areas stay neutral.',tip:'The anatomy view is visual feedback for your training — it does not replace the exercise-specific rank.',target:()=>document.querySelector('.anatomy-map-stage')||document.querySelector('.anatomy-stage')||document.querySelector('#n [data-v="ranks"]')},
+ {view:'settings',title:'9 · Profile: bodyweight',body:'Your bodyweight is used by the ranking system. Enter it in kilograms and save it. Lift keeps a dated bodyweight history for ranking past workouts fairly.',tip:'Use your real current bodyweight rather than the weight of the equipment.',target:()=>document.querySelector('#bw')?.closest('.add')||document.querySelector('#bw')},
+ {view:'settings',title:'10 · Profile: age + height',body:'Save your age and height in centimetres. Age and height adjustments are smooth ranking corrections, not separate ranks.',tip:'Your age is stored through your birth year so the ranking age can update automatically over time.',target:()=>document.querySelector('#age')?.closest('.add')||document.querySelector('#heightCm')?.closest('.add')||document.querySelector('#age')},
+ {view:'settings',title:'11 · Profile: reference',body:'Choose the Male reference or Female reference benchmark that matches the standard you want to compare against. This does not change your workout log.',tip:'Set this before judging your ranks so the benchmark is the one you actually want.',target:()=>document.querySelector('.standard-choice')||document.querySelector('[data-a="tbl"]')},
+ {view:'settings',title:'12 · Other tools',body:'Profile also contains appearance controls, backups, replay tutorial, and Check for updates. Export a backup periodically so you always have a copy of your local data.',tip:'Replay tutorial starts this walkthrough again. Check for updates installs the newest published build when one is available.',target:()=>document.querySelector('[data-a="tutorial"]')||document.querySelector('[data-a="update"]')},
+ {view:'settings',title:'13 · Profile setup complete',body:'Before you finish, make sure your bodyweight, height, age and reference are filled in. These are the inputs Lift uses to calculate ranks correctly.',tip:'You can change any of these later. Saved workouts stay intact.',target:()=>document.querySelector('#bw')||document.querySelector('#age')||document.querySelector('[data-a="tbl"]')},
+ {view:'settings',title:'Credits',body:'Lift is made by @o.r146. Thanks for using Lift and for helping shape the app.',tip:'You can replay this tutorial any time from Profile.',target:()=>document.querySelector('.credits-card')}
 ];
-let tutorialIndex=0;
-const tutorialClear=()=>{$('#tutorial-layer')?.remove();document.body.classList.remove('tutorial-open')};
+let tutorialIndex=0,tutorialResizeHandler=null;
+const tutorialClear=()=>{if(tutorialResizeHandler){window.removeEventListener('resize',tutorialResizeHandler);tutorialResizeHandler=null}$('#tutorial-layer')?.remove();document.body.classList.remove('tutorial-open')};
+const tutorialTarget=st=>{try{return typeof st.target==='function'?st.target():null}catch{return null}};
+const tutorialScrollTarget=el=>{if(!el)return;try{el.scrollIntoView({block:'center',inline:'nearest',behavior:'smooth'})}catch{try{el.scrollIntoView({block:'center'})}catch{}}};
+const tutorialPosition=()=>{
+ const layer=$('#tutorial-layer'),spot=$('#tutorial-spotlight'),tip=$('#tutorial-tooltip');if(!layer||!spot||!tip)return;
+ const st=tutorialSteps[tutorialIndex],target=tutorialTarget(st);
+ if(!target){spot.hidden=true;tip.style.removeProperty('--tx');tip.style.removeProperty('--ty');tip.classList.add('centered');return}
+ spot.hidden=false;tip.classList.remove('centered');
+ const r=target.getBoundingClientRect(),pad=8;
+ spot.style.left=Math.max(6,r.left-pad)+'px';spot.style.top=Math.max(6,r.top-pad)+'px';spot.style.width=Math.min(innerWidth-12,r.width+pad*2)+'px';spot.style.height=Math.min(innerHeight-12,r.height+pad*2)+'px';
+ const tw=Math.min(340,innerWidth-28),th=Math.min(220,tip.offsetHeight||180),gap=12;
+ let x=Math.min(Math.max(14,r.left),Math.max(14,innerWidth-tw-14)),y=r.bottom+gap;
+ if(y+th>innerHeight-12)y=r.top-th-gap;
+ if(y<12){y=Math.min(innerHeight-th-12,Math.max(12,r.top+(r.height-th)/2));x=Math.min(innerWidth-tw-14,Math.max(14,r.right+gap));if(x+tw>innerWidth-12)x=Math.max(14,r.left-tw-gap)}
+ tip.style.width=tw+'px';tip.style.left=x+'px';tip.style.top=y+'px';
+};
 const tutorialRender=()=>{
- const st=tutorialSteps[tutorialIndex];
- if(!st){tutorialClose(true);return}
+ const st=tutorialSteps[tutorialIndex];if(!st){tutorialFinish();return}
  if(view!==st.view){view=st.view;nav();render()}
  setTimeout(()=>{
-   tutorialClear();
-   document.body.classList.add('tutorial-open');
+   tutorialClear();document.body.classList.add('tutorial-open');
+   const layer=document.createElement('div');layer.id='tutorial-layer';layer.className='tutorial-layer';
    const pct=((tutorialIndex+1)/tutorialSteps.length)*100;
-   const layer=document.createElement('div');
-   layer.id='tutorial-layer';
-   layer.className='tutorial-layer';
-   layer.innerHTML=`<div class="tutorial-shell" role="dialog" aria-modal="true" aria-label="Lift tutorial">
-     <div class="tutorial-progress"><span style="width:${pct}%"></span></div>
-     <div class="tutorial-head">
-       <div><small class="tutorial-eyebrowr>${st.eyebrow}</small><span class="tutorial-count">${tutorialIndex+1} / ${tutorialSteps.length}</span></div>
-       <button class="tutorial-close" data-tut="skip" aria-label="Close tutorial">×</button>
-     </div>
-     <div class="tutorial-location"><span>WHERE</span><b>${st.where}</b></div>
-     <div class="tutorial-body"><h2>${st.title}</h2><p>${st.body}</p><div class="tutorial-tip"><b>TIP</b><span>${st.tip}</span></div></div>
-     <div class="tutorial-footer">
-       <button class="tutorial-back" data-tut="back" ${tutorialIndex===0?'disabled':''}>Back</button>
-       <button class="tutorial-skip" data-tut="skip">Skip</button>
-       <button class="tutorial-next" data-tut="next">${tutorialIndex===tutorialSteps.length-1?'Finish':'Continue'} <span>→</span></button>
-     </div>
-   </div>`;
+   layer.innerHTML=`<div id="tutorial-spotlight" class="tutorial-spotlight" aria-hidden="true"></div><section id="tutorial-tooltip" class="tutorial-tooltip" role="dialog" aria-modal="true" aria-label="Lift onboarding tutorial"><div class="tutorial-progress"><span style="width:${pct}%"></span></div><div class="tutorial-meta"><span>Lift tutorial</span><b>${tutorialIndex+1} / ${tutorialSteps.length}</b></div><h2>${st.title}</h2><p>${st.body}</p><div class="tutorial-tip"><b>TIP</b><span>${st.tip}</span></div><div class="tutorial-footer"><button class="tutorial-back" data-tut="back" ${tutorialIndex===0?'disabled':''}>Back</button><button class="tutorial-skip" data-tut="skip">Skip</button><button class="tutorial-next" data-tut="next">${tutorialIndex===tutorialSteps.length-1?'Finish':'Next'} <span>→</span></button></div></section>`;
    document.body.append(layer);
- },30)
+   const target=tutorialTarget(st);if(target)tutorialScrollTarget(target);
+   setTimeout(tutorialPosition,80);tutorialResizeHandler=()=>tutorialPosition();window.addEventListener('resize',tutorialResizeHandler,{passive:true});
+ },30);
 };
 const tutorialOpen=()=>{tutorialIndex=0;tutorialRender()};
-const tutorialClose=mark=>{
- tutorialClear();
- if(mark){S.set.tutorialSeen=true;S.set.tutorialVersion=TUTORIAL_VERSION;save();view='today';nav();render();setTimeout(()=>{if(S.set.installGuideSeen!==true&&installGuideDevice()!=='installed')installGuideOpen()},250)}
-};
+const tutorialFinish=async()=>{tutorialClear();S.set.tutorialSeen=true;S.set.tutorialVersion=TUTORIAL_VERSION;await save();view='today';nav();render();setTimeout(()=>{if(S.set.installGuideSeen!==true&&installGuideDevice()!=='installed')installGuideOpen()},250)};
+const tutorialClose=()=>tutorialFinish();
 document.addEventListener('click',e=>{
- const b=e.target.closest('[data-tut]');
- if(!b)return;
- if(b.dataset.tut==='skip'){tutorialClose(true);return}
+ const b=e.target.closest('[data-tut]');if(!b)return;
+ if(b.dataset.tut==='skip'){tutorialFinish();return}
  if(b.dataset.tut==='back'){tutorialIndex=Math.max(0,tutorialIndex-1);tutorialRender();return}
  if(b.dataset.tut==='next'){tutorialIndex++;tutorialRender()}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('tutorial-layer'))tutorialClose(true)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#tutorial-layer'))tutorialFinish()});
 const installGuideDevice=()=>{
  const ua=navigator.userAgent||'',standalone=window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
  if(standalone)return 'installed';
