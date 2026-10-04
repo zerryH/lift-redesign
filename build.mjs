@@ -1,1 +1,1 @@
-__BUILD__
+__REAL_BUILD__

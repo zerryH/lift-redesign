@@ -1,1 +1,1 @@
-__TEST__
+__REAL_TEST__
