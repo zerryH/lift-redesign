@@ -10,7 +10,7 @@ assert.match(app,/TN=Array\.isArray\(R\.tiers\)\?R\.tiers\.slice\(\):\[\];MAX_RA
 assert.match(app,/rankListOpen=\(\)=>/);
 assert.match(app,/data-a=rankList/);
 assert.match(app,/class="rank-info-button"/);
-assert.match(app,/Every rank from Wood I to Blue Gem/);
+assert.match(app,/All ranks/);
 assert.match(app,/const rankMetrics=\(i,x,adj,b,h,diff=1,e=x\)/);
 assert.match(app,/if\(i>=MAX_RANK\)return\{pc:100,need:null,next:null,max:true\}/);
 for(const [name,sexes] of Object.entries(cfg.t)){
