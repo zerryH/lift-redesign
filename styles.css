@@ -275,3 +275,23 @@ button.rank-info-button{
 }
 button.rank-info-button:hover{background:color-mix(in srgb,var(--fg) 9%,transparent)!important;border-color:color-mix(in srgb,var(--fg) 32%,var(--ln) 68%)!important;color:var(--fg)!important}
 button.rank-info-button:active{transform:scale(.94)!important;background:color-mix(in srgb,var(--fg) 11%,transparent)!important}
+
+/* v5.5.45: rank info belongs in the heading, top-right, with no wrapper/pill */
+.rank-heading{position:relative;display:block;width:100%;margin:0;padding:0}
+.rank-heading h1{margin:24px 0 14px!important;padding-right:48px}
+.rank-heading>.rank-info-button{
+  position:absolute!important;top:20px!important;right:0!important;
+  width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;
+  max-width:28px!important;max-height:28px!important;
+  margin:0!important;padding:0!important;box-sizing:border-box!important;
+  display:grid!important;place-items:center!important;
+  appearance:none!important;-webkit-appearance:none!important;
+  border:1px solid rgba(255,255,255,.16)!important;border-radius:50%!important;
+  background:transparent!important;background-color:transparent!important;
+  color:var(--mu)!important;box-shadow:none!important;
+  font-size:0!important;line-height:0!important;opacity:1!important;visibility:visible!important;
+  flex:none!important;transform:none!important;
+}
+.rank-heading>.rank-info-button:hover{background:rgba(255,255,255,.04)!important;color:var(--fg)!important;border-color:rgba(255,255,255,.25)!important}
+.rank-heading>.rank-info-button:active{background:rgba(255,255,255,.07)!important;transform:scale(.94)!important}
+.rank-heading .rank-info-glyph{display:block!important;width:auto!important;height:auto!important;color:currentColor!important;font:600 13px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif!important;opacity:.8!important;transform:none!important}

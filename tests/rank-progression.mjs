@@ -41,3 +41,8 @@ console.log('tutorial-style rank guide regression passed');
 assert.ok(app.includes('rank-info-glyph'));
 assert.ok(css.includes('.rank-info-glyph'));
 console.log('rank info control regression passed');
+
+assert.ok(app.includes('class=\"rank-heading\"'));
+assert.ok(app.includes('class=\"rank-info-button\"'));
+assert.ok(css.includes('.rank-heading{position:relative'));
+console.log('rank info placement regression passed');
