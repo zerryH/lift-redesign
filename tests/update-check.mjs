@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const s=fs.readFileSync('app.js','utf8');
-assert(s.includes("const BUILD_VERSION='5.5.51';"));
+assert(s.includes("const BUILD_VERSION='5.5.52';"));
 assert(s.includes("const SW_SCRIPT='sw.js'"));
 assert(s.includes("navigator.serviceWorker.getRegistration(SW_SCOPE)"));
 assert(s.includes("navigator.serviceWorker.register(SW_SCRIPT,{scope:SW_SCOPE,updateViaCache:'none'})"));
