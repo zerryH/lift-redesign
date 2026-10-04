@@ -289,3 +289,6 @@ body.rank-list-open{touch-action:none!important}
 .rank-heading>.rank-info-button:focus-visible .rank-info-label{color:rgba(247,243,255,.78)!important}
 .rank-heading>.rank-info-button:active{background:rgba(255,255,255,.04)!important;transform:scale(.98)!important}
 @media(max-width:430px){.rank-heading>.rank-info-button{gap:5px!important}.rank-heading .rank-info-label{font-size:11px!important}}
+
+/* Rank guide rows intentionally show only icon + rank name. */
+.rank-guide-row .rank-guide-copy small{display:none!important}
