@@ -536,6 +536,53 @@ html,body{overflow-x:clip!important}
  .exercise-library-head p{font-size:11.5px!important}
  .exercise-option{min-height:56px!important}
 }
+
+
+/* v5.5.74 · final mobile interaction + spacing layer */
+#v{width:100%!important;max-width:620px!important;min-width:0!important;overflow-x:hidden!important}
+#v>*{max-width:100%!important;min-width:0!important}
+#v button,#v input,#v select,#v textarea{max-width:100%!important}
+#v .top,#v .q,#v .add,#v .chips,#v .row,#v .note,#v .big,#v .body-card,#v .rank-tools,#v .credits-card{box-sizing:border-box!important}
+#v .q{padding-inline:1px!important}
+#v .chips{min-width:0!important;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none!important;touch-action:pan-x!important}
+#v .chips::-webkit-scrollbar{display:none!important}
+#v .row{min-height:58px!important}
+#v .row>div:first-child{min-width:0!important;flex:1 1 auto!important}
+#v .row>div:first-child>b,#v .row>div:first-child>small{max-width:100%!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#v .car{width:100%!important;min-width:0!important}
+#v .picker{width:100%!important;min-width:0!important}
+#v .range-wrap{width:100%!important;touch-action:pan-y!important;overscroll-behavior-x:none!important}
+#v .range{touch-action:pan-y!important}
+
+/* Exercise library: breathe around the sheet and give every zone a deliberate rhythm. */
+.exercise-library{width:100vw!important;height:100dvh!important;inset:0!important;box-sizing:border-box!important;padding:8px max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))!important;align-items:center!important;justify-content:center!important}
+.exercise-library-panel{width:min(620px,calc(100vw - 16px))!important;height:min(94dvh,calc(100dvh - 16px))!important;max-height:calc(100dvh - 16px)!important;min-height:0!important;padding:12px 14px max(12px,env(safe-area-inset-bottom))!important;border-radius:24px!important;box-sizing:border-box!important;overflow:hidden!important}
+.exercise-library-grab{margin:0 auto 15px!important}
+.exercise-library-head{padding:0 1px 15px!important;gap:12px!important}
+.exercise-library-head h2{font-size:25px!important;line-height:1.05!important}
+.exercise-library-head p{margin-top:6px!important;line-height:1.4!important}
+.exercise-library-close{width:40px!important;height:40px!important;min-width:40px!important;min-height:40px!important;flex-basis:40px!important}
+.exercise-search-wrap{height:50px!important;flex-basis:50px!important;border-radius:14px!important}
+.exercise-categories{padding:10px 1px 11px!important;gap:7px!important}
+.exercise-category{height:34px!important;min-height:34px!important;padding:0 12px!important;font-size:11.5px!important}
+.exercise-result-head{padding:5px 2px 9px!important}
+.exercise-result-head b{font-size:17px!important}
+.exercise-results{padding:0 1px 12px!important;gap:0!important;touch-action:pan-y!important}
+.exercise-option{min-height:62px!important;margin:0 0 8px!important;padding:10px 12px!important;border-radius:15px!important}
+.exercise-option-main{gap:4px!important}
+.exercise-option-main b{font-size:13.5px!important;line-height:1.22!important}
+.exercise-option-main small{font-size:10.5px!important;line-height:1.25!important}
+.exercise-option-side{gap:8px!important}
+.exercise-rank{font-size:10px!important}
+.exercise-add{font-size:20px!important}
+.exercise-custom{margin:4px 1px 0!important}
+.exercise-custom summary{padding:13px 2px!important;font-size:11.5px!important}
+@media(max-width:430px){
+ .exercise-library-panel{width:calc(100vw - 12px)!important;height:min(94dvh,calc(100dvh - 12px))!important;max-height:calc(100dvh - 12px)!important;padding-left:13px!important;padding-right:13px!important}
+ .exercise-library-head h2{font-size:24px!important}
+ .exercise-library-head p{font-size:12px!important}
+ .exercise-option{min-height:60px!important}
+}
 </style><link rel="icon" type="image/png" sizes="180x180" href="./lift-icon-photo-fit.png"><link rel="apple-touch-icon" sizes="180x180" href="./lift-icon-photo-fit.png"><link rel="manifest" href="./manifest.webmanifest"><style id="lift-anatomy-map-style">/* Premium 2D anatomy map — detailed individual muscle surfaces, no 3D runtime */
 .body-stage{height:455px;display:grid;place-items:center;overflow:hidden;position:relative;background:radial-gradient(ellipse at 50% 42%,rgba(105,112,180,.11),transparent 68%);border-radius:24px}
 .anatomy-pair{width:min(610px,100%);height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;align-items:center;justify-items:center;padding:4px 12px 2px}
@@ -606,7 +653,7 @@ html,body{overflow-x:clip!important}
 .rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent)!important;stroke:var(--c)!important;stroke-width:1.7!important;stroke-linejoin:round!important}
 .rank-icon b{position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;font-size:9px!important;line-height:1!important;font-weight:900!important;color:var(--c)!important;pointer-events:none!important}
 .overall-rank-title .rank-icon{--rank-icon-size:34px}.rank-result-title .rank-icon{--rank-icon-size:30px}.rank-badge .rank-icon{--rank-icon-size:26px}
-</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.73';
+</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.74';
 /*BEGIN:RANKING_ENGINE*//* Lift ranking engine — v6 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -876,7 +923,7 @@ settings(){const B=bw(),d=S.lastBackup?Math.floor((Date.now()-S.lastBackup)/864e
 ;
 const rulerTicks=(lo,hi,st)=>{const n=Math.max(0,Math.round((hi-lo)/st)),maj=Math.max(1,Math.round(10/st));return Array.from({length:n+1},(_,i)=>{const v=lo+i*st,major=i%maj==0||i==n;return `<div class="ruler-tick ${major?'major':''}"><i></i>${major?`<span>${fm(v)}</span>`:''}</div>`}).join('')};
 const syncRuler=(el,v)=>{if(!el)return;const lo=num(el.min),st=num(el.step)||1,idx=Math.max(0,Math.round((num(v)-lo)/st));const track=el.parentElement?.querySelector('.ruler-track');if(track)track.style.setProperty('--tx',`${-(idx*28+14)}px`)};
-const bindRuler=wrap=>{if(!wrap||wrap.dataset.bound)return;const el=wrap.querySelector('.range');if(!el)return;wrap.dataset.bound='1';let sx=0,sv=0,cid=null,lastX=null,raf=0;const PX_PER_STEP=36;const step=()=>num(el.step)||1;const clamp=v=>Math.min(num(el.max),Math.max(num(el.min),v));const apply=x=>{if(cid==null)return;const dx=sx-x;const next=clamp(sv+(dx/PX_PER_STEP)*step());const snapped=Math.round(next/step())*step();if(String(el.value)!==String(snapped)){el.value=String(snapped);el.dispatchEvent(new Event('input',{bubbles:true}))}};const schedule=e=>{lastX=e.clientX;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(lastX!=null)apply(lastX)})};const end=e=>{if(cid!==e.pointerId)return;cid=null;lastX=null;if(raf){cancelAnimationFrame(raf);raf=0}wrap.classList.remove('dragging');try{wrap.releasePointerCapture?.(e.pointerId)}catch{}e.preventDefault();e.stopPropagation()};wrap.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;if(e.isPrimary===false)return;sx=e.clientX;sv=num(el.value);cid=e.pointerId;wrap.classList.add('dragging');try{wrap.setPointerCapture?.(e.pointerId)}catch{}e.preventDefault();e.stopPropagation()},{passive:false});wrap.addEventListener('pointermove',e=>{if(cid!==e.pointerId)return;schedule(e);e.preventDefault();e.stopPropagation()},{passive:false});wrap.addEventListener('pointerup',end,{passive:false});wrap.addEventListener('pointercancel',end,{passive:false});wrap.addEventListener('lostpointercapture',end,{passive:false})};
+const bindRuler=wrap=>{if(!wrap||wrap.dataset.bound)return;const el=wrap.querySelector('.range');if(!el)return;wrap.dataset.bound='1';let sx=0,sy=0,sv=0,cid=null,lastX=null,raf=0,axis=null;const PX_PER_STEP=36,INTENT_PX=10,AXIS_BIAS=1.2;const step=()=>num(el.step)||1;const clamp=v=>Math.min(num(el.max),Math.max(num(el.min),v));const apply=x=>{if(cid==null||axis!=='x')return;const dx=sx-x;const next=clamp(sv+(dx/PX_PER_STEP)*step());const snapped=Math.round(next/step())*step();if(String(el.value)!==String(snapped)){el.value=String(snapped);el.dispatchEvent(new Event('input',{bubbles:true}))}};const schedule=e=>{lastX=e.clientX;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(lastX!=null)apply(lastX)})};const end=e=>{if(cid!==e.pointerId)return;const horizontal=axis==='x';cid=null;lastX=null;if(raf){cancelAnimationFrame(raf);raf=0}wrap.classList.remove('dragging');if(horizontal){try{wrap.releasePointerCapture?.(e.pointerId)}catch{}e.preventDefault();e.stopPropagation()}};wrap.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;if(e.isPrimary===false)return;sx=e.clientX;sy=e.clientY;sv=num(el.value);cid=e.pointerId;axis=null;lastX=null;wrap.classList.remove('dragging')},{passive:true});wrap.addEventListener('pointermove',e=>{if(cid!==e.pointerId)return;if(axis===null){const dx=e.clientX-sx,dy=e.clientY-sy,ax=Math.abs(dx),ay=Math.abs(dy);if(Math.max(ax,ay)<INTENT_PX)return;if(ax>ay*AXIS_BIAS){axis='x';wrap.classList.add('dragging');try{wrap.setPointerCapture?.(e.pointerId)}catch{}schedule(e);e.preventDefault();e.stopPropagation();return}if(ay>ax*AXIS_BIAS){axis='y';cid=null;wrap.classList.remove('dragging');return}return}if(axis!=='x')return;schedule(e);e.preventDefault();e.stopPropagation()},{passive:false});wrap.addEventListener('pointerup',end,{passive:false});wrap.addEventListener('pointercancel',end,{passive:false});wrap.addEventListener('lostpointercapture',end,{passive:false})};
 const bindRulers=()=>document.querySelectorAll('.range-wrap').forEach(bindRuler);
 const syncSlider=(el,v)=>{if(!el)return;const lo=num(el.min),hi=num(el.max);const p=hi>lo?Math.max(0,Math.min(100,(num(v)-lo)/(hi-lo)*100)):0;el.parentElement?.style.setProperty('--pct',p+'%');syncRuler(el,v)};
 const syncPickers=()=>{const w=$('#ws'),r=$('#rs'),wv=$('#wv'),rv=$('#rv'),ri=$('#rp');if(w){w.value=String(dr.kg);if(wv)wv.textContent=fm(dr.kg);syncSlider(w,dr.kg)}if(r){r.value=String(dr.reps);if(rv)rv.textContent=dr.reps;if(ri)ri.value=dr.reps;syncSlider(r,dr.reps)}};

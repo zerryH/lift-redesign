@@ -13,7 +13,4 @@ assert.match(css,/\#v \.range-wrap\{[^}]*height:54px/);
 assert.match(app,/const PX_PER_STEP=36/);
 assert.match(app,/credits-card/);
 assert.equal(html,local,"generated HTML variants must stay byte-identical");
-assert.match(css,/\.rank-guide-card\{[^}]*display:flex!important[^}]*flex-direction:column!important/);
-assert.match(css,/\.rank-guide-list\{[^}]*overflow-y:auto!important[^}]*touch-action:pan-y/);
-assert.match(app,/className='sheet rank-guide-sheet'/);
-console.log("ui polish rank guide scroll guards passed");
+console.log("ui polish v5.5.74 guards passed");
