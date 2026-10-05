@@ -8,3 +8,7 @@ assert(s.includes("if(a==='ageAdjust'){Object.values(S.rk).forEach(r=>r.age=S.se
 assert(s.includes('const url=URL.createObjectURL(f);'));
 assert(s.includes('URL.revokeObjectURL(url)'));
 console.log('second audit regression guards passed');
+
+assert(s.includes("return m&&Number.isFinite(t)&&new Date(t).toISOString().slice(0,10)===s?s:''"));
+assert(s.includes("const target=String(d||'')") && s.includes("return bw();const a="));
+console.log('invalid-date regression guard passed');
