@@ -601,7 +601,14 @@ const repairState=()=>{
  if(!Number.isFinite(Number(S.lastBackup)))S.lastBackup=0;
  return S;
 };
-const render=()=>{const root=$('#v');try{repairState();if(!root)throw new Error('App view root is missing');if(typeof V[view]!=='function')throw new Error('Unknown view: '+view);root.innerHTML=V[view]();root.style.animation='none';root.offsetWidth;root.style.animation='';syncPickers();bindRulers()}catch(err){console.error('Lift render failed in '+view,err);root.innerHTML=`<section class=note role=alert><b>Could not load ${esc(view)}.</b><p>The app is still running. Try again; your saved data has not been reset.</p><button class=pill data-a=retryRender>Repair &amp; retry</button></section>`;}};
+const ensureRuntimeExercises=()=>{
+ const ensure=n=>{const name=safeName(n);if(!name)return;if(!EX[name])EX[name]={g:'Custom',t:'B',c:'Custom'}};
+ for(const w of Array.isArray(S.workouts)?S.workouts:[])for(const x of Array.isArray(w.ex)?w.ex:[])ensure(x?.n);
+ for(const x of S.cur&&Array.isArray(S.cur.ex)?S.cur.ex:[])ensure(x?.n);
+ if(!X||typeof X!=='object')X={ex:[],templates:{}};
+ if(!X.templates||typeof X.templates!=='object'||Array.isArray(X.templates))X.templates={};
+};
+const render=()=>{const root=$('#v');try{repairState();ensureRuntimeExercises();if(!root)throw new Error('App view root is missing');if(typeof V[view]!=='function')throw new Error('Unknown view: '+view);root.innerHTML=V[view]();root.style.animation='none';root.offsetWidth;root.style.animation='';syncPickers();bindRulers()}catch(err){console.error('Lift render failed in '+view,err);root.innerHTML=`<section class=note role=alert><b>Could not load ${esc(view)}.</b><p>The app is still running. Try again; your saved data has not been reset.</p><button class=pill data-a=retryRender>Repair &amp; retry</button></section>`;}};
 const nav=()=>{$('#n').innerHTML='<span class=wm><b>Lift</b>log <small class=build-version>'+BUILD_LABEL+'</small></span>'+Object.keys(IC).map(k=>`<button class="${view==k?'on':''}" data-a=tab data-v=${k}><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg><small>${LB[k]}</small></button>`).join('')};
 /* actions */
 const addN=n=>{n=String(n||'').trim();if(!n)return;if(!EX[n]){const t='B',c='Custom';S.custom.push({n,t,c});EX[n]={g:'Custom',t,c}}ci=S.cur.ex.push({n,sets:[]})-1;exercisePickerClose();go()};
