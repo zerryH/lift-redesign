@@ -20,7 +20,7 @@ return{interp,ageMultiplier,heightMultiplier,repReliability,effectiveLoad,estima
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
 const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const safeName=v=>String(v??'').replace(/[<>"']/g,'').replace(new RegExp(String.fromCharCode(96),'g'),'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,80);
-const safeDate=v=>{const s=String(v??'').slice(0,10),m=/^\d{4}-\d{2}-\d{2}$/.test(s),t=m?Date.parse(s+'T00:00:00Z'):NaN;return m&&Number.isFinite(t)&&new Date(t).toISOString().slice(0,10)===s?s:iso()};let TN=[]; let MAX_RANK=-1; const RANK_FAMILY_COLORS=['#8a5a44','#b87333','#c0c0c0','#d4af37','#9ed8ff','#50c878','#0f52ba','#e0115f','#b9f2ff','#238cff']; const rankColor=i=>i<0?'#66617a':RANK_FAMILY_COLORS[Math.min(RANK_FAMILY_COLORS.length-1,Math.floor(i/5))];
+const safeDate=v=>{const s=String(v??'').slice(0,10),m=/^\d{4}-\d{2}-\d{2}$/.test(s),t=m?Date.parse(s+'T00:00:00Z'):NaN;return m&&Number.isFinite(t)&&new Date(t).toISOString().slice(0,10)===s?s:''};let TN=[]; let MAX_RANK=-1; const RANK_FAMILY_COLORS=['#8a5a44','#b87333','#c0c0c0','#d4af37','#9ed8ff','#50c878','#0f52ba','#e0115f','#b9f2ff','#238cff']; const rankColor=i=>i<0?'#66617a':RANK_FAMILY_COLORS[Math.min(RANK_FAMILY_COLORS.length-1,Math.floor(i/5))];
 const RANK_ROMAN=['I','II','III','IV','V'];
 const RANK_GLYPHS=['M0 4h20l-2 8-8 12-8-12z','M6 3h12l7 9-13 17L-1 12z','M4 5h24v22H4z','M16 2l13 14-13 14L3 16z','M16 2c7 4 11 9 11 14s-4 10-11 14C9 26 5 21 5 16S9 6 16 2z','M16 3l11 6v14l-11 6-11-6V9z','M16 2l14 8-14 20L2 10z','M16 2l4 10 10 4-10 4-4 10-4-10-10-4 10-4z','M16 2l4 8 10 6-10 6-4 8-4-8-10-6 10-6z','M16 2l3 8 8 3-8 3-3 8-3-8-8-3 8-3z'];
 const rankIcon=i=>{
@@ -61,7 +61,7 @@ const heightFactor=(h,n='')=>LiftRankingEngine.heightMultiplier(h,rankingSex(),e
 const heightLabel=h=>{const n=Number(h);return !Number.isFinite(n)||n<120||n>230?'height not set':Math.round(n)+' cm'};
 const ageLabel=a=>{const n=Number(a);return !Number.isFinite(n)||n<13||n>100?'age not set':String(Math.round(n))};
 let bestBW={},bestHeight={};
-const bwAtDate=d=>{const a=(Array.isArray(S.bw)?S.bw:[]).filter(x=>x&&typeof x==='object'&&typeof x.d==='string'&&Number.isFinite(num(x.kg))).sort((x,y)=>String(x.d).localeCompare(String(y.d)));let v=0;for(const x of a){if(String(x.d)<=String(d||''))v=num(x.kg);else break}return v||bw()};
+const bwAtDate=d=>{const target=String(d||'');if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(target))return bw();const a=(Array.isArray(S.bw)?S.bw:[]).filter(x=>x&&typeof x==='object'&&/^\\d{4}-\\d{2}-\\d{2}$/.test(String(x.d))&&Number.isFinite(num(x.kg))).sort((x,y)=>String(x.d).localeCompare(String(y.d)));let v=0;for(const x of a){if(String(x.d)<=target)v=num(x.kg);else break}return v||bw()};
 const rankSetEst=(n,s,b)=>LiftRankingEngine.estimate1RM(s,exerciseMeta(n),b,R.ranking||{});
 const est=(n,s)=>rankSetEst(n,s,num(s.bw)||bw());
 const th=n=>rankThresholds(n);
