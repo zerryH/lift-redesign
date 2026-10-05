@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const app=fs.readFileSync('app.js','utf8');
 const css=fs.readFileSync('styles.css','utf8');
-assert.match(app,/const TUTORIAL_VERSION=4;/);
+assert.match(app,/const TUTORIAL_VERSION=5;/);
 assert.match(app,/tutorialSteps=/);
 assert.match(app,/tutorialReady/);
 assert.match(app,/tutorial-spotlight/);
