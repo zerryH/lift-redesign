@@ -404,3 +404,135 @@ body.rank-list-open{touch-action:none!important}
 #v .ruler-tick span{bottom:19px!important;font-size:9px!important}
 #v .ruler-center{bottom:7px!important;height:30px!important}
 #v .range{height:54px!important}
+
+
+/* v5.5.73 · unified mobile UI polish
+   One final component layer: compact spacing, predictable widths, safe areas,
+   and clear hierarchy across every primary view and overlay. */
+html,body{overflow-x:clip!important}
+#v{max-width:620px!important;padding:18px 16px 26px!important}
+#v h1{font-size:29px!important;line-height:1.08!important;margin:18px 0 12px!important}
+#v .q{margin:16px 0 7px!important;font-size:11px!important;letter-spacing:.08em!important;text-transform:uppercase!important;font-weight:800!important}
+#v .top{min-height:44px!important;align-items:center!important;margin-bottom:6px!important}
+#v .top h1{margin:0!important}
+#v .pill{min-height:40px!important;padding:0 14px!important;font-size:13px!important;box-shadow:none!important}
+#v .cta{min-height:50px!important;margin:10px 0!important;border-radius:16px!important;font-size:15px!important;box-shadow:0 10px 24px color-mix(in srgb,var(--ac) 18%,transparent)!important}
+#v .chips{gap:7px!important;margin:9px 0!important}
+#v .add{display:flex!important;align-items:center!important;gap:8px!important;margin:12px 0!important}
+#v .add .cta{flex:1 1 auto!important;margin:0!important}
+#v .add .pill{flex:0 0 auto!important}
+#v .fl{margin:9px 0!important;font-size:11px!important;font-weight:750!important;letter-spacing:.02em}
+#v .fl input,#v .add input{height:46px!important;min-height:46px!important;border-radius:13px!important;padding:0 13px!important}
+#v .row{align-items:center!important;gap:12px!important;margin:7px 0!important;padding:12px 13px!important;border:1px solid var(--ln)!important;border-radius:16px!important;background:color-mix(in srgb,var(--cd) 72%,transparent)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important}
+#v .row>div{min-width:0!important}
+#v .row>div>b{display:block!important;font-size:13px!important;line-height:1.25!important}
+#v .row>div>small{display:block!important;margin-top:3px!important;line-height:1.35!important}
+#v .row .pill{flex:0 0 auto!important}
+
+/* Today / logging */
+#v .car{grid-template-columns:minmax(0,1fr) minmax(120px,1.35fr) minmax(0,1fr)!important;gap:6px!important;margin:12px 0 8px!important}
+#v .side{min-width:0!important;min-height:44px!important;font-size:11px!important;line-height:1.25!important;white-space:nowrap!important;text-overflow:ellipsis!important}
+#v .mid{min-width:0!important}
+#v .mid small{font-size:9px!important}
+#v .mid b{font-size:21px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+#v .picker{margin:12px 0 3px!important;padding:0!important}
+#v .phead{margin-bottom:5px!important}
+#v .phead>span{font-size:9px!important;letter-spacing:.14em!important}
+#v .phead b{font-size:38px!important;letter-spacing:-1.2px!important}
+#v .note{border:1px solid var(--ln)!important;background:color-mix(in srgb,var(--cd) 74%,transparent)!important;border-radius:14px!important;padding:10px 12px!important;margin:8px 0!important}
+#v .sets{border-radius:18px!important;padding:4px 12px!important;margin:10px 0!important}
+#v .srow{min-height:46px!important;gap:7px!important}
+#v .srow b{font-size:13px!important}
+#v .srow span{width:40px!important;font-size:11px!important}
+#v .rp{gap:16px!important;margin-top:3px!important}
+#v .rp button{width:44px!important;height:44px!important;font-size:21px!important;box-shadow:none!important}
+#v .rp input{width:72px!important;height:44px!important;font-size:22px!important}
+#v .lnk{min-height:40px!important;font-size:12px!important}
+
+/* History */
+#v .row>div:last-child{display:flex!important;align-items:center!important;gap:6px!important;flex:0 0 auto!important}
+#v .row>div:last-child .pill{min-width:0!important}
+
+/* Ranks */
+#v .rank-heading{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important}
+#v .rank-heading h1{margin:12px 0 10px!important;padding-right:0!important;min-width:0!important}
+#v .rank-heading>.rank-info-button{position:static!important;flex:0 0 auto!important;width:auto!important;height:32px!important;min-width:32px!important;max-width:none!important;padding:0 4px!important;display:inline-flex!important;gap:5px!important}
+#v .rank-heading .rank-info-glyph{width:24px!important;height:24px!important;font-size:19px!important;line-height:24px!important}
+#v .rank-heading .rank-info-label{font-size:10px!important}
+#v .rank-note{margin:0 0 12px!important}
+#v .big{margin:10px 0 14px!important;padding:13px 10px!important;border:1px solid var(--ln)!important;border-radius:18px!important;background:color-mix(in srgb,var(--cd) 70%,transparent)!important}
+#v .overall-rank-title{display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important}
+#v .overall-rank-title>b{font-size:28px!important;line-height:1!important}
+#v .big>span{display:block!important;margin-top:5px!important;font-size:11px!important}
+#v .body-card{margin:10px 0 12px!important;padding:12px!important;border:1px solid var(--ln)!important;border-radius:20px!important;background:color-mix(in srgb,var(--cd) 70%,transparent)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important}
+#v .body-card-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;padding:0 2px 9px!important}
+#v .body-card-head>div{min-width:0!important}
+#v .body-card-head b{display:block!important;font-size:14px!important}
+#v .body-card-head small{display:block!important;margin-top:3px!important;font-size:10px!important;line-height:1.3!important}
+#v .body-card-head>span{flex:0 0 auto!important;font-size:10px!important;color:var(--mu)!important}
+#v .body-stage{height:380px!important;border-radius:17px!important}
+#v .anatomy-pair{padding:2px 2px 0!important;gap:0!important}
+#v .anatomy-figure .anatomy-svg{height:350px!important;width:min(190px,100%)!important}
+#v .anatomy-figure figcaption{font-size:9px!important;letter-spacing:2px!important}
+#v .muscle-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin:10px 0!important}
+#v .muscle-pill{min-width:0!important;display:flex!important;align-items:center!important;gap:8px!important;padding:9px 10px!important;border:1px solid color-mix(in srgb,var(--mc) 30%,var(--ln))!important;border-radius:13px!important;background:color-mix(in srgb,var(--mc) 7%,var(--cd))!important}
+#v .muscle-pill>div{min-width:0!important}
+#v .muscle-pill b{display:block!important;font-size:11px!important;line-height:1.15!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#v .muscle-pill small{display:block!important;margin-top:2px!important;font-size:9px!important;line-height:1.2!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#v .muscle-dot{width:8px!important;height:8px!important;flex:0 0 8px!important;border-radius:50%!important;background:var(--mc)!important;box-shadow:0 0 8px color-mix(in srgb,var(--mc) 35%,transparent)!important}
+#v .rank-tools{margin:10px 0!important}
+
+/* Profile */
+#v .standard-choice,#v .theme-choices{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important}
+#v .standard-choice .pill,#v .theme-choices .pill{width:100%!important;justify-content:center!important}
+#v .credits-card{margin-top:4px!important;padding:12px 13px!important;border-radius:16px!important}
+#v .credits-copy{min-width:0!important}
+#v .credits-copy b{display:block!important;font-size:13px!important}
+#v .credits-copy small{display:block!important;margin-top:2px!important;font-size:10px!important}
+#v .credits-link{flex:0 0 auto!important;color:var(--ac2)!important;text-decoration:none!important;font-size:12px!important;font-weight:750!important}
+#v .build-card{padding:10px 0!important}
+#v .build-card b{font-size:16px!important}
+
+/* Tutorial / install / confirmation overlays */
+.tutorial-layer,.install-guide-layer,.reset-modal,.action-modal{padding-left:max(10px,env(safe-area-inset-left))!important;padding-right:max(10px,env(safe-area-inset-right))!important}
+.tutorial-shell,.install-guide-card,.reset-card,.action-card{width:min(100%,560px)!important;box-sizing:border-box!important}
+.tutorial-shell{max-height:78dvh!important}
+.tutorial-body h2{font-size:25px!important}
+.tutorial-footer{gap:7px!important}
+.install-guide-card{max-height:88dvh!important;padding:16px!important}
+.reset-card,.action-card{padding:20px!important;border-radius:22px!important}
+
+/* Exercise library: centered, breathable sheet with an actual internal scrollport. */
+.exercise-library{width:100vw!important;height:100dvh!important;left:0!important;right:0!important;top:0!important;bottom:0!important;box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:max(env(safe-area-inset-top),8px) max(env(safe-area-inset-right),8px) max(env(safe-area-inset-bottom),8px) max(env(safe-area-inset-left),8px)!important;background:rgba(5,3,10,.56)!important;backdrop-filter:blur(9px)!important;-webkit-backdrop-filter:blur(9px)!important;overflow:hidden!important}
+.exercise-library-panel{align-self:center!important;width:100%!important;max-width:620px!important;height:100%!important;max-height:100%!important;margin:0 auto!important;padding:10px 16px max(env(safe-area-inset-bottom),10px)!important;box-sizing:border-box!important;border:1px solid var(--ln)!important;border-radius:24px 24px 18px 18px!important;background:color-mix(in srgb,var(--cd) 94%,transparent)!important;box-shadow:0 24px 80px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.04)!important;overflow:hidden!important}
+.exercise-library-grab{margin:1px auto 13px!important}
+.exercise-library-head{flex:0 0 auto!important;align-items:center!important;gap:10px!important;padding:0 2px 13px!important}
+.exercise-library-head h2{font-size:25px!important;letter-spacing:-.45px!important}
+.exercise-library-head p{font-size:12px!important;margin-top:5px!important}
+.exercise-library-close{width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;flex-basis:38px!important;font-size:23px!important}
+.exercise-search-wrap{flex:0 0 46px!important;height:46px!important;border-radius:13px!important;margin:0!important}
+.exercise-search-wrap input{font-size:16px!important}
+.exercise-categories{flex:0 0 auto!important;gap:6px!important;padding:8px 1px 9px!important}
+.exercise-category{height:31px!important;min-height:31px!important;padding:0 11px!important;font-size:11px!important}
+.exercise-result-head{flex:0 0 auto!important;padding:3px 2px 8px!important}
+.exercise-result-head b{font-size:16px!important}
+.exercise-results{min-height:0!important;flex:1 1 auto!important;padding:0 1px 8px!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;touch-action:pan-y!important}
+.exercise-option{min-height:58px!important;height:auto!important;padding:9px 11px!important;margin:0 0 6px!important;border-radius:14px!important}
+.exercise-option-main{min-width:0!important;gap:3px!important}
+.exercise-option-main b{font-size:13px!important;line-height:1.25!important;white-space:normal!important;display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.exercise-option-main small{font-size:10.5px!important}
+.exercise-option-side{gap:6px!important}
+.exercise-rank{font-size:9px!important}
+.exercise-add{font-size:18px!important}
+.exercise-custom{margin:2px 1px 0!important;padding-bottom:max(env(safe-area-inset-bottom),4px)!important}
+.exercise-custom summary{padding:11px 2px!important;font-size:11px!important}
+@media(max-width:430px){
+ #v{padding-left:14px!important;padding-right:14px!important}
+ #v .body-stage{height:360px!important}
+ #v .anatomy-figure .anatomy-svg{height:330px!important;width:min(178px,100%)!important}
+ #v .muscle-grid{grid-template-columns:1fr!important}
+ .exercise-library-panel{padding-left:14px!important;padding-right:14px!important}
+ .exercise-library-head h2{font-size:23px!important}
+ .exercise-library-head p{font-size:11.5px!important}
+ .exercise-option{min-height:56px!important}
+}
