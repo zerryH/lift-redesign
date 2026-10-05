@@ -227,7 +227,7 @@ body.rank-list-open{touch-action:none!important}
 /* v5.5.43: rank guide is a single tutorial-style bottom sheet, not a page/tab */
 .rank-guide-sheet{z-index:10000!important;isolation:isolate!important}
 .rank-guide-sheet .bd{background:rgba(5,3,10,.62)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
-.rank-guide-card{height:min(88dvh,900px)!important;max-height:88dvh!important;overflow:hidden!important;padding:14px 18px calc(18px + env(safe-area-inset-bottom))!important;background:color-mix(in srgb,var(--cd) 82%,transparent)!important;border-color:color-mix(in srgb,var(--ac) 28%,var(--ln) 72%)!important;box-shadow:0 -24px 80px rgba(0,0,0,.38)!important}
+.rank-guide-card{display:flex!important;flex-direction:column!important;min-height:0!important;height:min(88dvh,900px)!important;max-height:88dvh!important;overflow:hidden!important;padding:14px 18px calc(18px + env(safe-area-inset-bottom))!important;background:color-mix(in srgb,var(--cd) 82%,transparent)!important;border-color:color-mix(in srgb,var(--ac) 28%,var(--ln) 72%)!important;box-shadow:0 -24px 80px rgba(0,0,0,.38)!important}
 .rank-guide-grip{width:38px;height:4px;margin:0 auto 14px;border-radius:99px;background:color-mix(in srgb,var(--fg) 22%,transparent)}
 .rank-guide-card .hd{padding:0!important;flex:0 0 auto}
 .rank-guide-card .hd h2{margin:3px 0 0;font-size:30px;line-height:1.05}
@@ -474,7 +474,7 @@ body.rank-list-open{touch-action:none!important}
 .rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent)!important;stroke:var(--c)!important;stroke-width:1.7!important;stroke-linejoin:round!important}
 .rank-icon b{position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;font-size:9px!important;line-height:1!important;font-weight:900!important;color:var(--c)!important;pointer-events:none!important}
 .overall-rank-title .rank-icon{--rank-icon-size:34px}.rank-result-title .rank-icon{--rank-icon-size:30px}.rank-badge .rank-icon{--rank-icon-size:26px}
-</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.71';
+</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.72';
 /*BEGIN:RANKING_ENGINE*//* Lift ranking engine — v6 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
