@@ -1,4 +1,4 @@
-const BUILD_VERSION='5.5.66';
+const BUILD_VERSION='5.5.67';
 /*BEGIN:RANKING_ENGINE*//* Lift ranking engine — v6 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -68,7 +68,7 @@ const th=n=>rankThresholds(n);
 const rankWorkouts=()=>{const editId=S.editingId;const a=(Array.isArray(S.workouts)?S.workouts:[]).filter(w=>!S.cur||editId==null||w.id!==editId);if(S.cur)a.push(S.cur);return a};
 const rankDifficulty=n=>1;
 const rankScore=(n,e,b,h)=>LiftRankingEngine.adjustedScore(e,b,rankingSex(),h,athleteAge(),exerciseMeta(n),{...(R.ranking||{}),ageAdjust:S.set.ageAdjust!==false,heightAdjust:S.set.heightAdjust!==false});
-const tier=(n,e,h=bestHeight[n]||num(S.set.heightCm)||null)=>{const b=bestBW[n]||bw(),t=rankThresholds(n);if(!t||!e||!b)return -1;return LiftRankingEngine.rankIndex(rankScore(n,e,b,h),t)};
+const tier=(n,e,h=bestHeight[n]||num(S.set.heightCm)||null)=>{const b=bestBW[n]||bw(),t=rankThresholds(n);if(!t||!e||!b)return -1;return LiftRankingEngine.rankIndex(rankScore(n,e,b,h),t)};const tiers=()=>Object.fromEntries(Object.entries(bests()).map(([n,e])=>[n,tier(n,e)]));
 const bests=()=>{const m={};bestBW={};bestHeight={};for(const w of rankWorkouts())for(const x of (w.ex||[]))for(const z of (x.sets||[])){const b=num(z.bw)||bwAtDate(w.d);if(!b)continue;const e=rankSetEst(x.n,z,b);if(!e)continue;const h=num(z.height)||num(S.set.heightCm)||null;const score=rankScore(x.n,e,b,h),cur=m[x.n];if(!cur||score>cur.score)m[x.n]={e,b,h,score}}for(const[n,z]of Object.entries(m)){bestBW[n]=z.b;bestHeight[n]=z.h||num(S.set.heightCm)||null}return Object.fromEntries(Object.entries(m).map(([n,z])=>[n,z.e]))};
 const rankMetrics=(i,x,adj,b,h,diff=1,e=x)=>{if(i<0)return{pc:0,need:null,next:null,max:false};if(i>=MAX_RANK)return{pc:100,need:null,next:null,max:true};const cur=adj[i],next=adj[i+1];if(!Number.isFinite(cur)||!Number.isFinite(next)||next<=cur)return{pc:100,need:null,next:null,max:true};const pc=Math.max(0,Math.min(100,(x-cur)/Math.max(.0001,next-cur)*100));const scorePerE=Number.isFinite(e)&&e>0&&Number.isFinite(x)?x/e:0;const requiredE=scorePerE>0?next/scorePerE:NaN;const need=Number.isFinite(requiredE)&&Number.isFinite(e)?Math.max(0,requiredE-e):null;return{pc:Number.isFinite(pc)?pc:0,need:Number.isFinite(need)?need:null,next}};
 const refreshRanks=()=>{const b=bests(),body=bw();if(!body)return;S.rk={};for(const[n,e]of Object.entries(b)){const h=bestHeight[n]||num(S.set.heightCm)||null,bb=bestBW[n]||body,x=rankScore(n,e,bb,h),t=rankThresholds(n),i=LiftRankingEngine.rankIndex(x,t),rm=rankMetrics(i,x,t||[],bb,h,1,e);S.rk[n]={n,w:0,r:1,b:bb,u:'kg',f:rankingSex(),i,x,e,pc:rm.pc,need:rm.need,d:iso(),age:athleteAge(),h,rawX:e/bb,auto:1,rankVersion:R.rankingVersion||6}}};
