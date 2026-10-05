@@ -95,7 +95,7 @@ const MUSCLE_LABEL={chest:'Chest',rearDelts:'Rear delts',frontDelts:'Front delts
 const MUSCLE_ORDER=['chest','frontDelts','rearDelts','sideDelts','biceps','triceps','lats','upperBack','abs','glutes','quads','hamstrings','calves'];
 const muscleTransferWeight=(id,n)=>({'Bench Press':{chest:1,triceps:.42,frontDelts:.3},'Overhead Press':{frontDelts:1,sideDelts:.5,triceps:.35},'Pull-Up':{lats:1,biceps:.4,upperBack:.35},'Barbell Row':{upperBack:1,lats:.72,biceps:.32,rearDelts:.32},'Squat':{quads:1,glutes:.58,hamstrings:.3,abs:.2,calves:.08},'Deadlift':{hamstrings:1,glutes:.7,upperBack:.35,lats:.22,abs:.2,calves:.06},'Romanian Deadlift':{hamstrings:1,glutes:.65}}[n]?.[id]??1);const muscleStates=(b,B)=>MUSCLE_ORDER.map(id=>{const lifts=MUSCLE_LIFTS[id],items=lifts.map(n=>{const e=b[n]||0;if(!e||!B)return null;const bb=bestBW[n]||B,h=bestHeight[n]||num(S.set.heightCm)||175,t=rankThresholds(n);if(!t)return null;const p=LiftRankingEngine.percentileScore(rankScore(n,e,bb,h),t,R.ranking||{}),w=muscleTransferWeight(id,n);return Number.isFinite(p)?{p,w}:null}).filter(Boolean);if(!items.length)return{id,label:MUSCLE_LABEL[id],i:-1,lifts,proxy:['abs','calves'].includes(id)};const ws=items.reduce((a,x)=>a+x.w,0),p=items.reduce((a,x)=>a+x.p*x.w,0)/Math.max(.0001,ws),i=LiftRankingEngine.percentileToRankIndex(p,R.ranking||{});return{id,label:MUSCLE_LABEL[id],i,lifts,percentile:p,proxy:['abs','calves'].includes(id)}});
 
-const TUTORIAL_VERSION=3;
+const TUTORIAL_VERSION=4;
 const tutorialSteps=[
  {view:'today',eyebrow:'WELCOME',title:'Welcome to Lift',body:'Lift is a private, offline workout log. Build a session, record your sets, finish it, and use the saved data to calculate exercise and muscle ranks.',tip:'Your workout and profile stay on this device. No account is required.',where:'Home'},
  {view:'today',eyebrow:'01 · START',title:'Start a workout',body:'Pick Empty, Push, Pull, Legs, or another split. Every new workout starts clean so you control exactly what gets logged.',tip:'A split is only a starting point — you can change the exercise list at any time.',where:'Home · Today'},
@@ -106,7 +106,7 @@ const tutorialSteps=[
  {view:'ranks',eyebrow:'06 · RANKS',title:'Calculate your rank',body:'Open Ranks and use Get your rank. Enter the lift, weight, reps, bodyweight, and height when available. The result is saved and the muscle ranks refresh.',tip:'Update rank recalculates the saved result — it does not create a second workout entry.',where:'Ranks'},
  {view:'ranks',eyebrow:'07 · ANATOMY',title:'Read the muscle map',body:'Ranks also show two separate anatomy models: front/anterior and back/posterior. Ranked muscle groups use their rank color; neutral anatomy stays unranked.',tip:'The head and neck are anatomy only. They are deliberately not ranked muscle groups.',where:'Ranks · Anatomy'},
  {view:'settings',eyebrow:'08 · CONTROLS',title:'Standards, backups & updates',body:'Profile lets you choose the comparison reference, turn age or height adjustment on or off, export a backup, and check for the newest published Lift build.',tip:'Use Check for updates after a new release. Lift will install the newest service-worker build and refresh.',where:'Profile'},
- {view:'settings',eyebrow:'09 · DONE',title:'That is the whole loop',body:'Log a workout → finish it → review History → calculate ranks → train again. Replay this guide any time from Profile.',tip:'Your saved workout data is separate from the benchmark settings and app version.',where:'Profile'}
+ {view:'settings',eyebrow:'09 · DONE',title:'That is the whole loop',body:'Log a workout → finish it → review History → calculate ranks → train again. Replay this guide any time from Profile.',tip:'Your saved workout data is separate from the benchmark settings and app version.',where:'Profile',credit:'Made by o.r146'}
 ];
 let tutorialIndex=0;
 const tutorialClear=()=>{$('#tutorial-layer')?.remove();document.body.classList.remove('tutorial-open')};
@@ -128,7 +128,7 @@ const tutorialRender=()=>{
        <button class="tutorial-close" data-tut="skip" aria-label="Close tutorial">×</button>
      </div>
      <div class="tutorial-location"><span>WHERE</span><b>${st.where}</b></div>
-     <div class="tutorial-body"><h2>${st.title}</h2><p>${st.body}</p><div class="tutorial-tip"><b>TIP</b><span>${st.tip}</span></div></div>
+     <div class="tutorial-body"><h2>${st.title}</h2><p>${st.body}</p><div class="tutorial-tip"><b>TIP</b><span>${st.tip}</span></div>${st.credit?`<div class="tutorial-credit">${st.credit}</div>`:``}</div>
      <div class="tutorial-footer">
        <button class="tutorial-back" data-tut="back" ${tutorialIndex===0?'disabled':''}>Back</button>
        <button class="tutorial-skip" data-tut="skip">Skip</button>
