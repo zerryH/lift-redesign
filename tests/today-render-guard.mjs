@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const s=fs.readFileSync('app.js','utf8');
+const hist=s.indexOf('const historicalBest=');
+const today=s.indexOf('today(){');
+assert.ok(hist>=0,'historicalBest helper must exist');
+assert.ok(hist<today,'historicalBest helper must be defined before Today renderer');
+const body=s.slice(today,today+12000);
+assert.match(body,/const meta=EX\[x\.n\]\|\|\{g:'Custom',t:'B'\}/,'Today must tolerate legacy/custom exercise keys');
+assert.match(body,/const t=meta\.t\|\|'B'/,'Today must use repaired exercise metadata');
+console.log('today render guard passed · legacy exercise keys cannot crash the Today view');

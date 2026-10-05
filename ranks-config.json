@@ -1,5 +1,5 @@
 {
-  "_": "Lift rank system v4. Wood I starts at 0.20x normalized bodyweight. Blue Gem is the ceiling at 3.00x. Every exercise in the library is rankable. Exercise scales normalize different movement types; age and height/ROM adjustments are applied after the normalized ratio.",
+  "_": "Lift rank system v6. Every exercise has its own male/female 46-rank threshold ladder. Scores use allometric bodyweight scaling, age, height/ROM, equipment/load mode, warm-up exclusion and exercise-specific standards. Muscle ranks aggregate exercise percentiles independently.",
   "tiers": [
     "Wood I",
     "Wood II",
@@ -210,100 +210,100 @@
   "t": {
     "Bench Press": [
       [
-        37.5,
-        41.25,
-        45.0,
-        48.75,
-        52.5,
-        56.25,
-        60.0,
-        63.75,
-        67.5,
-        71.25,
-        75.0,
-        76.5,
-        78.75,
-        80.25,
-        82.5,
-        84.0,
-        86.25,
-        88.5,
-        90.0,
-        92.25,
-        93.75,
-        95.25,
-        97.5,
-        99.0,
-        101.25,
-        103.5,
-        105.0,
-        107.25,
-        108.75,
-        111.0,
-        112.5,
-        114.75,
-        117.75,
-        120.0,
-        122.25,
-        125.25,
-        127.5,
-        129.75,
-        132.75,
-        135.0,
-        137.25,
-        140.25,
-        142.5,
-        144.75,
-        147.75,
-        165.0
+        51.0,
+        52.9,
+        54.8,
+        56.7,
+        58.6,
+        60.5,
+        62.4,
+        64.3,
+        66.2,
+        68.1,
+        70.0,
+        72.2,
+        74.4,
+        76.6,
+        78.8,
+        81.0,
+        83.2,
+        85.4,
+        87.6,
+        89.8,
+        92.0,
+        94.5,
+        97.0,
+        99.5,
+        102.0,
+        104.5,
+        107.0,
+        109.5,
+        112.0,
+        114.5,
+        117.0,
+        118.93,
+        120.86,
+        122.79,
+        124.71,
+        126.64,
+        128.57,
+        130.5,
+        132.43,
+        134.36,
+        136.29,
+        138.21,
+        140.14,
+        142.07,
+        144.0,
+        158.4
       ],
       [
-        18.0,
-        19.2,
-        20.4,
-        21.6,
-        22.8,
-        24.0,
-        25.2,
-        26.4,
-        27.6,
-        28.8,
-        30.0,
-        31.8,
-        33.0,
+        19.0,
+        20.2,
+        21.4,
+        22.6,
+        23.8,
+        25.0,
+        26.2,
+        27.4,
+        28.6,
+        29.8,
+        31.0,
+        32.6,
         34.2,
-        36.0,
-        37.2,
+        35.8,
+        37.4,
         39.0,
-        40.8,
-        42.0,
-        43.2,
-        45.0,
-        47.4,
-        49.2,
-        51.0,
-        53.4,
-        55.8,
-        57.6,
-        60.0,
-        61.8,
-        63.6,
+        40.6,
+        42.2,
+        43.8,
+        45.4,
+        47.0,
+        48.9,
+        50.8,
+        52.7,
+        54.6,
+        56.5,
+        58.4,
+        60.3,
+        62.2,
+        64.1,
         66.0,
-        67.2,
-        69.0,
-        70.2,
-        71.4,
-        73.2,
-        74.4,
-        75.6,
-        77.4,
-        78.6,
-        79.8,
-        81.6,
-        82.8,
-        84.0,
-        85.8,
-        95.7
+        67.57,
+        69.14,
+        70.71,
+        72.29,
+        73.86,
+        75.43,
+        77.0,
+        78.57,
+        80.14,
+        81.71,
+        83.29,
+        84.86,
+        86.43,
+        88.0,
+        96.8
       ]
     ],
     "Incline Bench Press": [
@@ -406,100 +406,100 @@
     ],
     "Dumbbell Bench Press": [
       [
-        30.0,
-        32.25,
-        34.5,
-        36.75,
-        39.0,
-        41.25,
-        43.5,
-        45.75,
-        48.0,
-        50.25,
-        52.5,
-        54.75,
+        17.0,
+        17.9,
+        18.8,
+        19.7,
+        20.6,
+        21.5,
+        22.4,
+        23.3,
+        24.2,
+        25.1,
+        26.0,
+        27.1,
+        28.2,
+        29.3,
+        30.4,
+        31.5,
+        32.6,
+        33.7,
+        34.8,
+        35.9,
+        37.0,
+        38.4,
+        39.8,
+        41.2,
+        42.6,
+        44.0,
+        45.4,
+        46.8,
+        48.2,
+        49.6,
+        51.0,
+        52.0,
+        53.0,
+        54.0,
+        55.0,
+        56.0,
         57.0,
-        59.25,
-        61.5,
-        63.75,
-        66.0,
-        68.25,
-        70.5,
-        72.75,
-        75.0,
-        78.0,
-        81.0,
-        84.0,
-        87.0,
-        90.0,
-        93.0,
-        96.0,
-        99.0,
-        102.0,
-        105.0,
-        107.25,
-        108.75,
-        111.0,
-        113.25,
-        114.75,
-        117.0,
-        119.25,
-        120.75,
-        123.0,
-        125.25,
-        126.75,
-        129.0,
-        131.25,
-        132.75,
-        148.5
+        58.0,
+        59.0,
+        60.0,
+        61.0,
+        62.0,
+        63.0,
+        64.0,
+        65.0,
+        71.5
       ],
       [
-        13.8,
-        15.0,
-        16.2,
-        17.4,
+        7.0,
+        7.6,
+        8.2,
+        8.8,
+        9.4,
+        10.0,
+        10.6,
+        11.2,
+        11.8,
+        12.4,
+        13.0,
+        13.7,
+        14.4,
+        15.1,
+        15.8,
+        16.5,
+        17.2,
+        17.9,
         18.6,
-        19.8,
+        19.3,
+        20.0,
         21.0,
-        22.2,
-        23.4,
-        24.6,
-        25.8,
-        27.6,
-        28.8,
+        22.0,
+        23.0,
+        24.0,
+        25.0,
+        26.0,
+        27.0,
+        28.0,
+        29.0,
         30.0,
-        31.8,
-        33.0,
-        34.2,
-        36.0,
-        37.2,
-        38.4,
-        40.2,
-        42.0,
-        43.8,
-        46.2,
-        48.0,
-        49.8,
-        52.2,
-        54.0,
-        55.8,
-        58.2,
-        60.0,
-        61.2,
-        62.4,
-        64.2,
-        65.4,
-        66.6,
-        67.8,
-        69.6,
-        70.8,
-        72.0,
-        73.2,
-        74.4,
-        76.2,
-        77.4,
-        78.6,
-        87.78
+        30.71,
+        31.43,
+        32.14,
+        32.86,
+        33.57,
+        34.29,
+        35.0,
+        35.71,
+        36.43,
+        37.14,
+        37.86,
+        38.57,
+        39.29,
+        40.0,
+        44.0
       ]
     ],
     "Incline Dumbbell Press": [
@@ -1974,100 +1974,100 @@
     ],
     "Deadlift": [
       [
-        75.0,
-        78.75,
-        82.5,
-        86.25,
-        90.0,
-        93.75,
-        97.5,
-        101.25,
-        105.0,
-        108.75,
-        112.5,
-        116.25,
-        120.0,
-        123.75,
-        127.5,
-        131.25,
-        135.0,
-        138.75,
+        82.0,
+        84.9,
+        87.8,
+        90.7,
+        93.6,
+        96.5,
+        99.4,
+        102.3,
+        105.2,
+        108.1,
+        111.0,
+        114.5,
+        118.0,
+        121.5,
+        125.0,
+        128.5,
+        132.0,
+        135.5,
+        139.0,
         142.5,
-        146.25,
+        146.0,
         150.0,
-        153.75,
-        157.5,
-        161.25,
-        165.0,
-        168.75,
-        172.5,
-        176.25,
-        180.0,
-        183.75,
-        187.5,
-        191.25,
+        154.0,
+        158.0,
+        162.0,
+        166.0,
+        170.0,
+        174.0,
+        178.0,
+        182.0,
+        186.0,
+        189.0,
+        192.0,
         195.0,
-        198.75,
-        202.5,
-        206.25,
+        198.0,
+        201.0,
+        204.0,
+        207.0,
         210.0,
-        213.75,
-        217.5,
-        221.25,
+        213.0,
+        216.0,
+        219.0,
+        222.0,
         225.0,
-        228.75,
-        232.5,
-        236.25,
-        240.0,
-        268.12
+        228.0,
+        250.8
       ],
       [
-        45.0,
-        46.8,
+        40.0,
+        42.0,
+        44.0,
+        46.0,
         48.0,
-        49.2,
-        51.0,
-        52.8,
+        50.0,
+        52.0,
         54.0,
-        55.8,
-        57.0,
-        58.2,
+        56.0,
+        58.0,
         60.0,
-        63.0,
-        66.0,
-        69.0,
-        72.0,
-        75.0,
-        78.0,
-        81.0,
-        84.0,
-        87.0,
-        90.0,
-        93.0,
-        96.0,
-        99.0,
-        102.0,
-        105.0,
-        108.0,
-        111.0,
-        114.0,
-        117.0,
-        120.0,
-        121.8,
-        124.2,
-        126.0,
-        127.8,
-        130.2,
-        132.0,
-        133.8,
-        136.2,
-        138.0,
-        139.8,
-        142.2,
-        144.0,
-        145.8,
-        148.2,
-        165.0
+        62.6,
+        65.2,
+        67.8,
+        70.4,
+        73.0,
+        75.6,
+        78.2,
+        80.8,
+        83.4,
+        86.0,
+        89.0,
+        92.0,
+        95.0,
+        98.0,
+        101.0,
+        104.0,
+        107.0,
+        110.0,
+        113.0,
+        116.0,
+        118.36,
+        120.71,
+        123.07,
+        125.43,
+        127.79,
+        130.14,
+        132.5,
+        134.86,
+        137.21,
+        139.57,
+        141.93,
+        144.29,
+        146.64,
+        149.0,
+        163.9
       ]
     ],
     "Barbell Row": [
@@ -3738,100 +3738,100 @@
     ],
     "Squat": [
       [
-        56.25,
-        60.0,
-        63.75,
-        67.5,
-        71.25,
-        75.0,
-        78.75,
-        82.5,
-        86.25,
-        90.0,
-        93.75,
-        97.5,
-        101.25,
-        105.0,
-        108.75,
-        112.5,
-        116.25,
-        120.0,
-        123.75,
+        69.0,
+        71.5,
+        74.0,
+        76.5,
+        79.0,
+        81.5,
+        84.0,
+        86.5,
+        89.0,
+        91.5,
+        94.0,
+        97.0,
+        100.0,
+        103.0,
+        106.0,
+        109.0,
+        112.0,
+        115.0,
+        118.0,
+        121.0,
+        124.0,
         127.5,
-        131.25,
-        135.0,
-        138.75,
-        142.5,
-        146.25,
-        150.0,
-        153.75,
-        157.5,
-        161.25,
-        165.0,
-        168.75,
-        171.0,
-        174.0,
-        176.25,
-        178.5,
-        181.5,
-        183.75,
-        186.0,
-        189.0,
-        191.25,
-        193.5,
-        196.5,
-        198.75,
-        201.0,
-        204.0,
-        226.88
+        131.0,
+        134.5,
+        138.0,
+        141.5,
+        145.0,
+        148.5,
+        152.0,
+        155.5,
+        159.0,
+        161.64,
+        164.29,
+        166.93,
+        169.57,
+        172.21,
+        174.86,
+        177.5,
+        180.14,
+        182.79,
+        185.43,
+        188.07,
+        190.71,
+        193.36,
+        196.0,
+        215.6
       ],
       [
-        30.0,
-        31.8,
-        33.0,
-        34.2,
-        36.0,
-        37.2,
-        39.0,
-        40.8,
-        42.0,
-        43.2,
-        45.0,
-        48.0,
-        51.0,
-        54.0,
-        57.0,
-        60.0,
-        63.0,
-        66.0,
-        69.0,
+        32.0,
+        33.7,
+        35.4,
+        37.1,
+        38.8,
+        40.5,
+        42.2,
+        43.9,
+        45.6,
+        47.3,
+        49.0,
+        51.3,
+        53.6,
+        55.9,
+        58.2,
+        60.5,
+        62.8,
+        65.1,
+        67.4,
+        69.7,
         72.0,
-        75.0,
-        78.0,
-        81.0,
-        84.0,
-        87.0,
-        90.0,
-        93.0,
-        96.0,
+        74.7,
+        77.4,
+        80.1,
+        82.8,
+        85.5,
+        88.2,
+        90.9,
+        93.6,
+        96.3,
         99.0,
-        102.0,
-        105.0,
-        106.8,
-        109.2,
-        111.0,
-        112.8,
-        115.2,
-        117.0,
-        118.8,
-        121.2,
-        123.0,
-        124.8,
-        127.2,
+        101.14,
+        103.29,
+        105.43,
+        107.57,
+        109.71,
+        111.86,
+        114.0,
+        116.14,
+        118.29,
+        120.43,
+        122.57,
+        124.71,
+        126.86,
         129.0,
-        130.8,
-        133.2,
-        148.5
+        141.9
       ]
     ],
     "Front Squat": [
@@ -3934,100 +3934,100 @@
     ],
     "Leg Press": [
       [
-        93.75,
-        99.0,
-        105.0,
-        111.0,
-        116.25,
-        121.5,
-        127.5,
-        132.75,
-        138.75,
-        144.75,
-        150.0,
-        156.0,
-        161.25,
-        167.25,
-        172.5,
-        178.5,
-        183.75,
-        189.0,
-        195.0,
-        200.25,
-        206.25,
-        216.0,
-        225.0,
-        234.0,
-        243.75,
-        253.5,
-        262.5,
+        96.0,
+        101.7,
+        107.4,
+        113.1,
+        118.8,
+        124.5,
+        130.2,
+        135.9,
+        141.6,
+        147.3,
+        153.0,
+        160.4,
+        167.8,
+        175.2,
+        182.6,
+        190.0,
+        197.4,
+        204.8,
+        212.2,
+        219.6,
+        227.0,
+        235.9,
+        244.8,
+        253.7,
+        262.6,
         271.5,
-        281.25,
-        291.0,
-        300.0,
-        306.0,
-        312.75,
-        318.75,
-        324.75,
-        331.5,
-        337.5,
-        343.5,
-        350.25,
-        356.25,
-        362.25,
-        369.0,
-        375.0,
-        381.0,
-        387.75,
-        433.13
+        280.4,
+        289.3,
+        298.2,
+        307.1,
+        316.0,
+        323.0,
+        330.0,
+        337.0,
+        344.0,
+        351.0,
+        358.0,
+        365.0,
+        372.0,
+        379.0,
+        386.0,
+        393.0,
+        400.0,
+        407.0,
+        414.0,
+        455.4
       ],
       [
-        45.0,
-        49.2,
-        54.0,
-        58.2,
-        63.0,
-        67.2,
-        72.0,
-        76.2,
-        81.0,
-        85.8,
-        90.0,
-        94.2,
-        99.0,
-        103.8,
-        108.0,
-        112.8,
-        117.0,
-        121.2,
-        126.0,
-        130.2,
-        135.0,
-        141.0,
-        147.0,
-        153.0,
-        159.0,
-        165.0,
-        171.0,
-        177.0,
-        183.0,
-        189.0,
-        195.0,
-        199.8,
-        205.2,
-        210.0,
-        214.8,
-        220.2,
-        225.0,
-        229.8,
-        235.2,
-        240.0,
-        244.8,
-        250.2,
-        255.0,
-        259.8,
-        265.2,
-        297.0
+        52.0,
+        56.2,
+        60.4,
+        64.6,
+        68.8,
+        73.0,
+        77.2,
+        81.4,
+        85.6,
+        89.8,
+        94.0,
+        99.7,
+        105.4,
+        111.1,
+        116.8,
+        122.5,
+        128.2,
+        133.9,
+        139.6,
+        145.3,
+        151.0,
+        158.1,
+        165.2,
+        172.3,
+        179.4,
+        186.5,
+        193.6,
+        200.7,
+        207.8,
+        214.9,
+        222.0,
+        227.71,
+        233.43,
+        239.14,
+        244.86,
+        250.57,
+        256.29,
+        262.0,
+        267.71,
+        273.43,
+        279.14,
+        284.86,
+        290.57,
+        296.29,
+        302.0,
+        332.2
       ]
     ],
     "Hack Squat": [
@@ -46173,7 +46173,7 @@
   },
   "legRankMultiplier": 1.0,
   "_legRankNote": "Retained for compatibility; ranking uses exercise-specific standards.",
-  "rankingVersion": 5,
+  "rankingVersion": 6,
   "ranking": {
     "referenceBodyweightKg": {
       "M": 75,
@@ -46280,11 +46280,66 @@
       ]
     },
     "sources": [
-      "Strength Level 2026 exercise standards used as calibration anchors for common movements.",
-      "Obscure variations use explicit Strength-Level-style percentile ladders with movement/type calibration; every exercise has its own editable 46-rank thresholds."
+      "Strength Level 2026 exercise-specific standards and percentile framework (5/20/50/80/95 percentiles) used as calibration anchors.",
+      "ExRx-style strength-standard methodology used for movement/type calibration where direct exercise data is limited.",
+      "Obscure variations use editable exercise-specific ladders derived from their explicit movement metadata; they are not treated as a universal bodyweight multiplier."
     ],
     "topTierFactor": 1.1,
-    "topTierNote": "Blue Gem is calibrated above the Strength Level-style Elite (~95th percentile) anchor to target roughly the top 1% while preserving the existing rank name."
+    "topTierNote": "Blue Gem is calibrated above the Strength Level-style Elite (~95th percentile) anchor to target roughly the top 1% while preserving the existing rank name.",
+    "rankPercentiles": [
+      5.0,
+      6.5,
+      8.0,
+      9.5,
+      11.0,
+      12.5,
+      14.0,
+      15.5,
+      17.0,
+      18.5,
+      20.0,
+      23.0,
+      26.0,
+      29.0,
+      32.0,
+      35.0,
+      38.0,
+      41.0,
+      44.0,
+      47.0,
+      50.0,
+      53.0,
+      56.0,
+      59.0,
+      62.0,
+      65.0,
+      68.0,
+      71.0,
+      74.0,
+      77.0,
+      80.0,
+      81.0714,
+      82.1429,
+      83.2143,
+      84.2857,
+      85.3571,
+      86.4286,
+      87.5,
+      88.5714,
+      89.6429,
+      90.7143,
+      91.7857,
+      92.8571,
+      93.9286,
+      95.0,
+      99.0
+    ],
+    "exerciseStandardModel": "per-exercise-male-female-thresholds",
+    "muscleAggregation": "weighted-exercise-percentile",
+    "romCorrection": "height exponent by exercise ROM class; capped at ±10%",
+    "ageCorrection": "smooth age curve; 25-40 baseline; youth and older-lifter bonus capped at 20%",
+    "machineLeniency": "encoded in each exercise threshold ladder; no universal machine multiplier",
+    "unilateralRule": "unilateral loads are scored per side; bilateral dumbbell loads use both dumbbells"
   },
   "exerciseMeta": {
     "Bench Press": {
@@ -46295,7 +46350,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Incline Bench Press": {
       "type": "B",
@@ -46305,7 +46362,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Dumbbell Bench Press": {
       "type": "D",
@@ -46315,7 +46374,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Incline Dumbbell Press": {
       "type": "D",
@@ -46325,7 +46386,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Machine Chest Press": {
       "type": "M",
@@ -46335,7 +46398,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Overhead Press": {
       "type": "B",
@@ -46345,7 +46410,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Dumbbell Shoulder Press": {
       "type": "D",
@@ -46355,7 +46422,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Machine Shoulder Press": {
       "type": "M",
@@ -46365,7 +46434,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Weighted Dip": {
       "type": "W",
@@ -46375,7 +46446,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Lateral Raise": {
       "type": "D",
@@ -46385,7 +46458,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable Fly": {
       "type": "M",
@@ -46395,7 +46470,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Pec Deck": {
       "type": "M",
@@ -46405,7 +46482,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Tricep Pushdown": {
       "type": "M",
@@ -46415,7 +46494,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Skull Crusher": {
       "type": "B",
@@ -46425,7 +46506,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Overhead Tricep Extension": {
       "type": "B",
@@ -46435,7 +46518,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Dumbbell Chest Fly": {
       "type": "D",
@@ -46445,7 +46530,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Incline Dumbbell Fly": {
       "type": "D",
@@ -46455,7 +46542,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Push-Up": {
       "type": "U",
@@ -46465,7 +46554,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Deadlift": {
       "type": "B",
@@ -46475,7 +46566,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Barbell Row": {
       "type": "B",
@@ -46485,7 +46578,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Dumbbell Row": {
       "type": "D",
@@ -46495,7 +46590,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Pull-Up": {
       "type": "U",
@@ -46505,7 +46602,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Chin-Up": {
       "type": "U",
@@ -46515,7 +46614,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Lat Pulldown": {
       "type": "M",
@@ -46525,7 +46626,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Seated Cable Row": {
       "type": "M",
@@ -46535,7 +46638,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "T-Bar Row": {
       "type": "B",
@@ -46545,7 +46650,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Face Pull": {
       "type": "M",
@@ -46555,7 +46662,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Rear Delt Fly": {
       "type": "D",
@@ -46565,7 +46674,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Barbell Shrug": {
       "type": "B",
@@ -46575,7 +46686,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Dumbbell Shrug": {
       "type": "D",
@@ -46585,7 +46698,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Reverse Pec Deck": {
       "type": "M",
@@ -46595,7 +46710,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Barbell Curl": {
       "type": "B",
@@ -46605,7 +46722,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Dumbbell Curl": {
       "type": "D",
@@ -46615,7 +46734,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Hammer Curl": {
       "type": "D",
@@ -46625,7 +46746,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Preacher Curl": {
       "type": "B",
@@ -46635,7 +46758,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Cable Curl": {
       "type": "M",
@@ -46645,7 +46770,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Squat": {
       "type": "B",
@@ -46655,7 +46782,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Front Squat": {
       "type": "B",
@@ -46665,7 +46794,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Leg Press": {
       "type": "M",
@@ -46675,7 +46806,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Hack Squat": {
       "type": "M",
@@ -46685,7 +46818,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Bulgarian Split Squat": {
       "type": "B",
@@ -46695,7 +46830,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Barbell Lunge": {
       "type": "B",
@@ -46705,7 +46842,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Walking Lunge": {
       "type": "D",
@@ -46715,7 +46854,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Romanian Deadlift": {
       "type": "B",
@@ -46725,7 +46866,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Hip Thrust": {
       "type": "B",
@@ -46735,7 +46878,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Leg Extension": {
       "type": "M",
@@ -46745,7 +46890,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Leg Curl": {
       "type": "M",
@@ -46755,7 +46902,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Standing Calf Raise": {
       "type": "M",
@@ -46765,7 +46914,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Seated Calf Raise": {
       "type": "M",
@@ -46775,7 +46926,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Hip Abduction Machine": {
       "type": "M",
@@ -46785,7 +46938,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Hip Adduction Machine": {
       "type": "M",
@@ -46795,7 +46950,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Step-Up": {
       "type": "D",
@@ -46805,7 +46962,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Hanging Leg Raise": {
       "type": "U",
@@ -46815,7 +46974,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Cable Crunch": {
       "type": "M",
@@ -46825,7 +46986,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Ab Wheel": {
       "type": "U",
@@ -46835,7 +46998,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Plank": {
       "type": "U",
@@ -46845,7 +47010,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Dumbbell Lateral Raise": {
       "type": "D",
@@ -46855,7 +47022,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Seated Dumbbell Lateral Raise": {
       "type": "D",
@@ -46865,7 +47034,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Leaning Dumbbell Lateral Raise": {
       "type": "D",
@@ -46875,7 +47046,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable Lateral Raise": {
       "type": "M",
@@ -46885,7 +47058,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Single-Arm Cable Lateral Raise": {
       "type": "M",
@@ -46895,7 +47070,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Behind-the-Body Cable Lateral Raise": {
       "type": "M",
@@ -46905,7 +47082,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Machine Lateral Raise": {
       "type": "M",
@@ -46915,7 +47094,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Lateral Raise Machine": {
       "type": "M",
@@ -46925,7 +47106,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Dumbbell Front Raise": {
       "type": "D",
@@ -46935,7 +47118,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable Front Raise": {
       "type": "M",
@@ -46945,7 +47130,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Plate Front Raise": {
       "type": "B",
@@ -46955,7 +47142,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Smith Machine Shoulder Press": {
       "type": "M",
@@ -46965,7 +47154,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Arnold Press": {
       "type": "D",
@@ -46975,7 +47166,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Seated Barbell Overhead Press": {
       "type": "B",
@@ -46985,7 +47178,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Push Press": {
       "type": "B",
@@ -46995,7 +47190,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Landmine Shoulder Press": {
       "type": "B",
@@ -47005,7 +47202,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Single-Arm Landmine Press": {
       "type": "B",
@@ -47015,7 +47214,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable Y Raise": {
       "type": "M",
@@ -47025,7 +47226,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Incline Y Raise": {
       "type": "D",
@@ -47035,7 +47238,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Prone Y Raise": {
       "type": "D",
@@ -47045,7 +47250,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Reverse Cable Fly": {
       "type": "M",
@@ -47055,7 +47262,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable Rear Delt Fly": {
       "type": "M",
@@ -47065,7 +47274,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Single-Arm Cable Rear Delt Fly": {
       "type": "M",
@@ -47075,7 +47286,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Chest-Supported Rear Delt Raise": {
       "type": "D",
@@ -47085,7 +47298,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Bent-Over Dumbbell Rear Delt Raise": {
       "type": "D",
@@ -47095,7 +47310,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Rear Delt Machine Fly": {
       "type": "M",
@@ -47105,7 +47322,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Upright Row": {
       "type": "D",
@@ -47115,7 +47334,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable Upright Row": {
       "type": "M",
@@ -47125,7 +47346,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Smith Machine Shrug": {
       "type": "M",
@@ -47135,7 +47358,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Dumbbell Bicep Curl": {
       "type": "D",
@@ -47145,7 +47370,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Alternating Dumbbell Curl": {
       "type": "D",
@@ -47155,7 +47382,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Seated Dumbbell Curl": {
       "type": "D",
@@ -47165,7 +47394,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Incline Dumbbell Curl": {
       "type": "D",
@@ -47175,7 +47406,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Spider Curl": {
       "type": "D",
@@ -47185,7 +47418,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Concentration Curl": {
       "type": "D",
@@ -47195,7 +47430,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Cross-Body Hammer Curl": {
       "type": "D",
@@ -47205,7 +47442,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Rope Hammer Curl": {
       "type": "D",
@@ -47215,7 +47454,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Cable Bicep Curl": {
       "type": "M",
@@ -47225,7 +47466,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Single-Arm Cable Curl": {
       "type": "M",
@@ -47235,7 +47478,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Bayesian Cable Curl": {
       "type": "M",
@@ -47245,7 +47490,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "High Cable Curl": {
       "type": "M",
@@ -47255,7 +47502,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Low Cable Curl": {
       "type": "M",
@@ -47265,7 +47514,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "EZ-Bar Curl": {
       "type": "B",
@@ -47275,7 +47526,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Preacher Curl Machine": {
       "type": "M",
@@ -47285,7 +47538,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Machine Biceps Curl": {
       "type": "M",
@@ -47295,7 +47550,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Selectorized Biceps Curl": {
       "type": "M",
@@ -47305,7 +47562,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Plate-Loaded Biceps Curl": {
       "type": "M",
@@ -47315,7 +47574,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Reverse Curl": {
       "type": "D",
@@ -47325,7 +47586,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "EZ-Bar Reverse Curl": {
       "type": "B",
@@ -47335,7 +47598,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Zottman Curl": {
       "type": "D",
@@ -47345,7 +47610,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Drag Curl": {
       "type": "D",
@@ -47355,7 +47622,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "21s Biceps Curl": {
       "type": "D",
@@ -47365,7 +47634,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Resistance Band Curl": {
       "type": "D",
@@ -47375,7 +47646,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Cable Triceps Pushdown": {
       "type": "M",
@@ -47385,7 +47658,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Rope Triceps Pushdown": {
       "type": "M",
@@ -47395,7 +47670,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Straight-Bar Pushdown": {
       "type": "M",
@@ -47405,7 +47682,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "V-Bar Pushdown": {
       "type": "M",
@@ -47415,7 +47694,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Single-Arm Cable Pushdown": {
       "type": "M",
@@ -47425,7 +47706,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Reverse-Grip Pushdown": {
       "type": "M",
@@ -47435,7 +47718,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Overhead Cable Triceps Extension": {
       "type": "M",
@@ -47445,7 +47730,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Rope Overhead Triceps Extension": {
       "type": "M",
@@ -47455,7 +47742,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Single-Arm Overhead Cable Extension": {
       "type": "M",
@@ -47465,7 +47754,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Cable Skull Crusher": {
       "type": "M",
@@ -47475,7 +47766,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "EZ-Bar Skull Crusher": {
       "type": "B",
@@ -47485,7 +47778,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Dumbbell Skull Crusher": {
       "type": "D",
@@ -47495,7 +47790,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Lying Triceps Extension": {
       "type": "M",
@@ -47505,7 +47802,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Seated Dumbbell Overhead Extension": {
       "type": "D",
@@ -47515,7 +47814,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Single-Dumbbell Overhead Extension": {
       "type": "D",
@@ -47525,7 +47826,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Cable Kickback": {
       "type": "M",
@@ -47535,7 +47838,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Dumbbell Triceps Kickback": {
       "type": "D",
@@ -47545,7 +47850,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Assisted Dip": {
       "type": "W",
@@ -47555,7 +47862,9 @@
       "loadMode": "assisted",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Bench Dip": {
       "type": "U",
@@ -47565,7 +47874,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "JM Press": {
       "type": "B",
@@ -47575,7 +47886,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Tate Press": {
       "type": "D",
@@ -47585,7 +47898,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Flat Dumbbell Fly": {
       "type": "D",
@@ -47595,7 +47910,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Cable Chest Fly": {
       "type": "M",
@@ -47605,7 +47922,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Low-to-High Cable Fly": {
       "type": "M",
@@ -47615,7 +47934,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "High-to-Low Cable Fly": {
       "type": "M",
@@ -47625,7 +47946,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Standing Cable Press": {
       "type": "M",
@@ -47635,7 +47958,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Single-Arm Cable Press": {
       "type": "M",
@@ -47645,7 +47970,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Incline Cable Fly": {
       "type": "M",
@@ -47655,7 +47982,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Decline Cable Fly": {
       "type": "M",
@@ -47665,7 +47994,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Smith Machine Bench Press": {
       "type": "M",
@@ -47675,7 +48006,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Smith Machine Incline Press": {
       "type": "M",
@@ -47685,7 +48018,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Smith Machine Decline Press": {
       "type": "M",
@@ -47695,7 +48030,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Decline Bench Press": {
       "type": "B",
@@ -47705,7 +48042,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Incline Machine Chest Press": {
       "type": "M",
@@ -47715,7 +48054,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Decline Machine Chest Press": {
       "type": "M",
@@ -47725,7 +48066,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Plate-Loaded Chest Press": {
       "type": "M",
@@ -47735,7 +48078,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Hammer Strength Chest Press": {
       "type": "D",
@@ -47745,7 +48090,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Pec Fly Machine": {
       "type": "M",
@@ -47755,7 +48102,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Assisted Chest Dip": {
       "type": "W",
@@ -47765,7 +48114,9 @@
       "loadMode": "assisted",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Deficit Push-Up": {
       "type": "U",
@@ -47775,7 +48126,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Weighted Push-Up": {
       "type": "W",
@@ -47785,7 +48138,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Ring Push-Up": {
       "type": "U",
@@ -47795,7 +48150,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Ring Dip": {
       "type": "U",
@@ -47805,7 +48162,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Svend Press": {
       "type": "D",
@@ -47815,7 +48174,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Landmine Chest Press": {
       "type": "B",
@@ -47825,7 +48186,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Neutral-Grip Lat Pulldown": {
       "type": "M",
@@ -47835,7 +48198,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Wide-Grip Lat Pulldown": {
       "type": "M",
@@ -47845,7 +48210,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Close-Grip Lat Pulldown": {
       "type": "M",
@@ -47855,7 +48222,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Underhand Lat Pulldown": {
       "type": "M",
@@ -47865,7 +48234,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Single-Arm Lat Pulldown": {
       "type": "M",
@@ -47875,7 +48246,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Straight-Arm Cable Pulldown": {
       "type": "M",
@@ -47885,7 +48258,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Rope Straight-Arm Pulldown": {
       "type": "M",
@@ -47895,7 +48270,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Kneeling Cable Pulldown": {
       "type": "M",
@@ -47905,7 +48282,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Machine Lat Pulldown": {
       "type": "M",
@@ -47915,7 +48294,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Assisted Pull-Up Machine": {
       "type": "M",
@@ -47925,7 +48306,9 @@
       "loadMode": "assisted",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Chest-Supported Machine Row": {
       "type": "M",
@@ -47935,7 +48318,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Plate-Loaded Row": {
       "type": "M",
@@ -47945,7 +48330,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Chest-Supported T-Bar Row": {
       "type": "M",
@@ -47955,7 +48342,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Landmine Row": {
       "type": "B",
@@ -47965,7 +48354,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Meadows Row": {
       "type": "M",
@@ -47975,7 +48366,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Single-Arm Cable Row": {
       "type": "M",
@@ -47985,7 +48378,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Wide-Grip Seated Cable Row": {
       "type": "M",
@@ -47995,7 +48390,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Close-Grip Seated Cable Row": {
       "type": "M",
@@ -48005,7 +48402,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Neutral-Grip Seated Cable Row": {
       "type": "M",
@@ -48015,7 +48414,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Underhand Seated Cable Row": {
       "type": "M",
@@ -48025,7 +48426,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "High Row Machine": {
       "type": "M",
@@ -48035,7 +48438,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Iso-Lateral Row Machine": {
       "type": "M",
@@ -48045,7 +48450,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Low Row Machine": {
       "type": "M",
@@ -48055,7 +48462,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Smith Machine Bent-Over Row": {
       "type": "M",
@@ -48065,7 +48474,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Pendlay Row": {
       "type": "B",
@@ -48075,7 +48486,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Seal Row": {
       "type": "M",
@@ -48085,7 +48498,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Chest-Supported Dumbbell Row": {
       "type": "D",
@@ -48095,7 +48510,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Incline Bench Dumbbell Row": {
       "type": "D",
@@ -48105,7 +48522,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Renegade Row": {
       "type": "M",
@@ -48115,7 +48534,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Cable Pullover": {
       "type": "M",
@@ -48125,7 +48546,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Dumbbell Pullover": {
       "type": "D",
@@ -48135,7 +48558,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Machine Pullover": {
       "type": "M",
@@ -48145,7 +48570,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Back Extension": {
       "type": "M",
@@ -48155,7 +48582,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "45-Degree Back Extension": {
       "type": "M",
@@ -48165,7 +48594,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Reverse Hyperextension": {
       "type": "M",
@@ -48175,7 +48606,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Rack Pull": {
       "type": "M",
@@ -48185,7 +48618,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Smith Machine Squat": {
       "type": "M",
@@ -48195,7 +48630,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Hack Squat Machine": {
       "type": "M",
@@ -48205,7 +48642,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Pendulum Squat": {
       "type": "M",
@@ -48215,7 +48654,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Belt Squat": {
       "type": "M",
@@ -48225,7 +48666,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "V-Squat Machine": {
       "type": "M",
@@ -48235,7 +48678,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Goblet Squat": {
       "type": "B",
@@ -48245,7 +48690,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Dumbbell Front Squat": {
       "type": "D",
@@ -48255,7 +48702,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Zercher Squat": {
       "type": "B",
@@ -48265,7 +48714,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Pause Squat": {
       "type": "B",
@@ -48275,7 +48726,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Box Squat": {
       "type": "B",
@@ -48285,7 +48738,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Safety Bar Squat": {
       "type": "B",
@@ -48295,7 +48750,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Leg Press Calf Raise": {
       "type": "M",
@@ -48305,7 +48762,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Single-Leg Leg Press": {
       "type": "M",
@@ -48315,7 +48774,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Horizontal Leg Press": {
       "type": "M",
@@ -48325,7 +48786,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Single-Leg Extension": {
       "type": "M",
@@ -48335,7 +48798,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Leg Extension Machine": {
       "type": "M",
@@ -48345,7 +48810,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Seated Leg Curl": {
       "type": "M",
@@ -48355,7 +48822,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Lying Leg Curl": {
       "type": "M",
@@ -48365,7 +48834,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Standing Leg Curl": {
       "type": "M",
@@ -48375,7 +48846,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Single-Leg Seated Curl": {
       "type": "M",
@@ -48385,7 +48858,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Nordic Hamstring Curl": {
       "type": "U",
@@ -48395,7 +48870,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Glute-Ham Raise": {
       "type": "U",
@@ -48405,7 +48882,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Good Morning": {
       "type": "B",
@@ -48415,7 +48894,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Dumbbell Romanian Deadlift": {
       "type": "D",
@@ -48425,7 +48906,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Single-Leg Romanian Deadlift": {
       "type": "B",
@@ -48435,7 +48918,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Stiff-Leg Deadlift": {
       "type": "B",
@@ -48445,7 +48930,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Cable Pull-Through": {
       "type": "M",
@@ -48455,7 +48942,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Smith Machine Romanian Deadlift": {
       "type": "M",
@@ -48465,7 +48954,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Reverse Lunge": {
       "type": "M",
@@ -48475,7 +48966,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Dumbbell Reverse Lunge": {
       "type": "D",
@@ -48485,7 +48978,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Smith Machine Lunge": {
       "type": "M",
@@ -48495,7 +48990,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Single-Leg Press": {
       "type": "M",
@@ -48505,7 +49002,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Sissy Squat": {
       "type": "B",
@@ -48515,7 +49014,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Spanish Squat": {
       "type": "B",
@@ -48525,7 +49026,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Wall Sit": {
       "type": "M",
@@ -48535,7 +49038,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Step-Up Machine": {
       "type": "M",
@@ -48545,7 +49050,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Leg Press (High Feet)": {
       "type": "M",
@@ -48555,7 +49062,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Leg Press (Low Feet)": {
       "type": "M",
@@ -48565,7 +49074,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Legs"
     },
     "Cable Glute Kickback": {
       "type": "M",
@@ -48575,7 +49086,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Machine Glute Kickback": {
       "type": "M",
@@ -48585,7 +49098,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Glute Kickback Machine": {
       "type": "M",
@@ -48595,7 +49110,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Smith Machine Hip Thrust": {
       "type": "M",
@@ -48605,7 +49122,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Barbell Glute Bridge": {
       "type": "B",
@@ -48615,7 +49134,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Dumbbell Glute Bridge": {
       "type": "D",
@@ -48625,7 +49146,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Single-Leg Hip Thrust": {
       "type": "M",
@@ -48635,7 +49158,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Glute Drive Machine": {
       "type": "M",
@@ -48645,7 +49170,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Hip Thrust Machine": {
       "type": "M",
@@ -48655,7 +49182,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Pull Through": {
       "type": "M",
@@ -48665,7 +49194,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "45-Degree Hip Extension (Glute Focus)": {
       "type": "M",
@@ -48675,7 +49206,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Hip Abduction Machine (Leaning Forward)": {
       "type": "M",
@@ -48685,7 +49218,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Standing Cable Hip Abduction": {
       "type": "M",
@@ -48695,7 +49230,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Hip Extension": {
       "type": "M",
@@ -48705,7 +49242,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Frog Pump": {
       "type": "M",
@@ -48715,7 +49254,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Banded Glute Bridge": {
       "type": "M",
@@ -48725,7 +49266,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Standing Calf Raise Machine": {
       "type": "M",
@@ -48735,7 +49278,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Calves"
     },
     "Donkey Calf Raise": {
       "type": "M",
@@ -48745,7 +49290,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Calves"
     },
     "Single-Leg Calf Raise": {
       "type": "M",
@@ -48755,7 +49302,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Calves"
     },
     "Smith Machine Calf Raise": {
       "type": "M",
@@ -48765,7 +49314,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Calves"
     },
     "Tibialis Raise": {
       "type": "M",
@@ -48775,7 +49326,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Calves"
     },
     "Tibialis Raise Machine": {
       "type": "M",
@@ -48785,7 +49338,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Calves"
     },
     "Seated Tibialis Raise": {
       "type": "M",
@@ -48795,7 +49350,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Calves"
     },
     "Reverse Crunch": {
       "type": "U",
@@ -48805,7 +49362,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Decline Sit-Up": {
       "type": "U",
@@ -48815,7 +49374,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Weighted Decline Sit-Up": {
       "type": "W",
@@ -48825,7 +49386,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Sit-Up": {
       "type": "U",
@@ -48835,7 +49398,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Crunch": {
       "type": "U",
@@ -48845,7 +49410,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Bicycle Crunch": {
       "type": "U",
@@ -48855,7 +49422,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Russian Twist": {
       "type": "U",
@@ -48865,7 +49434,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Cable Woodchop": {
       "type": "M",
@@ -48875,7 +49446,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "High-to-Low Woodchop": {
       "type": "U",
@@ -48885,7 +49458,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Low-to-High Woodchop": {
       "type": "U",
@@ -48895,7 +49470,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Pallof Press": {
       "type": "U",
@@ -48905,7 +49482,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Cable Pallof Press": {
       "type": "M",
@@ -48915,7 +49494,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Hanging Knee Raise": {
       "type": "U",
@@ -48925,7 +49506,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Captain’s Chair Knee Raise": {
       "type": "U",
@@ -48935,7 +49518,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Captain’s Chair Leg Raise": {
       "type": "U",
@@ -48945,7 +49530,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Toes-to-Bar": {
       "type": "U",
@@ -48955,7 +49542,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Dragon Flag": {
       "type": "U",
@@ -48965,7 +49554,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Side Plank": {
       "type": "U",
@@ -48975,7 +49566,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Weighted Plank": {
       "type": "W",
@@ -48985,7 +49578,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Dead Bug": {
       "type": "U",
@@ -48995,7 +49590,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Bird Dog": {
       "type": "U",
@@ -49005,7 +49602,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Hollow Body Hold": {
       "type": "U",
@@ -49015,7 +49614,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "L-Sit": {
       "type": "U",
@@ -49025,7 +49626,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Mountain Climber": {
       "type": "U",
@@ -49035,7 +49638,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Cable Side Bend": {
       "type": "M",
@@ -49045,7 +49650,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Dumbbell Side Bend": {
       "type": "D",
@@ -49055,7 +49662,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Ab Crunch Machine": {
       "type": "M",
@@ -49065,7 +49674,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Rotary Torso Machine": {
       "type": "M",
@@ -49075,7 +49686,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Core"
     },
     "Wrist Curl": {
       "type": "D",
@@ -49085,7 +49698,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Reverse Wrist Curl": {
       "type": "D",
@@ -49095,7 +49710,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Dumbbell Wrist Curl": {
       "type": "D",
@@ -49105,7 +49722,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Behind-the-Back Wrist Curl": {
       "type": "D",
@@ -49115,7 +49734,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Wrist Roller": {
       "type": "B",
@@ -49125,7 +49746,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Farmer’s Carry": {
       "type": "B",
@@ -49135,7 +49758,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Dumbbell Farmer Carry": {
       "type": "D",
@@ -49145,7 +49770,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Barbell Hold": {
       "type": "B",
@@ -49155,7 +49782,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Plate Pinch Hold": {
       "type": "B",
@@ -49165,7 +49794,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Dead Hang": {
       "type": "U",
@@ -49175,7 +49806,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Towel Hang": {
       "type": "U",
@@ -49185,7 +49818,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Forearms"
     },
     "Power Clean": {
       "type": "B",
@@ -49195,7 +49830,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Hang Power Clean": {
       "type": "B",
@@ -49205,7 +49842,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Clean Pull": {
       "type": "B",
@@ -49215,7 +49854,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Snatch-Grip Deadlift": {
       "type": "B",
@@ -49225,7 +49866,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Barbell Thruster": {
       "type": "B",
@@ -49235,7 +49878,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Dumbbell Thruster": {
       "type": "D",
@@ -49245,7 +49890,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Kettlebell Swing": {
       "type": "B",
@@ -49255,7 +49902,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Turkish Get-Up": {
       "type": "B",
@@ -49265,7 +49914,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Sled Push": {
       "type": "B",
@@ -49275,7 +49926,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Sled Drag": {
       "type": "B",
@@ -49285,7 +49938,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Battle Ropes": {
       "type": "B",
@@ -49295,7 +49950,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Full Body"
     },
     "Cable Crossover": {
       "type": "M",
@@ -49305,7 +49962,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Standing Cable Crossover": {
       "type": "M",
@@ -49315,7 +49974,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Machine Incline Press": {
       "type": "M",
@@ -49325,7 +49986,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Converging Chest Press": {
       "type": "M",
@@ -49335,7 +49998,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Iso-Lateral Chest Press": {
       "type": "M",
@@ -49345,7 +50010,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Cable Lateral Raise (Behind Body)": {
       "type": "M",
@@ -49355,7 +50022,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable Lateral Raise (Lean-Away)": {
       "type": "M",
@@ -49365,7 +50034,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Machine Reverse Fly": {
       "type": "M",
@@ -49375,7 +50046,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Rear Delt Cable Crossover": {
       "type": "M",
@@ -49385,7 +50058,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Face Pull (Rope)": {
       "type": "M",
@@ -49395,7 +50070,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable External Rotation": {
       "type": "M",
@@ -49405,7 +50082,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Dumbbell External Rotation": {
       "type": "D",
@@ -49415,7 +50094,9 @@
       "loadMode": "normal",
       "loadMultiplier": 2,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Dual-Cable Curl": {
       "type": "M",
@@ -49425,7 +50106,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Cable Preacher Curl": {
       "type": "M",
@@ -49435,7 +50118,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Machine Preacher Curl": {
       "type": "M",
@@ -49445,7 +50130,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "EZ-Bar Preacher Curl": {
       "type": "B",
@@ -49455,7 +50142,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Single-Arm Preacher Curl": {
       "type": "M",
@@ -49465,7 +50154,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Standing Cable Chest Press": {
       "type": "M",
@@ -49475,7 +50166,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Single-Arm Standing Cable Chest Press": {
       "type": "M",
@@ -49485,7 +50178,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Seated Cable Chest Press": {
       "type": "M",
@@ -49495,7 +50190,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Single-Arm Seated Cable Chest Press": {
       "type": "M",
@@ -49505,7 +50202,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Incline Cable Chest Press": {
       "type": "M",
@@ -49515,7 +50214,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Decline Cable Chest Press": {
       "type": "M",
@@ -49525,7 +50226,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Split-Stance Cable Chest Press": {
       "type": "M",
@@ -49535,7 +50238,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Alternating Cable Chest Press": {
       "type": "M",
@@ -49545,7 +50250,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Mid-Height Cable Fly": {
       "type": "M",
@@ -49555,7 +50262,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Single-Arm Cable Fly": {
       "type": "M",
@@ -49565,7 +50274,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Standing Single-Arm Cable Fly": {
       "type": "M",
@@ -49575,7 +50286,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Seated Cable Fly": {
       "type": "M",
@@ -49585,7 +50298,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Low Cable Crossover": {
       "type": "M",
@@ -49595,7 +50310,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "High Cable Crossover": {
       "type": "M",
@@ -49605,7 +50322,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Single-Arm Cable Crossover": {
       "type": "M",
@@ -49615,7 +50334,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Cable Squeeze Press": {
       "type": "M",
@@ -49625,7 +50346,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Cable Press-Around": {
       "type": "M",
@@ -49635,7 +50358,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Standing Cable Pec Fly": {
       "type": "M",
@@ -49645,7 +50370,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Cable Chest Press with Pause": {
       "type": "M",
@@ -49655,7 +50382,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Chest"
     },
     "Cable Shoulder Press": {
       "type": "M",
@@ -49665,7 +50394,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Single-Arm Cable Shoulder Press": {
       "type": "M",
@@ -49675,7 +50406,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Half-Kneeling Single-Arm Cable Shoulder Press": {
       "type": "M",
@@ -49685,7 +50418,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Single-Arm Cable Front Raise": {
       "type": "M",
@@ -49695,7 +50430,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Seated Cable Front Raise": {
       "type": "M",
@@ -49705,7 +50442,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Behind-the-Back Cable Lateral Raise": {
       "type": "M",
@@ -49715,7 +50454,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Lean-Away Cable Lateral Raise": {
       "type": "M",
@@ -49725,7 +50466,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Seated Cable Lateral Raise": {
       "type": "M",
@@ -49735,7 +50478,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Single-Arm Seated Cable Lateral Raise": {
       "type": "M",
@@ -49745,7 +50490,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable Y-Raise": {
       "type": "M",
@@ -49755,7 +50502,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Single-Arm Cable Y-Raise": {
       "type": "M",
@@ -49765,7 +50514,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Wide-Grip Cable Upright Row": {
       "type": "M",
@@ -49775,7 +50526,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable Rear Delt Row": {
       "type": "M",
@@ -49785,7 +50538,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cross-Body Cable Rear Delt Fly": {
       "type": "M",
@@ -49795,7 +50550,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "High Cable Rear Delt Fly": {
       "type": "M",
@@ -49805,7 +50562,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Low Cable Rear Delt Fly": {
       "type": "M",
@@ -49815,7 +50574,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Rope Face Pull": {
       "type": "M",
@@ -49825,7 +50586,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Wide-Grip Cable Face Pull": {
       "type": "M",
@@ -49835,7 +50598,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Face Pull with External Rotation": {
       "type": "M",
@@ -49845,7 +50610,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Cable Shrug": {
       "type": "M",
@@ -49855,7 +50622,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Single-Arm Cable Shrug": {
       "type": "M",
@@ -49865,7 +50634,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Shoulders"
     },
     "Rope Cable Triceps Pushdown": {
       "type": "M",
@@ -49875,7 +50646,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "EZ-Bar Cable Pushdown": {
       "type": "M",
@@ -49885,7 +50658,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Straight-Bar Cable Pushdown": {
       "type": "M",
@@ -49895,7 +50670,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Single-Arm Reverse-Grip Cable Pushdown": {
       "type": "M",
@@ -49905,7 +50682,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Cross-Body Cable Triceps Extension": {
       "type": "M",
@@ -49915,7 +50694,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Single-Arm Overhead Cable Triceps Extension": {
       "type": "M",
@@ -49925,7 +50706,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Straight-Bar Overhead Cable Extension": {
       "type": "M",
@@ -49935,7 +50718,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Seated Cable Triceps Extension": {
       "type": "M",
@@ -49945,7 +50730,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Cable Triceps Kickback": {
       "type": "M",
@@ -49955,7 +50742,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Single-Arm Cable Triceps Kickback": {
       "type": "M",
@@ -49965,7 +50754,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Lying Cable Triceps Extension": {
       "type": "M",
@@ -49975,7 +50766,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "High-Pulley Triceps Extension": {
       "type": "M",
@@ -49985,7 +50778,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Cable Triceps Press": {
       "type": "M",
@@ -49995,7 +50790,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Reverse-Grip Rope Pushdown": {
       "type": "M",
@@ -50005,7 +50802,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Kneeling Single-Arm Lat Pulldown": {
       "type": "M",
@@ -50015,7 +50814,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "V-Bar Lat Pulldown": {
       "type": "M",
@@ -50025,7 +50826,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Rope Lat Pulldown": {
       "type": "M",
@@ -50035,7 +50838,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Single-Arm Straight-Arm Pulldown": {
       "type": "M",
@@ -50045,7 +50850,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "High-to-Low Cable Row": {
       "type": "M",
@@ -50055,7 +50862,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Low-to-High Cable Row": {
       "type": "M",
@@ -50065,7 +50874,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Single-Arm Seated Cable Row": {
       "type": "M",
@@ -50075,7 +50886,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Chest-Supported Cable Row": {
       "type": "M",
@@ -50085,7 +50898,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Rope Seated Cable Row": {
       "type": "M",
@@ -50095,7 +50910,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Kneeling Cable Row": {
       "type": "M",
@@ -50105,7 +50922,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Standing Cable Row": {
       "type": "M",
@@ -50115,7 +50934,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "High Cable Row": {
       "type": "M",
@@ -50125,7 +50946,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Low Cable Row": {
       "type": "M",
@@ -50135,7 +50958,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Rope Cable Pullover": {
       "type": "M",
@@ -50145,7 +50970,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Single-Arm Cable Pullover": {
       "type": "M",
@@ -50155,7 +50982,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Cable Reverse Fly": {
       "type": "M",
@@ -50165,7 +50994,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Standing Cable Reverse Fly": {
       "type": "M",
@@ -50175,7 +51006,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Single-Arm Cable Reverse Fly": {
       "type": "M",
@@ -50185,7 +51018,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Cable Lat Prayer": {
       "type": "M",
@@ -50195,7 +51030,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Kneeling Cable Lat Prayer": {
       "type": "M",
@@ -50205,7 +51042,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Cable Straight-Arm Row": {
       "type": "M",
@@ -50215,7 +51054,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Cross-Body Single-Arm Cable Row": {
       "type": "M",
@@ -50225,7 +51066,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Back"
     },
     "Standing Cable Curl": {
       "type": "M",
@@ -50235,7 +51078,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Seated Cable Curl": {
       "type": "M",
@@ -50245,7 +51090,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Single-Arm Cable Curl with Supination": {
       "type": "M",
@@ -50255,7 +51102,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Rope Hammer Cable Curl": {
       "type": "M",
@@ -50265,7 +51114,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Cross-Body Cable Curl": {
       "type": "M",
@@ -50275,7 +51126,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "High-Pulley Cable Curl": {
       "type": "M",
@@ -50285,7 +51138,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Low-Pulley Cable Curl": {
       "type": "M",
@@ -50295,7 +51150,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Behind-the-Body Cable Curl": {
       "type": "M",
@@ -50305,7 +51162,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Rope Cable Curl": {
       "type": "M",
@@ -50315,7 +51174,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Wide-Grip Cable Curl": {
       "type": "M",
@@ -50325,7 +51186,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Reverse-Grip Cable Curl": {
       "type": "M",
@@ -50335,7 +51198,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Single-Arm Reverse Cable Curl": {
       "type": "M",
@@ -50345,7 +51210,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Cable Spider Curl": {
       "type": "M",
@@ -50355,7 +51222,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Dual-Cable Biceps Curl": {
       "type": "M",
@@ -50365,7 +51234,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Alternating Cable Curl": {
       "type": "M",
@@ -50375,7 +51246,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Cable Drag Curl": {
       "type": "M",
@@ -50385,7 +51258,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Kneeling Cable Curl": {
       "type": "M",
@@ -50395,7 +51270,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Biceps"
     },
     "Cable Squat": {
       "type": "M",
@@ -50405,7 +51282,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Front Squat": {
       "type": "M",
@@ -50415,7 +51294,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Reverse Lunge": {
       "type": "M",
@@ -50425,7 +51306,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Split Squat": {
       "type": "M",
@@ -50435,7 +51318,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Bulgarian Split Squat": {
       "type": "M",
@@ -50445,7 +51330,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Step-Up": {
       "type": "M",
@@ -50455,7 +51342,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Leg Extension": {
       "type": "M",
@@ -50465,7 +51354,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Seated Cable Leg Extension": {
       "type": "M",
@@ -50475,7 +51366,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Standing Cable Hamstring Curl": {
       "type": "M",
@@ -50485,7 +51378,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Single-Leg Cable Hamstring Curl": {
       "type": "M",
@@ -50495,7 +51390,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Kneeling Cable Leg Curl": {
       "type": "M",
@@ -50505,7 +51402,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Hip Abduction": {
       "type": "M",
@@ -50515,7 +51414,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Hip Adduction": {
       "type": "M",
@@ -50525,7 +51426,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Standing Cable Hip Adduction": {
       "type": "M",
@@ -50535,7 +51438,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Bent-Knee Cable Glute Kickback": {
       "type": "M",
@@ -50545,7 +51450,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Diagonal Cable Glute Kickback": {
       "type": "M",
@@ -50555,7 +51462,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Romanian Deadlift": {
       "type": "M",
@@ -50565,7 +51474,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Good Morning": {
       "type": "M",
@@ -50575,7 +51486,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Calf Raise": {
       "type": "M",
@@ -50585,7 +51498,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Single-Leg Cable Calf Raise": {
       "type": "M",
@@ -50595,7 +51510,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Lateral Lunge": {
       "type": "M",
@@ -50605,7 +51522,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Curtsy Lunge": {
       "type": "M",
@@ -50615,7 +51534,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Reverse Step-Up": {
       "type": "M",
@@ -50625,7 +51546,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Hip Hinge": {
       "type": "M",
@@ -50635,7 +51558,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Cable Kickstand RDL": {
       "type": "M",
@@ -50645,7 +51570,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Glutes"
     },
     "Kneeling Cable Crunch": {
       "type": "M",
@@ -50655,7 +51582,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Standing Cable Crunch": {
       "type": "M",
@@ -50665,7 +51594,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "High-Pulley Cable Crunch": {
       "type": "M",
@@ -50675,7 +51606,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Rope Cable Crunch": {
       "type": "M",
@@ -50685,7 +51618,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Kneeling Rope Crunch": {
       "type": "M",
@@ -50695,7 +51630,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Cable Woodchop High-to-Low": {
       "type": "M",
@@ -50705,7 +51642,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Cable Woodchop Low-to-High": {
       "type": "M",
@@ -50715,7 +51654,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Half-Kneeling Cable Chop": {
       "type": "M",
@@ -50725,7 +51666,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Tall-Kneeling Cable Chop": {
       "type": "M",
@@ -50735,7 +51678,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Half-Kneeling Pallof Press": {
       "type": "M",
@@ -50745,7 +51690,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Single-Arm Pallof Press": {
       "type": "M",
@@ -50755,7 +51702,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Standing Cable Side Bend": {
       "type": "M",
@@ -50765,7 +51714,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Seated Cable Rotation": {
       "type": "M",
@@ -50775,7 +51726,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Standing Cable Rotation": {
       "type": "M",
@@ -50785,7 +51738,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Cable Lift": {
       "type": "M",
@@ -50795,7 +51750,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Half-Kneeling Cable Lift": {
       "type": "M",
@@ -50805,7 +51762,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Cable Reverse Crunch": {
       "type": "M",
@@ -50815,7 +51774,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Cable Oblique Crunch": {
       "type": "M",
@@ -50825,7 +51786,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Cable Dead Bug": {
       "type": "M",
@@ -50835,7 +51798,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Anti-Rotation Cable Hold": {
       "type": "M",
@@ -50845,7 +51810,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Split-Stance Pallof Press": {
       "type": "M",
@@ -50855,7 +51822,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Tall-Kneeling Anti-Rotation Press": {
       "type": "M",
@@ -50865,7 +51834,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Abs"
     },
     "Triceps Extension": {
       "type": "M",
@@ -50875,7 +51846,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Triceps Press": {
       "type": "M",
@@ -50885,7 +51858,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Cable Triceps Extension": {
       "type": "M",
@@ -50895,7 +51870,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Rope Triceps Extension": {
       "type": "M",
@@ -50905,7 +51882,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Single-Arm Triceps Extension": {
       "type": "M",
@@ -50915,7 +51894,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": true,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Reverse-Grip Triceps Extension": {
       "type": "M",
@@ -50925,7 +51906,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Cross-Body Triceps Extension": {
       "type": "M",
@@ -50935,7 +51918,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Machine Triceps Extension": {
       "type": "M",
@@ -50945,7 +51930,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Machine Triceps Press": {
       "type": "M",
@@ -50955,7 +51942,9 @@
       "loadMode": "normal",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "medium"
+      "rom": "medium",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Close-Grip Push-Up": {
       "type": "U",
@@ -50965,7 +51954,9 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "low"
+      "rom": "low",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     },
     "Dip Machine": {
       "type": "M",
@@ -50975,7 +51966,14 @@
       "loadMode": "bodyweight",
       "loadMultiplier": 1,
       "unilateral": false,
-      "rom": "high"
+      "rom": "high",
+      "standardsVersion": 6,
+      "primaryMuscle": "Triceps"
     }
+  },
+  "muscleModel": {
+    "aggregation": "weighted_percentile",
+    "rankPercentileMap": "ranking.rankPercentiles",
+    "note": "Each muscle is scored only from its mapped exercises; transfer weights remain exercise-specific in app.js."
   }
 }
