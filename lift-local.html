@@ -315,7 +315,7 @@ html.tutorial-open,body.tutorial-open{overflow:hidden!important}
 .rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent)!important;stroke:var(--c)!important;stroke-width:1.7!important;stroke-linejoin:round!important}
 .rank-icon b{position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;font-size:9px!important;line-height:1!important;font-weight:900!important;color:var(--c)!important;pointer-events:none!important}
 .overall-rank-title .rank-icon{--rank-icon-size:34px}.rank-result-title .rank-icon{--rank-icon-size:30px}.rank-badge .rank-icon{--rank-icon-size:26px}
-</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.57';
+</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.58';
 /*BEGIN:RANKING_ENGINE*//* Lift ranking engine — pure metric calculations; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;const lerp=(a,b,t)=>a+(b-a)*t;const interp=(p,x)=>{if(!p?.length)return 1;if(x<=p[0][0])return p[0][1];for(let i=1;i<p.length;i++){if(x<=p[i][0]){const[x0,y0]=p[i-1],[x1,y1]=p[i];return lerp(y0,y1,(x-x0)/(x1-x0))}}return p[p.length-1][1]};const ageMultiplier=(age,c)=>{if(age===null||age===undefined||age==='')return 1;const a=finite(age,NaN);return Number.isFinite(a)&&a>=13?Math.min(c.ageCap??1.2,interp(c.ageCurve,a)):1};const heightMultiplier=(h,sex,rom,c)=>{const n=finite(h,NaN),ref=finite(c.referenceHeightCm?.[sex],NaN);if(!Number.isFinite(n)||!Number.isFinite(ref)||n<=0)return 1;const k=finite(c.height?.kByRom?.[rom],0);return Math.max(c.height?.capMin??.9,Math.min(c.height?.capMax??1.1,Math.pow(n/ref,k)))};const repReliability=(r,c)=>interp(c.repReliability,finite(r,1));const effectiveLoad=(s,e,b)=>{const bw=finite(b),w=finite(s?.kg),mode=e?.loadMode||'normal',m=finite(e?.loadMultiplier,1);if(mode==='assisted')return Math.max(0,bw-w);if(mode==='bodyweight')return Math.max(0,bw+w);return Math.max(0,w*m)};const estimate1RM=(s,e,b,c)=>{const r=Math.round(finite(s?.reps));if(s?.t==='w'||r<1||r>finite(c.epleyMaxReps,12))return 0;const load=effectiveLoad(s,e,b);if(load<=0)return 0;const x=r===1?load:load*(1+r/30);return x*repReliability(r,c)};const adjustedScore=(e,b,sex,h,age,ex,c)=>{const bw=finite(b),ref=finite(c.referenceBodyweightKg?.[sex]);if(e<=0||bw<=0||ref<=0)return 0;return e*Math.pow(ref/bw,finite(c.allometricExponent,.67))*ageMultiplier(age,c)*heightMultiplier(h,sex,ex?.rom,c)};const rankIndex=(score,t)=>{if(!Array.isArray(t)||!Number.isFinite(score)||score<=0)return -1;let i=-1;for(let j=0;j<t.length;j++)if(score>=t[j])i=j;return i};const thresholds=(c,n,sex)=>c.t?.[c.alias?.[n]||n]?.[sex==='F'?1:0]||null;return{interp,ageMultiplier,heightMultiplier,repReliability,effectiveLoad,estimate1RM,adjustedScore,rankIndex,thresholds}})();/*END:RANKING_ENGINE*/const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
 let S,X,R,EX={},view='today',flt='All',ci=0,dr={},gr=null;
@@ -396,12 +396,12 @@ const MUSCLE_LABEL={chest:'Chest',rearDelts:'Rear delts',frontDelts:'Front delts
 const MUSCLE_ORDER=['chest','frontDelts','rearDelts','sideDelts','biceps','triceps','lats','upperBack','abs','glutes','quads','hamstrings','calves'];
 const muscleTransferWeight=(id,n)=>({'Bench Press':{chest:1,triceps:.42,frontDelts:.3},'Overhead Press':{frontDelts:1,sideDelts:.5,triceps:.35},'Pull-Up':{lats:1,biceps:.4,upperBack:.35},'Barbell Row':{upperBack:1,lats:.72,biceps:.32,rearDelts:.32},'Squat':{quads:1,glutes:.58,hamstrings:.3,abs:.2,calves:.08},'Deadlift':{hamstrings:1,glutes:.7,upperBack:.35,lats:.22,abs:.2,calves:.06},'Romanian Deadlift':{hamstrings:1,glutes:.65}}[n]?.[id]??1);const muscleStates=(b,B)=>MUSCLE_ORDER.map(id=>{const lifts=MUSCLE_LIFTS[id],items=lifts.map(n=>{const e=b[n]||0;if(!e||!B)return null;const i=tier(n,e,bestHeight[n]||num(S.set.heightCm)||175),w=muscleTransferWeight(id,n);return i>=0?{i,w}:null}).filter(Boolean);if(!items.length)return{id,label:MUSCLE_LABEL[id],i:-1,lifts,proxy:['abs','calves'].includes(id)};const ws=items.reduce((a,x)=>a+x.w,0),i=Math.round(items.reduce((a,x)=>a+x.i*x.w,0)/Math.max(.0001,ws));return{id,label:MUSCLE_LABEL[id],i,lifts,proxy:['abs','calves'].includes(id)}});
 
-const TUTORIAL_VERSION=4;
+const TUTORIAL_VERSION=5;
 /* Tutorial v4: guided real-UI walkthrough. The dim is created by the spotlight
    itself so the highlighted control stays fully visible and interactive. */
 const tutorialSteps=[
  {id:'welcome',view:'today',title:'Welcome to Lift',body:'This walkthrough uses the real Lift interface. You will create a workout, add an exercise, log a set, finish it, then walk through History, Ranks and Profile.',tip:'Follow the highlighted control. Next stays locked until an action step is actually completed.',target:null},
- {id:'start',view:'today',title:'1 · Create a workout',body:'Start from an empty workout so you can see the complete flow without a preset split adding exercises for you.',tip:'Tap Empty. The workout screen will appear and the next step will unlock.',target:()=>document.querySelector('[data-a="start"][data-v="Empty"]'),gate:()=>!!S.cur&&S.cur.split==='Empty'},
+ {id:'start',view:'today',title:'1 · Create a workout',body:'Start from an empty workout so you can see the complete flow without a preset split adding exercises for you.',tip:'Tap Empty. The workout screen will appear and the next step will unlock.',target:()=>S.cur?document.querySelector('[data-a="log"]')||document.querySelector('[data-a="openx"]')||document.querySelector('[data-a="fin"]'):document.querySelector('[data-a="start"][data-v="Empty"]'),gate:()=>!!S.cur&&S.cur.split==='Empty'},
  {id:'exercise',view:'today',title:'2 · Add an exercise',body:'Now open Browse exercise library. The guide follows you into the picker and highlights a real exercise you can add.',tip:'Tap Browse exercise library, then choose any exercise from the highlighted list. The picker closes automatically.',target:()=>document.querySelector('#exercise-library .exercise-option')||document.querySelector('.exercise-add-bar [data-a="openx"]'),gate:()=>!!S.cur&&Array.isArray(S.cur.ex)&&S.cur.ex.length>0},
  {id:'set',view:'today',title:'3 · Log weight + reps',body:'Use the weight and reps controls for the exercise, then tap Log set. Your first set will appear immediately below.',tip:'You can change the values before logging. Next unlocks only after a set has actually been added.',target:()=>document.querySelector('[data-a="log"]'),gate:()=>!!S.cur&&S.cur.ex?.some(x=>Array.isArray(x.sets)&&x.sets.length>0)},
  {id:'finish',view:'today',title:'4 · Finish the workout',body:'When the set is logged, Finish workout saves the session to History. This is the real save path used by the app.',tip:'Tap Finish workout to continue. Discard is intentionally not used in the tutorial so your walkthrough creates a real History entry.',target:()=>document.querySelector('[data-a="fin"]'),gate:()=>!S.cur&&S.workouts.length>0},
@@ -434,7 +434,7 @@ const tutorialPosition=()=>{
  spot.hidden=false;tip.classList.remove('centered');
  const r=target.getBoundingClientRect(),pad=8;
  spot.style.left=Math.max(6,r.left-pad)+'px';spot.style.top=Math.max(6,r.top-pad)+'px';spot.style.width=Math.min(innerWidth-12,r.width+pad*2)+'px';spot.style.height=Math.min(innerHeight-12,r.height+pad*2)+'px';
- const tw=Math.min(340,innerWidth-28),th=Math.min(220,tip.offsetHeight||180),gap=12;
+ const tw=Math.min(340,innerWidth-28),th=Math.min(innerHeight*.48,tip.getBoundingClientRect().height||180),gap=12;
  let x=Math.min(Math.max(14,r.left),Math.max(14,innerWidth-tw-14)),y=r.bottom+gap;
  if(y+th>innerHeight-12)y=r.top-th-gap;
  if(y<12){y=Math.min(innerHeight-th-12,Math.max(12,r.top+(r.height-th)/2));x=Math.min(innerWidth-tw-14,Math.max(14,r.right+gap));if(x+tw>innerWidth-12)x=Math.max(14,r.left-tw-gap)}
@@ -442,7 +442,7 @@ const tutorialPosition=()=>{
 };
 const tutorialRender=()=>{
  const st=tutorialSteps[tutorialIndex];if(!st){tutorialFinish();return}
- if(view!==st.view){view=st.view;nav();render()}
+ if(view!==st.view)view=st.view;nav();render()
  setTimeout(()=>{
    tutorialClear();document.body.classList.add('tutorial-open');
    const layer=document.createElement('div');layer.id='tutorial-layer';layer.className='tutorial-layer';
@@ -526,12 +526,12 @@ today(){const c=S.cur,add=`<div class="add exercise-add-bar"><button class="cta"
  if(!c)return h('Today\'s','workout')+rem()+'<p class=q>Choose a split — each new split starts empty.</p><div class=chips>'+['Empty',...Object.keys(X.templates)].map(t=>`<button class=pill data-a=start data-v="${t}">${t}</button>`).join('')+'</div>';
  const L=c.ex,x=L[ci=Math.min(ci,L.length-1)],top=`<div class=top>${h(c.split=='Empty'?'Workout':c.split,c.d)}<button class=lnk data-a=tab data-v=settings>Set bodyweight</button></div>`,foot=`<div class=chips><button class="pill dark" data-a=fin>Finish workout</button><button class=pill data-a=cancel>Discard</button></div>`;
  if(!x)return top+'<p class=q>Add your first exercise</p>'+add+foot;
- const t=EX[x.n].t,[lo,hi,st]=RG(t),P=L[ci-1],N=L[ci+1],note={D:'per dumbbell',W:'added kg (negative = assisted)',M:'approximate, machines vary by gym'}[t]||'';
+ const exMeta=EX[x.n]||{g:'Custom',t:'B',c:'Custom'},t=exMeta.t,[lo,hi,st]=RG(t),P=L[ci-1],N=L[ci+1],note={D:'per dumbbell',W:'added kg (negative = assisted)',M:'approximate, machines vary by gym'}[t]||'';
  if(dr.n!=x.n){const l=lastSet(x.n);dr={n:x.n,kg:l?num(l.kg):t=='W'?0:t=='D'?10:20,reps:l?num(l.reps)||8:8}}
  Object.assign(dr,{lo,hi,st});dr.kg=Math.min(hi,Math.max(lo,dr.kg));dr.reps=Math.min(30,Math.max(1,Math.round(num(dr.reps)||8)));
  let run=historicalBest(x.n,S.editingId);
  const rows=x.sets.map((s,j)=>{const e=est(x.n,s),pr=e>run;run=Math.max(run,e);return `<div class=srow><span>Set ${j+1}</span><b>${s.kg} kg × ${s.reps}</b><em>${pr?'PR':''}</em><button class="tag ${s.t}" title="Warm-up" data-a=wu data-i=${ci} data-j=${j}>W</button><button data-a=ds data-i=${ci} data-j=${j} aria-label="Delete set">×</button></div>`}).join('');
- return top+`<div class=car>${P?`<button class=side data-a=cp>${P.n}</button>`:'<span class=side></span>'}<div class=mid><small>${EX[x.n].g}</small><b>${x.n}</b></div>${N?`<button class=side data-a=cn>${N.n}</button>`:'<span class=side></span>'}</div>`+
+ return top+`<div class=car>${P?`<button class=side data-a=cp>${P.n}</button>`:'<span class=side></span>'}<div class=mid><small>${exMeta.g}</small><b>${x.n}</b></div>${N?`<button class=side data-a=cn>${N.n}</button>`:'<span class=side></span>'}</div>`+
  `<div class=picker><div class=phead><span>WEIGHT</span><div><b id=wv>${fm(dr.kg)}</b><small>kg</small></div></div><small class=ctr>${note}</small><div class=range-wrap><div class=range-window><div class=ruler-track>${rulerTicks(lo,hi,st)}</div><div class=ruler-center></div></div><input id=ws class=range type=range min=${lo} max=${hi} step=${st} value=${dr.kg} aria-label="Weight"></div></div>`+
  `<div class="note rep-limit-note"><small>Sets over 12 reps are logged, but do not count toward ranks or PRs.</small></div><div class="picker reps-picker"><div class=phead><span>REPS</span><div><b id=rv>${dr.reps}</b><small>reps</small></div></div><div class=range-wrap><div class=range-window><div class=ruler-track>${rulerTicks(1,30,1)}</div><div class=ruler-center></div></div><input id=rs class=range type=range min=1 max=30 step=1 value=${dr.reps} aria-label="Repetitions"></div><div class=rp><button data-a=rm aria-label="Fewer reps">−</button><label><input id=rp inputmode=numeric value="${dr.reps}"><small>reps</small></label><button data-a=rpl aria-label="More reps">+</button></div></div><button class=cta data-a=log>Log set</button>`+
  (rows?`<div class=sets>${rows}</div>`:'')+(N?'<button class="cta ghost" data-a=cn>Next exercise</button>':'')+`<button class=lnk data-a=rx data-i=${ci}>Remove ${x.n}</button>`+add+foot},
@@ -595,11 +595,11 @@ const migrateRankingState=async()=>{
 const repairState=()=>{
  const d={workouts:[],custom:[],bw:[],set:defaultSettings(),rk:{},cur:null,editingId:null,lastBackup:0};
  if(!S||typeof S!=='object')S=d;
- S.custom=Array.isArray(S.custom)?S.custom:[];S.rk={};
+ S.custom=Array.isArray(S.custom)?S.custom:[]; for(const c of S.custom){const n=safeName(c?.n);if(!n)continue;c.n=n;if(typeof EX==='object'&&EX)EX[n]=EX[n]||{g:c?.c||'Custom',t:['B','D','W','M','U'].includes(c?.t)?c.t:'B',c:c?.c||'Custom'}} S.rk={};
  S.set=normalizeSettings(S.set,d.set);
  S.bw=Array.isArray(S.bw)?S.bw.filter(b=>b&&typeof b==='object'&&Number.isFinite(num(b.kg))).map(b=>({d:safeDate(b.d),kg:num(b.kg)})).sort((a,b)=>a.d.localeCompare(b.d)):[];
  const normSet=z=>{const q=z&&typeof z==='object'?{...z}:{};q.kg=num(q.kg);q.reps=Math.min(30,Math.max(1,Math.round(num(q.reps)||1)));q.t=typeof q.t==='string'?q.t:'';if(q.bw!=null)q.bw=num(q.bw);if(q.height!=null)q.height=num(q.height);return q};
- const normEx=x=>{const q=x&&typeof x==='object'?{...x}:{};q.n=safeName(q.n);q.sets=Array.isArray(q.sets)?q.sets.filter(Boolean).map(normSet):[];return q};
+ const normEx=x=>{const q=x&&typeof x==='object'?{...x}:{};q.n=safeName(q.n);if(q.n&&typeof EX==='object'&&EX&&!EX[q.n]){const c=S.custom.find(v=>v&&v.n===q.n);EX[q.n]={g:c?.c||'Custom',t:['B','D','W','M','U'].includes(c?.t)?c.t:'B',c:c?.c||'Custom'}}q.sets=Array.isArray(q.sets)?q.sets.filter(Boolean).map(normSet):[];return q};
  const used=new Set(),base=Date.now();
  S.workouts=(Array.isArray(S.workouts)?S.workouts:[]).filter(w=>w&&typeof w==='object').map((w,i)=>{const q={...w};let id=Number(q.id);if(!Number.isSafeInteger(id)||id<=0||used.has(id)){id=base+i;while(used.has(id))id++}used.add(id);q.id=id;q.d=safeDate(q.d);q.split=safeName(q.split)||'Workout';q.ex=Array.isArray(q.ex)?q.ex.map(normEx).filter(x=>x.n):[];return q});
  S.custom=S.custom.filter(c=>c&&typeof c==='object').map(c=>({...c,n:safeName(c.n)})).filter(c=>c.n);

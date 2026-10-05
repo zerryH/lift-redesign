@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('app.js','utf8');
+const css=fs.readFileSync('styles.css','utf8');
+assert.match(app,/const BUILD_VERSION='5\.5\.58';/);
+assert.match(app,/const TUTORIAL_VERSION=5;/);
+assert.match(app,/if\(view!==st\.view\)view=st\.view;nav\(\);render\(\)/);
+assert.match(app,/for\(const c of S\.custom\).*EX\[n\]=EX\[n\]\|\|/);
+assert.match(app,/const exMeta=EX\[x\.n\]\|\|\{g:'Custom',t:'B',c:'Custom'\}/);
+assert.match(app,/tutorial-spotlight/);
+assert.match(app,/getBoundingClientRect\(\)\.height\|\|180/);
+assert.doesNotMatch(css,/tutorial-layer[^}]*backdrop-filter:blur/);
+assert.match(css,/tutorial-layer\{[^}]*backdrop-filter:none/);
+assert.match(css,/tutorial-spotlight\{[^}]*isolation:isolate/);
+console.log('tutorial/runtime v5 regression passed');
