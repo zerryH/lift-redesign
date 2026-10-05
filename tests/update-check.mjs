@@ -17,7 +17,9 @@ assert(!s.includes("setTimeout(()=>location.reload(),250"));
 console.log('update privacy/offline/staged-activation regression test passed');
 
 assert(!s.includes('const found=await new Promise(resolve=>'));
-assert(s.includes('await reg.update();if(reg.waiting)promptSWUpdate(reg.waiting);'));
+assert(s.includes('const waitForSWInstall=reg=>new Promise'));
+assert(s.includes('await reg.update();const waiting=reg.waiting||await waitForSWInstall(reg);'));
+assert(s.includes('const ok=await activateSW(waiting);'));
 assert(s.includes("reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed')promptSWUpdate(w)})},{once:true})"));
 console.log('fast event-driven update check regression passed');
 

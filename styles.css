@@ -1,12 +1,12 @@
 :root{--bg:#0d0915;--cd:#171121;--fg:#f7f3ff;--mu:#857b91;--ln:#2a2035;--ac:#756bff;--ac2:#52a7ff}
 [data-d="0"]{--bg:#f6f4fa;--cd:#fff;--fg:#17131f;--mu:#7d778a;--ln:#e4e0ec;--ac:#6758f5;--ac2:#2787ee}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;height:100%;overscroll-behavior:none;touch-action:manipulation}
+html,body{margin:0;min-height:100%;height:100%;overscroll-behavior:none;touch-action:pan-y}
 body{background:var(--bg);color:var(--fg);font:400 15px/1.45 "Avenir Next","Segoe UI",system-ui,sans-serif;-webkit-user-select:none;user-select:none;height:100vh;height:100dvh;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden}
 input{-webkit-user-select:text;user-select:text;font:inherit;font-size:16px;color:var(--fg)}
 button{font-family:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--ac2);outline-offset:2px}
-#v{max-width:640px;width:100%;min-height:0;height:100%;margin:0 auto;padding:max(env(safe-area-inset-top),20px) 20px 24px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;z-index:1;grid-row:1}
+#v{touch-action:pan-y;max-width:640px;width:100%;min-height:0;height:100%;margin:0 auto;padding:max(env(safe-area-inset-top),20px) 20px 24px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;z-index:1;grid-row:1}
 @keyframes f{from{opacity:0;transform:translateY(6px)}}
 h1{font-size:30px;font-weight:300;line-height:1.1;margin:24px 0 14px;letter-spacing:-.5px}h1 b{font-weight:800}h1 i{font-style:normal}
 small,.q{color:var(--mu);font-size:12px}.q{margin:22px 0 6px}
@@ -31,7 +31,7 @@ nav button.on{color:var(--ac)}nav svg{width:24px;height:24px;stroke:currentColor
 .phead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:6px}
 .phead>span{color:var(--mu);font-size:11px;letter-spacing:.18em;font-weight:800}
 .phead>div{display:flex;align-items:baseline;gap:6px}.phead b{font-size:52px;line-height:.95;letter-spacing:-1.8px;font-weight:850}.phead small{font-size:12px}
-.range-wrap{position:relative;height:102px;margin:4px -2px 0;overflow:hidden;border-radius:18px;--pct:50%}
+.range-wrap{position:relative;height:102px;margin:4px -2px 0;overflow:hidden;border-radius:18px;--pct:50%;touch-action:none;-webkit-user-select:none;user-select:none;cursor:grab}
 .range-window{position:absolute;inset:0;overflow:hidden;border-radius:18px;mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 90%,transparent 100%);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 10%,#000 90%,transparent 100%)}
 .range-window:before{content:'';position:absolute;left:8%;right:8%;bottom:20px;height:2px;background:color-mix(in srgb,var(--fg) 16%,transparent);border-radius:99px;pointer-events:none}
 .range-window:after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,var(--cd),transparent 14%,transparent 86%,var(--cd));opacity:.8;pointer-events:none;z-index:2}
@@ -132,7 +132,7 @@ body::after{right:-16vw;top:36vh;background:radial-gradient(circle at 50% 50%,co
 .action-modal{position:fixed;inset:0;z-index:1250;display:grid;place-items:center;padding:24px}.action-backdrop{position:absolute;inset:0;background:rgba(6,5,12,.60);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}.action-card{position:relative;width:min(430px,100%);padding:24px;border-radius:28px;border:1px solid rgba(255,255,255,.12);background:color-mix(in srgb,var(--cd) 92%,transparent);box-shadow:0 30px 80px rgba(0,0,0,.35);text-align:center}.action-kicker{font-size:11px;font-weight:900;letter-spacing:.14em;color:var(--mu)}.action-card h2{margin:6px 0}.action-card p{margin:0 auto 20px;color:var(--mu);line-height:1.5;max-width:34ch}.action-actions{display:flex;gap:10px;justify-content:center}.action-actions .pill{min-width:120px}.action-actions .danger{min-width:120px}
 [data-motion="1"] .action-card{animation:sheetIn .28s cubic-bezier(.16,1,.3,1)}
 
-/* v5.5.20 anatomy polish */
+
 .anatomy-map-stage .anatomy-svg .real-body-base path[id="platysma"],
 .anatomy-map-stage .anatomy-svg .real-body-base path[id="sternohyoid"],
 .anatomy-map-stage .anatomy-svg .real-body-base path[id="sternocleidomastoid_l"],
@@ -140,7 +140,7 @@ body::after{right:-16vw;top:36vh;background:radial-gradient(circle at 50% 50%,co
 .anatomy-map-stage .anatomy-svg .muscle-zone-group[data-muscles="calves"] path{stroke-width:1.7!important;stroke-opacity:1!important}
 .anatomy-map-stage .anatomy-svg .muscle-zone-group[data-muscles="quads"] path{stroke-width:1.45!important}
 
-/* v5.5.20 tutorial redesign */
+
 .tutorial-layer{position:fixed!important;inset:0!important;z-index:1300!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;padding:18px 14px max(18px,env(safe-area-inset-bottom))!important;background:rgba(7,4,14,.62)!important;backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
 .tutorial-shell{width:min(500px,100%)!important;max-height:min(78vh,680px)!important;overflow:auto!important;border:1px solid color-mix(in srgb,var(--ac) 28%,var(--ln) 72%)!important;border-radius:30px!important;padding:9px!important;background:linear-gradient(180deg,color-mix(in srgb,var(--cd) 97%,#fff 3%),var(--cd))!important;box-shadow:0 26px 90px rgba(0,0,0,.48),0 0 0 1px rgba(255,255,255,.03) inset!important}
 .tutorial-progress{height:4px;border-radius:999px;background:color-mix(in srgb,var(--mu) 18%,transparent);overflow:hidden;margin:3px 4px 13px}.tutorial-progress span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .25s ease}
@@ -150,7 +150,7 @@ body::after{right:-16vw;top:36vh;background:radial-gradient(circle at 50% 50%,co
 .tutorial-footer{display:grid;grid-template-columns:auto auto 1fr;gap:8px;padding:7px 4px 4px}.tutorial-footer button{min-height:46px;border-radius:15px;font:inherit;font-weight:800;cursor:pointer}.tutorial-back,.tutorial-skip{border:1px solid var(--ln);background:transparent;color:var(--mu);padding:0 14px}.tutorial-back:disabled{opacity:.3;cursor:default}.tutorial-next{border:0;background:var(--ac);color:#fff;padding:0 18px;box-shadow:0 8px 24px color-mix(in srgb,var(--ac) 24%,transparent)}
 .tutorial-focus{position:relative!important;z-index:1301!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--ac2) 82%,#fff 18%),0 0 0 9999px rgba(6,4,12,.66)!important;border-radius:20px!important}
 @media(max-width:500px){.tutorial-layer{padding:12px 10px max(10px,env(safe-area-inset-bottom))!important}.tutorial-shell{border-radius:27px!important;max-height:80vh!important}.tutorial-body{padding:14px 7px 10px}.tutorial-body h2{font-size:25px}.tutorial-footer{grid-template-columns:auto auto 1fr}.tutorial-footer button{min-height:44px}}
-/* v5.5.22 tutorial final */
+
 html.tutorial-open,body.tutorial-open{overflow:hidden!important}
 .tutorial-layer{position:fixed!important;inset:0!important;z-index:5000!important;display:flex!important;align-items:flex-end!important;justify-content:center!important;padding:12px 10px max(12px,env(safe-area-inset-bottom))!important;background:rgba(5,3,10,.8)!important;backdrop-filter:blur(10px)!important;-webkit-backdrop-filter:blur(10px)!important;overflow:hidden!important;pointer-events:auto!important}
 .tutorial-shell{width:min(520px,100%)!important;max-height:min(72vh,640px)!important;overflow:auto!important;padding:10px!important;border-radius:28px!important;background:var(--cd)!important;border:1px solid color-mix(in srgb,var(--ac) 32%,var(--ln) 68%)!important;box-shadow:0 24px 80px rgba(0,0,0,.58),0 1px 0 rgba(255,255,255,.05) inset!important;color:var(--fg)!important}
@@ -289,3 +289,5 @@ body.rank-list-open{touch-action:none!important}
 .rank-heading>.rank-info-button:focus-visible .rank-info-label{color:rgba(247,243,255,.78)!important}
 .rank-heading>.rank-info-button:active{background:rgba(255,255,255,.04)!important;transform:scale(.98)!important}
 @media(max-width:430px){.rank-heading>.rank-info-button{gap:5px!important}.rank-heading .rank-info-label{font-size:11px!important}}
+
+.range-wrap.dragging{cursor:grabbing}
