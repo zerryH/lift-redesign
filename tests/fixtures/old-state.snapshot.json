@@ -119,7 +119,20 @@
     "installGuideSeen": false,
     "futureSetting": "preserve"
   },
-  "rk": {},
+  "rk": {
+    "My <Custom>": {
+      "n": "My <Custom>",
+      "i": 3,
+      "x": 1.1,
+      "extraRank": "keep"
+    },
+    "Bench Press": {
+      "n": "Bench Press",
+      "i": 4,
+      "x": 1.2,
+      "auto": true
+    }
+  },
   "cur": {
     "id": 1001,
     "d": "2026-09-22",
