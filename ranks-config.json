@@ -1,5 +1,5 @@
 {
-  "_": "Lift rank system v5. Per-exercise standards are sex-specific and movement-specific; age and height/ROM adjustments are optional profile controls.",
+  "_": "Lift rank system v4. Wood I starts at 0.20x normalized bodyweight. Blue Gem is the ceiling at 3.00x. Every exercise in the library is rankable. Exercise scales normalize different movement types; age and height/ROM adjustments are applied after the normalized ratio.",
   "tiers": [
     "Wood I",
     "Wood II",
