@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-const BUILD_VERSION = '5.5.68';
+const BUILD_VERSION = '5.5.69';
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => fs.writeFileSync(p, s);
 function validateData(ex, ranks) {
@@ -27,9 +27,10 @@ function injectData(appSource, ex, ranks, engineSource) {
   appSource = appSource.replace(/\/\*BEGIN:RANKING_ENGINE\*\/[\s\S]*?\/\*END:RANKING_ENGINE\*\//, '/*BEGIN:RANKING_ENGINE*/' + engineSource + '/*END:RANKING_ENGINE*/');
   return appSource;
 }
-function buildHtml(name, appSource, anatomyCss) {
+function buildHtml(name, appSource, anatomyCss, stylesCss) {
   let html = read(name);
   html = html.replace(/<style id="lift-anatomy-map-style">[\s\S]*?<\/style>\s*/g, '');
+  html = html.replace(/<style>[\s\S]*?<\/style>/, '<style>' + stylesCss + '</style>');
   const appRe = /(<script[^>]*>)[\s\S]*?(<\/script>)/;
   if (!appRe.test(html)) throw new Error('No inline app script found in ' + name);
   html = html.replace(appRe, (_, open, close) => open + appSource + close);
@@ -43,9 +44,10 @@ validateData(ex, ranks);
 let app = injectData(read('app.js').replace(/const BUILD_VERSION='[^']+';/, "const BUILD_VERSION='" + BUILD_VERSION + "';"), ex, ranks, engine);
 write('app.js', app);
 const anatomyCss = read('anatomy-map.css');
-for (const name of ['index.html', 'lift-local.html']) write(name, buildHtml(name, app, anatomyCss));
+const stylesCss = read('styles.css');
+for (const name of ['index.html', 'lift-local.html']) write(name, buildHtml(name, app, anatomyCss, stylesCss));
 if (read('index.html') !== read('lift-local.html')) throw new Error('index.html and lift-local.html diverged');
-const hashInput = [app, read('index.html'), read('exercises.json'), read('ranks-config.json'), read('ranking-engine.js'), anatomyCss, read('manifest.webmanifest'), fs.readFileSync('lift-icon-photo-fit.png').toString('base64'), fs.readFileSync('apple-touch-icon-photo-fit.png').toString('base64')].join('\n');
+const hashInput = [app, stylesCss, read('index.html'), read('exercises.json'), read('ranks-config.json'), read('ranking-engine.js'), anatomyCss, read('manifest.webmanifest'), fs.readFileSync('lift-icon-photo-fit.png').toString('base64'), fs.readFileSync('apple-touch-icon-photo-fit.png').toString('base64')].join('\n');
 const shortHash = crypto.createHash('sha256').update(hashInput).digest('hex').slice(0, 12);
 const cacheVersion = 'liftlog-v' + BUILD_VERSION + '-' + shortHash;
 let sw = read('sw.js');

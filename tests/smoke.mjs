@@ -9,6 +9,7 @@ const ranks=JSON.parse(fs.readFileSync('ranks-config.json','utf8'));
 const html=fs.readFileSync('index.html','utf8');
 const local=fs.readFileSync('lift-local.html','utf8');
 const build=fs.readFileSync('build.mjs','utf8');
+const styles=fs.readFileSync('styles.css','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const manifest=JSON.parse(fs.readFileSync('manifest.webmanifest','utf8'));
 
@@ -29,6 +30,8 @@ for(const [name,sexes] of Object.entries(ranks.t)){
 assert.equal((html.match(/<style id="lift-anatomy-map-style">/g)||[]).length,1,'index anatomy CSS count');
 assert.equal((local.match(/<style id="lift-anatomy-map-style">/g)||[]).length,1,'local anatomy CSS count');
 assert.equal(html,local,'generated HTML files differ');
+const inlineStyle=(html.match(/<style>([\s\S]*?)<\/style>/)||[])[1];
+assert.equal(inlineStyle,styles,'published inline CSS differs from styles.css');
 assert(!/three\.min\.js|DRACOLoader|GLTFLoader|lift-muscle3d|lift-three-runtime|lift-anatomy-data|lift-procedural-3d-style|Real WebGL muscle model/.test(build),'dead 3D cleanup remains in build');
 assert(!/5\.5\.(14|15|16|17|18|19|20|21|22|23)\b/.test(app+build+html+local+sw),'stale release version string remains');
 const version=(app.match(/const BUILD_VERSION='([^']+)'/)||[])[1];assert(version,'missing BUILD_VERSION');
