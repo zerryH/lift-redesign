@@ -1,1 +1,15 @@
-__GESTURE__
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('app.js','utf8');
+const css=fs.readFileSync('styles.css','utf8');
+assert.match(css,/html,body\{[^}]*touch-action:pan-y/);
+assert.match(css,/#v\{[^}]*touch-action:pan-y/);
+assert.match(css,/\.range-wrap\{[^}]*touch-action:none/);
+assert.match(css,/\.range-wrap\{[^}]*-webkit-user-select:none/);
+assert.match(app,/const PX_PER_STEP=36/);
+assert.match(app,/requestAnimationFrame/);
+assert.match(app,/setPointerCapture/);
+assert.match(app,/lostpointercapture/);
+assert.match(app,/const waitForSWInstall=/);
+assert.match(app,/await activateSW\(waiting\)/);
+console.log('gesture safety ok');

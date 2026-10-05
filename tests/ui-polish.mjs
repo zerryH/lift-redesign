@@ -1,1 +1,16 @@
-__UIPOLISH__
+import fs from "node:fs";
+import assert from "node:assert/strict";
+const css=fs.readFileSync("styles.css","utf8");
+const app=fs.readFileSync("app.js","utf8");
+const html=fs.readFileSync("index.html","utf8");
+const local=fs.readFileSync("lift-local.html","utf8");
+assert.match(css,/\.exercise-library\{[^}]*position:fixed/);
+assert.match(css,/\.exercise-library\{[^}]*safe-area-inset-top/);
+assert.match(css,/\.exercise-library button,/);
+assert.match(css,/\.exercise-option\{[^}]*min-height:56px/);
+assert.match(css,/\.exercise-category\{[^}]*height:34px/);
+assert.match(css,/\#v \.range-wrap\{[^}]*height:54px/);
+assert.match(app,/const PX_PER_STEP=36/);
+assert.match(app,/credits-card/);
+assert.equal(html,local,"generated HTML variants must stay byte-identical");
+console.log("ui polish 5.5.71 guards passed");
