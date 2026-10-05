@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-const BUILD_VERSION = '5.5.71';
+const BUILD_VERSION = '5.5.72';
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => fs.writeFileSync(p, s);
 function validateData(ex, ranks) {
@@ -31,7 +31,7 @@ function buildHtml(name, appSource, anatomyCss, stylesCss) {
   let html = read(name);
   html = html.replace(/<style id="lift-anatomy-map-style">[\s\S]*?<\/style>\s*/g, '');
   html = html.replace(/<style>[\s\S]*?<\/style>/, '<style>' + stylesCss + '</style>');
-  const appRe = /(<script[^>]*>)[\s\S]*?(<\/script>)/;
+  const appRe = /(<script[^>]*>)const BUILD_VERSION='[^']+';[\s\S]*?(<\/script>)/;
   if (!appRe.test(html)) throw new Error('No inline app script found in ' + name);
   html = html.replace(appRe, (_, open, close) => open + appSource + close);
   html = html.replace('</head>', '<style id="lift-anatomy-map-style">' + anatomyCss + '</style></head>');
