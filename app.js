@@ -1,4 +1,4 @@
-const BUILD_VERSION='5.5.67';
+const BUILD_VERSION='5.5.68';
 /*BEGIN:RANKING_ENGINE*//* Lift ranking engine — v6 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
