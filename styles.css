@@ -291,3 +291,51 @@ body.rank-list-open{touch-action:none!important}
 @media(max-width:430px){.rank-heading>.rank-info-button{gap:5px!important}.rank-heading .rank-info-label{font-size:11px!important}}
 
 .range-wrap.dragging{cursor:grabbing}
+
+
+/* v5.5.70 · compact iOS-style UI polish */
+#v .chips{align-items:center}
+#v .pill{min-width:0;min-height:44px;padding:0 16px;font-size:14px}
+#v .add{align-items:flex-end;gap:10px;margin:14px 0}
+#v .add .fl{flex:1 1 auto;min-width:0;margin:0}
+#v .add>.pill{flex:0 0 auto;align-self:flex-end;min-width:0}
+#v .toggle{width:auto!important;min-width:88px!important;min-height:44px!important;flex:0 0 auto!important;justify-content:flex-start!important;gap:8px!important;padding:0 10px 0 6px!important;border-radius:999px!important}
+#v .toggle .track{width:38px;height:22px;padding:3px}
+#v .toggle .track i{width:16px;height:16px}
+#v .toggle.on .track i{transform:translateX(16px)}
+#v .toggle small{margin-left:0!important;font-size:11px;line-height:1}
+#v .row{align-items:center}
+#v .row>div:first-child{min-width:0}
+#v .cta{min-height:48px!important;border-radius:16px!important;margin:10px 0!important;font-size:16px!important;letter-spacing:.1px!important;box-shadow:0 10px 24px color-mix(in srgb,var(--ac) 20%,transparent),inset 0 1px 0 rgba(255,255,255,.18)!important}
+#v .range-wrap{height:68px;margin:4px 0 0;border-radius:14px}
+#v .range-window{border-radius:14px}
+#v .range-window:before{left:7%;right:7%;bottom:15px}
+#v .ruler-track{bottom:11px;height:48px;transition:transform .08s linear}
+#v .ruler-tick{height:42px}
+#v .ruler-tick.major i{height:21px}
+#v .ruler-tick span{bottom:22px;font-size:10px}
+#v .ruler-center{bottom:8px;height:34px}
+#v .range{height:68px}
+#v .rank-check-row{gap:12px;padding:12px 0}
+#v .rank-check-row>div:first-child>b{display:inline-block;margin-right:7px;font-size:18px;line-height:1.15}
+#v .rank-check-row>div:first-child>small{display:block!important;margin-top:4px;color:var(--mu);line-height:1.35}
+#v .rank-check-actions{flex:0 0 auto;align-items:flex-end!important;gap:8px!important}
+#v .rank-check-actions .badge{font-size:11px;padding:4px 10px}
+#v .rank-check-update{min-width:82px!important}
+#v .build-card{display:flex;align-items:baseline;flex-wrap:wrap;gap:7px;margin-top:2px}
+#v .build-card b{font-size:18px;line-height:1}
+#v .build-card small{font-size:12px}
+#v .credits-card{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:4px;padding:14px 16px;border:1px solid color-mix(in srgb,var(--ln) 86%,transparent);border-radius:18px;background:color-mix(in srgb,var(--cd) 72%,transparent);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+#v .credits-copy{min-width:0;display:grid;gap:3px}
+#v .credits-copy b{font-size:15px;line-height:1.2;letter-spacing:.05px}
+#v .credits-copy small{font-size:11px}
+#v .credits-link{flex:0 0 auto;min-height:44px;display:inline-flex;align-items:center;gap:4px;padding:0 12px;border:1px solid color-mix(in srgb,var(--ac) 28%,var(--ln) 72%);border-radius:999px;color:var(--ac2);background:color-mix(in srgb,var(--ac) 8%,transparent);text-decoration:none!important;font-size:12px;font-weight:750}
+#v .credits-link:active{transform:scale(.97)}
+@media(max-width:430px){
+  #v .rank-check-row{gap:10px}
+  #v .rank-check-row>div:first-child>b{font-size:17px}
+  #v .rank-check-actions .rank-icon{width:34px;height:34px}
+  #v .rank-check-update{min-width:76px!important;padding:0 12px}
+  #v .credits-card{padding:13px 14px}
+}
+
