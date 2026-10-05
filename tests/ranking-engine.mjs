@@ -22,4 +22,10 @@ assert.ok(score('Bench Press',100,1,75,'M',190,25) > score('Bench Press',100,1,7
 assert.equal(E.effectiveLoad(set(10,1),R.exerciseMeta['Dumbbell Bench Press'],75),20);
 assert.equal(E.effectiveLoad(set(20,1),R.exerciseMeta['Pull-Up'],75),95);
 assert.equal(E.effectiveLoad(set(20,1),R.exerciseMeta['Assisted Pull-Up Machine'],75),55);
-console.log('ranking engine regression tests passed');
+assert.ok(E.percentileScore(score('Bench Press',100,1,75,'M'),R.t['Bench Press'][0],C)>E.percentileScore(score('Leg Press',100,1,75,'M'),R.t['Leg Press'][0],C),'exercise-specific standards must separate bench from leg press');
+assert.ok(score('Bench Press',100,1,75,'M',178,25)>0);
+assert.ok(score('Bench Press',100,1,75,'M',190,25)>score('Bench Press',100,1,75,'M',165,25),'ROM/height correction must be active');
+assert.ok(score('Bench Press',100,1,75,'M',178,50)>score('Bench Press',100,1,75,'M',178,25),'age correction must be active');
+assert.equal(E.effectiveLoad(set(20,1),R.exerciseMeta['Dumbbell Bench Press'],75),40,'bilateral dumbbell load uses both hands');
+assert.equal(E.effectiveLoad(set(20,1),{...R.exerciseMeta['Dumbbell Bench Press'],unilateral:true},75),20,'unilateral load stays per side');
+console.log('ranking engine v6 regression tests passed');
