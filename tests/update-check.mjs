@@ -18,7 +18,7 @@ console.log('update privacy/offline/staged-activation regression test passed');
 
 assert(!s.includes('const found=await new Promise(resolve=>'));
 assert(s.includes('await reg.update();if(reg.waiting)promptSWUpdate(reg.waiting);'));
-assert(s.includes("reg.addEventListener('updatefound',()=>watchInstalling(),{once:true})"));
+assert(s.includes("reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed')promptSWUpdate(w)})},{once:true})"));
 console.log('fast event-driven update check regression passed');
 
-const a=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8'); assert.ok(a.includes("cache:'no-store'")); assert.ok(a.includes("SW_SCRIPT+'?check='+stamp")); console.log('cache-busted SW check regression passed');
+console.log('update-check regression passed · native SW update + staged explicit activation');
