@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const s=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
+const sync=s.indexOf('const syncPickers=');
+const render=s.indexOf('const render=');
+const bind=s.indexOf('const bindValuePickers=');
+assert(sync>=0,'shared syncPickers hook must exist');
+assert(render>=0 && sync<render,'syncPickers must be defined before render uses it');
+assert(bind>=0 && sync<bind,'syncPickers must be defined before value-picker binding');
+assert((s.match(/syncPickers\(\)/g)||[]).length>=5,'workout controls must retain shared picker synchronization');
+console.log('shared render hook regression: ok');
