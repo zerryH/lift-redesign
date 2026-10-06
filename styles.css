@@ -583,3 +583,25 @@ html,body{overflow-x:clip!important}
  .exercise-library-head p{font-size:12px!important}
  .exercise-option{min-height:60px!important}
 }
+
+
+/* v5.5.76 · mobile slider + Today spacing fixes */
+#v .range-wrap{touch-action:pan-y!important;overscroll-behavior-x:none!important;cursor:grab!important}
+#v .range{pointer-events:auto!important;opacity:0!important;z-index:4!important;touch-action:pan-y!important;cursor:grab!important}
+#v .range:active{cursor:grabbing!important}
+#v .range-wrap.dragging{cursor:grabbing!important}
+#v .range-window:after{pointer-events:none!important}
+#v .today-empty{margin-top:18px!important;padding:2px 0 4px!important}
+#v .today-empty>.q{margin:0 1px 12px!important}
+#v .today-empty .exercise-add-bar{margin:0 0 14px!important;gap:9px!important}
+#v .today-empty .exercise-add-bar .cta{min-height:48px!important;margin:0!important}
+#v .today-empty .exercise-add-bar .pill{min-height:48px!important}
+#v .today-empty>.chips{margin:0!important;padding-top:2px!important;gap:8px!important}
+#v .today-empty>.chips .pill{min-height:44px!important}
+#v .today-empty>.chips .pill.dark{box-shadow:none!important}
+@media(max-width:430px){
+  #v .today-empty{margin-top:20px!important}
+  #v .today-empty>.q{margin-bottom:13px!important}
+  #v .today-empty .exercise-add-bar{gap:8px!important;margin-bottom:16px!important}
+  #v .today-empty .exercise-add-bar .cta,#v .today-empty .exercise-add-bar .pill{min-height:46px!important}
+}
