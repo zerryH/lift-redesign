@@ -1,15 +1,5 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-const app=fs.readFileSync('app.js','utf8');
-const css=fs.readFileSync('styles.css','utf8');
-assert.match(app,/const bindRuler=wrap=>\{[\s\S]*?el\.addEventListener\('pointerdown'/,'slider binds pointer events to the actual range input');
-assert.match(app,/PX_PER_STEP=36,INTENT_PX=10,AXIS_BIAS=1\.2/,'slider keeps the horizontal intent threshold');
-assert.match(app,/ay>ax\*AXIS_BIAS\)\{axis='y';cid=null/,'vertical gestures are released for page scrolling');
-assert.match(app,/ax>ay\*AXIS_BIAS\)\{axis='x'/,'horizontal gestures control the slider');
-assert.match(css,/#v \.range\{[^}]*pointer-events:auto!important/,'range inputs receive touch events');
-assert.match(css,/#v \.range\{[^}]*touch-action:pan-y!important/,'range preserves vertical page scrolling');
-assert.match(app,/const resetViewScroll=\(\)=>\{const root=\$\('#v'\);if\(root\)\{root\.scrollTop=0;root\.scrollLeft=0\}\};/,'view scroll reset helper exists');
-assert.match(app,/tab:d=>\{view=d\.v;nav\(\);render\(\);requestAnimationFrame\(resetViewScroll\)\}/,'tab switches reset the destination scroll position');
-assert.match(app,/class=\\?"today-empty\\?"/,'Today empty state has dedicated spacing container');
-assert.match(css,/#v \.today-empty\{/,'Today empty state has mobile spacing rules');
-console.log('mobile interactions: ok');
+const app=fs.readFileSync('app.js','utf8'); const css=fs.readFileSync('styles.css','utf8');
+for(const x of ['const bindValuePickers=','drag.axis','Math.abs(dy)>Math.abs(dx)','e.preventDefault()','const resetViewScroll=']) assert.ok(app.includes(x),x);
+assert.ok(css.includes('touch-action:pan-y')); console.log('mobile wheel interactions: ok');

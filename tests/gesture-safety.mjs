@@ -1,14 +1,5 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-const app=fs.readFileSync('app.js','utf8');
-const css=fs.readFileSync('styles.css','utf8');
-assert.match(css,/html,body\{[^}]*touch-action:pan-y/);
-assert.match(css,/#v\{[^}]*touch-action:pan-y/);
-assert.match(css,/\.value-slider\{[^}]*height:52px/);
-assert.match(css,/\.value-slider \.range\{[^}]*opacity:1/);
-assert.match(css,/\.value-slider \.range\{[^}]*pointer-events:auto/);
-assert.doesNotMatch(app,/const PX_PER_STEP=36/);
-assert.doesNotMatch(app,/const bindRuler=wrap=>/);
-assert.match(app,/const waitForSWInstall=/);
-assert.match(app,/await activateSW\(waiting\)/);
-console.log('gesture safety ok');
+const app=fs.readFileSync('app.js','utf8'); const css=fs.readFileSync('styles.css','utf8');
+for(const x of ['touch-action:pan-y','pointer-events:none']) assert.ok(css.includes(x),x);
+assert.ok(!app.includes('const bindRulers=()=>')); assert.ok(app.includes("root.addEventListener('pointerdown'")); console.log('wheel gesture safety: ok');

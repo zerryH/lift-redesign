@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-const BUILD_VERSION = '5.5.78';
+const BUILD_VERSION = '5.5.79';
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => fs.writeFileSync(p, s);
 function validateData(ex, ranks) {
@@ -54,4 +54,4 @@ let sw = read('sw.js');
 sw = sw.replace(/const V='[^']+',F=/, "const V='" + cacheVersion + "',F=");
 sw = sw.replace(/F=\[[^\]]*\]/, "F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','ranking-engine.js','anatomy-map.css','manifest.webmanifest','lift-icon-photo-fit.png','apple-touch-icon-photo-fit.png']");
 write('sw.js', sw);
-console.log('build ok Â· ' + BUILD_VERSION + ' Â· ' + cacheVersion);
+console.log('build ok · ' + BUILD_VERSION + ' · ' + cacheVersion);
