@@ -583,6 +583,28 @@ html,body{overflow-x:clip!important}
  .exercise-library-head p{font-size:12px!important}
  .exercise-option{min-height:60px!important}
 }
+
+
+/* v5.5.76 · mobile slider + Today spacing fixes */
+#v .range-wrap{touch-action:pan-y!important;overscroll-behavior-x:none!important;cursor:grab!important}
+#v .range{pointer-events:auto!important;opacity:0!important;z-index:4!important;touch-action:pan-y!important;cursor:grab!important}
+#v .range:active{cursor:grabbing!important}
+#v .range-wrap.dragging{cursor:grabbing!important}
+#v .range-window:after{pointer-events:none!important}
+#v .today-empty{margin-top:18px!important;padding:2px 0 4px!important}
+#v .today-empty>.q{margin:0 1px 12px!important}
+#v .today-empty .exercise-add-bar{margin:0 0 14px!important;gap:9px!important}
+#v .today-empty .exercise-add-bar .cta{min-height:48px!important;margin:0!important}
+#v .today-empty .exercise-add-bar .pill{min-height:48px!important}
+#v .today-empty>.chips{margin:0!important;padding-top:2px!important;gap:8px!important}
+#v .today-empty>.chips .pill{min-height:44px!important}
+#v .today-empty>.chips .pill.dark{box-shadow:none!important}
+@media(max-width:430px){
+  #v .today-empty{margin-top:20px!important}
+  #v .today-empty>.q{margin-bottom:13px!important}
+  #v .today-empty .exercise-add-bar{gap:8px!important;margin-bottom:16px!important}
+  #v .today-empty .exercise-add-bar .cta,#v .today-empty .exercise-add-bar .pill{min-height:46px!important}
+}
 </style><link rel="icon" type="image/png" sizes="180x180" href="./lift-icon-photo-fit.png"><link rel="apple-touch-icon" sizes="180x180" href="./lift-icon-photo-fit.png"><link rel="manifest" href="./manifest.webmanifest"><style id="lift-anatomy-map-style">/* Premium 2D anatomy map — detailed individual muscle surfaces, no 3D runtime */
 .body-stage{height:455px;display:grid;place-items:center;overflow:hidden;position:relative;background:radial-gradient(ellipse at 50% 42%,rgba(105,112,180,.11),transparent 68%);border-radius:24px}
 .anatomy-pair{width:min(610px,100%);height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;align-items:center;justify-items:center;padding:4px 12px 2px}
@@ -653,7 +675,7 @@ html,body{overflow-x:clip!important}
 .rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent)!important;stroke:var(--c)!important;stroke-width:1.7!important;stroke-linejoin:round!important}
 .rank-icon b{position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;font-size:9px!important;line-height:1!important;font-weight:900!important;color:var(--c)!important;pointer-events:none!important}
 .overall-rank-title .rank-icon{--rank-icon-size:34px}.rank-result-title .rank-icon{--rank-icon-size:30px}.rank-badge .rank-icon{--rank-icon-size:26px}
-</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.75';
+</style></head><body><nav id="n"></nav><main id="v"></main><script>const BUILD_VERSION='5.5.76';
 /*BEGIN:RANKING_ENGINE*//* Lift ranking engine — v6 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -880,7 +902,7 @@ const V={
 today(){const c=S.cur,add=`<div class="add exercise-add-bar"><button class="cta" data-a="openx">＋ Browse exercise library</button><button class="pill" data-a="cx">Custom</button></div>`;
  if(!c)return h('Today\'s','workout')+rem()+'<p class=q>Choose a split — each new split starts empty.</p><div class=chips>'+['Empty',...Object.keys(X.templates)].map(t=>`<button class=pill data-a=start data-v="${t}">${t}</button>`).join('')+'</div>';
  const L=c.ex,x=L[ci=Math.min(ci,L.length-1)],top=`<div class=top>${h(c.split=='Empty'?'Workout':c.split,c.d)}<button class=lnk data-a=tab data-v=settings>Set bodyweight</button></div>`,foot=`<div class=chips><button class="pill dark" data-a=fin>Finish workout</button><button class=pill data-a=cancel>Discard</button></div>`;
- if(!x)return top+'<p class=q>Add your first exercise</p>'+add+foot;
+ if(!x)return top+'<section class="today-empty"><p class=q>Add your first exercise</p>'+add+foot+'</section>';
  const meta=EX[x.n]||{g:'Custom',t:'B'};EX[x.n]=meta;const t=meta.t||'B',[lo,hi,st]=RG(t),P=L[ci-1],N=L[ci+1],note={D:'per dumbbell',W:'added kg (negative = assisted)',M:'approximate, machines vary by gym'}[t]||'';
  if(dr.n!=x.n){const l=lastSet(x.n);dr={n:x.n,kg:l?num(l.kg):t=='W'?0:t=='D'?10:20,reps:l?num(l.reps)||8:8}}
  Object.assign(dr,{lo,hi,st});dr.kg=Math.min(hi,Math.max(lo,dr.kg));dr.reps=Math.min(30,Math.max(1,Math.round(num(dr.reps)||8)));
@@ -927,7 +949,7 @@ settings(){const B=bw(),d=S.lastBackup?Math.floor((Date.now()-S.lastBackup)/864e
 ;
 const rulerTicks=(lo,hi,st)=>{const n=Math.max(0,Math.round((hi-lo)/st)),maj=Math.max(1,Math.round(10/st));return Array.from({length:n+1},(_,i)=>{const v=lo+i*st,major=i%maj==0||i==n;return `<div class="ruler-tick ${major?'major':''}"><i></i>${major?`<span>${fm(v)}</span>`:''}</div>`}).join('')};
 const syncRuler=(el,v)=>{if(!el)return;const lo=num(el.min),st=num(el.step)||1,idx=Math.max(0,Math.round((num(v)-lo)/st));const track=el.parentElement?.querySelector('.ruler-track');if(track)track.style.setProperty('--tx',`${-(idx*28+14)}px`)};
-const bindRuler=wrap=>{if(!wrap||wrap.dataset.bound)return;const el=wrap.querySelector('.range');if(!el)return;wrap.dataset.bound='1';let sx=0,sy=0,sv=0,cid=null,lastX=null,raf=0,axis=null;const PX_PER_STEP=36,INTENT_PX=10,AXIS_BIAS=1.2;const step=()=>num(el.step)||1;const clamp=v=>Math.min(num(el.max),Math.max(num(el.min),v));const apply=x=>{if(cid==null||axis!=='x')return;const dx=sx-x;const next=clamp(sv+(dx/PX_PER_STEP)*step());const snapped=Math.round(next/step())*step();if(String(el.value)!==String(snapped)){el.value=String(snapped);el.dispatchEvent(new Event('input',{bubbles:true}))}};const schedule=e=>{lastX=e.clientX;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(lastX!=null)apply(lastX)})};const end=e=>{if(cid!==e.pointerId)return;const horizontal=axis==='x';cid=null;lastX=null;if(raf){cancelAnimationFrame(raf);raf=0}wrap.classList.remove('dragging');if(horizontal){try{wrap.releasePointerCapture?.(e.pointerId)}catch{}e.preventDefault();e.stopPropagation()}};wrap.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;if(e.isPrimary===false)return;sx=e.clientX;sy=e.clientY;sv=num(el.value);cid=e.pointerId;axis=null;lastX=null;wrap.classList.remove('dragging')},{passive:true});wrap.addEventListener('pointermove',e=>{if(cid!==e.pointerId)return;if(axis===null){const dx=e.clientX-sx,dy=e.clientY-sy,ax=Math.abs(dx),ay=Math.abs(dy);if(Math.max(ax,ay)<INTENT_PX)return;if(ax>ay*AXIS_BIAS){axis='x';wrap.classList.add('dragging');try{wrap.setPointerCapture?.(e.pointerId)}catch{}schedule(e);e.preventDefault();e.stopPropagation();return}if(ay>ax*AXIS_BIAS){axis='y';cid=null;wrap.classList.remove('dragging');return}return}if(axis!=='x')return;schedule(e);e.preventDefault();e.stopPropagation()},{passive:false});wrap.addEventListener('pointerup',end,{passive:false});wrap.addEventListener('pointercancel',end,{passive:false});wrap.addEventListener('lostpointercapture',end,{passive:false})};
+const bindRuler=wrap=>{if(!wrap||wrap.dataset.bound)return;const el=wrap.querySelector('.range');if(!el)return;wrap.dataset.bound='1';let sx=0,sy=0,sv=0,cid=null,lastX=null,raf=0,axis=null;const PX_PER_STEP=36,INTENT_PX=10,AXIS_BIAS=1.2;const step=()=>num(el.step)||1;const clamp=v=>Math.min(num(el.max),Math.max(num(el.min),v));const apply=x=>{if(cid==null||axis!=='x')return;const dx=sx-x;const next=clamp(sv+(dx/PX_PER_STEP)*step());const snapped=Math.round(next/step())*step();if(String(el.value)!==String(snapped)){el.value=String(snapped);el.dispatchEvent(new Event('input',{bubbles:true}))}};const schedule=e=>{lastX=e.clientX;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(lastX!=null)apply(lastX)})};const finish=e=>{if(cid!==e.pointerId)return;const horizontal=axis==='x';cid=null;lastX=null;if(raf){cancelAnimationFrame(raf);raf=0}wrap.classList.remove('dragging');if(horizontal){try{el.releasePointerCapture?.(e.pointerId)}catch{}e.preventDefault();e.stopPropagation()}};el.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;if(e.isPrimary===false)return;sx=e.clientX;sy=e.clientY;sv=num(el.value);cid=e.pointerId;axis=null;lastX=null;wrap.classList.remove('dragging')},{passive:true});el.addEventListener('pointermove',e=>{if(cid!==e.pointerId)return;if(axis===null){const dx=e.clientX-sx,dy=e.clientY-sy,ax=Math.abs(dx),ay=Math.abs(dy);if(Math.max(ax,ay)<INTENT_PX)return;if(ax>ay*AXIS_BIAS){axis='x';wrap.classList.add('dragging');try{el.setPointerCapture?.(e.pointerId)}catch{}schedule(e);e.preventDefault();e.stopPropagation();return}if(ay>ax*AXIS_BIAS){axis='y';cid=null;wrap.classList.remove('dragging');return}return}if(axis!=='x')return;schedule(e);e.preventDefault();e.stopPropagation()},{passive:false});el.addEventListener('pointerup',finish,{passive:false});el.addEventListener('pointercancel',finish,{passive:false});el.addEventListener('lostpointercapture',finish,{passive:false})};
 const bindRulers=()=>document.querySelectorAll('.range-wrap').forEach(bindRuler);
 const syncSlider=(el,v)=>{if(!el)return;const lo=num(el.min),hi=num(el.max);const p=hi>lo?Math.max(0,Math.min(100,(num(v)-lo)/(hi-lo)*100)):0;el.parentElement?.style.setProperty('--pct',p+'%');syncRuler(el,v)};
 const syncPickers=()=>{const w=$('#ws'),r=$('#rs'),wv=$('#wv'),rv=$('#rv'),ri=$('#rp');if(w){w.value=String(dr.kg);if(wv)wv.textContent=fm(dr.kg);syncSlider(w,dr.kg)}if(r){r.value=String(dr.reps);if(rv)rv.textContent=dr.reps;if(ri)ri.value=dr.reps;syncSlider(r,dr.reps)}};
@@ -970,6 +992,7 @@ const ensureRuntimeExercises=()=>{
  if(!X.templates||typeof X.templates!=='object'||Array.isArray(X.templates))X.templates={};
 };
 const render=()=>{const root=$('#v');try{repairState();ensureRuntimeExercises();if(!root)throw new Error('App view root is missing');if(typeof V[view]!=='function')throw new Error('Unknown view: '+view);root.innerHTML=V[view]();root.style.animation='none';root.offsetWidth;root.style.animation='';syncPickers();bindRulers()}catch(err){console.error('Lift render failed in '+view,err);root.innerHTML=`<section class=note role=alert><b>Could not load ${esc(view)}.</b><p>The app is still running. Try again; your saved data has not been reset.</p><button class=pill data-a=retryRender>Repair &amp; retry</button></section>`;}};
+const resetViewScroll=()=>{const root=$('#v');if(root){root.scrollTop=0;root.scrollLeft=0}};
 const nav=()=>{$('#n').innerHTML='<span class=wm><b>Lift</b>log <small class=build-version>'+BUILD_LABEL+'</small></span>'+Object.keys(IC).map(k=>`<button class="${view==k?'on':''}" data-a=tab data-v=${k}><svg viewBox="0 0 24 24"><path d="${IC[k]}"/></svg><small>${LB[k]}</small></button>`).join('')};
 /* actions */
 const addN=n=>{n=String(n||'').trim();if(!n)return;if(!EX[n]){const t='B',c='Custom';S.custom.push({n,t,c});EX[n]={g:'Custom',t,c}}ci=S.cur.ex.push({n,sets:[]})-1;exercisePickerClose();go()};
@@ -982,7 +1005,7 @@ gr:d=>{refreshRanks();const name=String(d.v||'').trim(),k=name?S.rk[name]:null,u
 gx:()=>{gr=null;sheet()},gs:d=>{gr.f=d.v;sheet()},
 gu:d=>{if(gr.u==d.v)return;const k=d.v=='lb'?2.20462:1/2.20462,f=v=>v===''?'':String(fm(num(v)*k));gr.w=f(gr.w);gr.b=f(gr.b);gr.u=d.v;setRankingControl({unit:d.v},{redraw:false});sheet()},
 calc:async()=>{if(!gr)return toast('Open the rank form first');const n=String(gr.n||'').trim(),sex=gr.f==='F'?'F':'M',w=num(gr.w),r=Math.round(num(gr.r)),b=num(gr.b),h=num(gr.h)||num(S.set.heightCm)||null;if(!EX[n]||!rankThresholds(n))return toast('Choose a supported exercise from the list');if(!Number.isInteger(r)||r<1||r>12)return toast('Use 1–12 reps for ranked sets');if(!Number.isFinite(b)||b<=0)return toast('Enter bodyweight');if(h&&(!Number.isFinite(h)||h<120||h>230))return toast('Height must be between 120 and 230 cm');const oldSex=S.set.table;S.set.table=sex;const set={kg:w,reps:r,t:'',bw:b,height:h};const e=rankSetEst(n,set,b),x=rankScore(n,e,b,h),t=rankThresholds(n),i=LiftRankingEngine.rankIndex(x,t),rm=rankMetrics(i,x,t,b,h,1,e);S.rk[n]={n,w,r,b,u:'kg',f:sex,i,x,e,pc:rm.pc,need:rm.need,d:iso(),age:athleteAge(),h,rawX:e/b,auto:false,rankVersion:R.rankingVersion||6};gr.res=S.rk[n];S.set.table=oldSex;refreshRanks();await save();render();sheet();toast('Rank updated · ranks refreshed')},
-tab:d=>{view=d.v;nav();render()},
+tab:d=>{view=d.v;nav();render();requestAnimationFrame(resetViewScroll)},
 start:d=>{ci=0;S.cur={id:Date.now(),d:iso(),split:d.v,ex:[]};go()},
 ds:d=>{const i=+d.i,j=+d.j;confirmAction('Delete set?','This will remove Set '+(j+1)+' from '+S.cur.ex[i].n+'.','Delete',()=>{S.cur.ex[i].sets.splice(j,1);go()})},
 wu:d=>{const s=S.cur.ex[d.i].sets[d.j];s.t=s.t=='w'?'':'w';go()},
