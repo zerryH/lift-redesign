@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const app=fs.readFileSync('app.js','utf8');
+const css=fs.readFileSync('styles.css','utf8');
+const html=fs.readFileSync('index.html','utf8');
+assert.match(app,/const sliderMarkup=/);
+assert.match(app,/type=\"range\"/);
+assert.match(app,/t\.id==[\"']ws[\"']/);
+assert.match(app,/t\.id==[\"']rs[\"']/);
+assert.match(css,/\.value-slider \.range\{[^}]*opacity:1/);
+assert.match(css,/\.value-slider \.range\{[^}]*pointer-events:auto/);
+assert.match(css,/\.value-slider \.range::-webkit-slider-thumb/);
+assert.doesNotMatch(app,/PX_PER_STEP/);
+assert.doesNotMatch(app,/setPointerCapture/);
+assert.doesNotMatch(app,/rulerTicks/);
+assert.match(html,/class=value-slider/);
+console.log('direct value slider contract ok');
