@@ -138,6 +138,8 @@ body::after{right:-16vw;top:36vh;background:radial-gradient(circle at 50% 50%,co
 .anatomy-map-stage .anatomy-svg .real-body-base path[id="sternocleidomastoid_l"],
 .anatomy-map-stage .anatomy-svg .real-body-base path[id="sternocleidomastoid_r"]{fill:#4b5263!important;stroke:#858c9d!important;fill-opacity:1!important;stroke-opacity:.9!important}
 .anatomy-map-stage .anatomy-svg .muscle-zone-group[data-muscles="calves"] path{stroke-width:1.7!important;stroke-opacity:1!important}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path{fill:var(--mc)!important;fill-opacity:var(--ma,.94)!important;stroke:var(--ms,var(--mc))!important;stroke-opacity:.95!important}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{fill:var(--mc)!important;fill-opacity:var(--ma,.62)!important;stroke:var(--ms)!important;stroke-opacity:.9!important}
 .anatomy-map-stage .anatomy-svg .muscle-zone-group[data-muscles="quads"] path{stroke-width:1.45!important}
 
 
