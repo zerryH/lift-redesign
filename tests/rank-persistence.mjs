@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 const app=fs.readFileSync('app.js','utf8');
 assert.ok(app.includes("const previous=S.rk&&typeof S.rk==='object'&&!Array.isArray(S.rk)?S.rk:{}"));
 assert.ok(app.includes("const manual=Object.fromEntries(Object.entries(previous).filter(([n,r])=>r&&r.auto!==1"));
-assert.ok(app.includes('S.rk={...manual,...rebuilt}'));
+assert.ok(app.includes('S.rk={...rebuilt,...manual}'));
 assert.ok(!/const snapshot=JSON.parse\(JSON.stringify\(S\)\);delete snapshot\.rk;/.test(app));
 assert.ok(app.includes('Keep manually calculated rank records; refreshRanks() rebuilds workout-derived ranks below.'));
 assert.ok(app.includes('Object.entries(R.alias||{}).filter(([,target])=>target===n)'));
