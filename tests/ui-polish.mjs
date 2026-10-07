@@ -1,4 +1,4 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const css=fs.readFileSync('styles.css','utf8'); const app=fs.readFileSync('app.js','utf8'); const html=fs.readFileSync('index.html','utf8'); const local=fs.readFileSync('lift-local.html','utf8');
-for(const x of ['.value-slider-wrap','.value-picker-center','.value-picker-tick']) assert.ok(css.includes(x),x); assert.ok(!app.includes('PX_PER_STEP')); assert.ok(html.includes('class=\"value-slider\"')); assert.equal(html,local); console.log('ui wheel polish: ok');
+for(const x of ['.value-slider-wrap','.value-picker-center','.value-picker-tick']) assert.ok(css.includes(x),x); assert.ok(!app.includes('PX_PER_STEP')); assert.ok(html.includes('class=\"value-slider\"')); assert.equal(html,local); assert.ok(css.includes('#v{max-width:620px!important;padding:26px 16px 26px!important}'),'primary views need a small top breathing-room increase'); assert.ok(/#v \.pill\{[^}]*min-height:40px!important/.test(css),'pill touch target must stay usable'); assert.ok(/#v \.cta\{[^}]*min-height:50px!important/.test(css),'CTA touch target must stay usable'); console.log('ui wheel polish: ok');
