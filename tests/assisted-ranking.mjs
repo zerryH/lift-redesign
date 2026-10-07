@@ -31,4 +31,7 @@ assert.match(app,/loadMode==='assisted'/);
 assert.match(app,/ASSISTANCE/);
 assert.match(app,/bodyweight minus assistance/);
 assert.match(app,/refreshAssistedManualRank/);
+assert.match(app,/profileBw=bw\(\)/);
+assert.match(app,/storedBw>1/);
+assert.match(app,/Enter your real bodyweight for assisted exercises/);
 console.log('assisted ranking passed · 3 assisted exercises use explicit assistance semantics');

@@ -6,7 +6,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.5.91';
+const BUILD_VERSION='5.5.92';
 /*BEGIN:RANKING_ENGINE*//* Lift ranking engine — v9 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -339,10 +339,9 @@ update:updateApp,
 log:()=>{S.cur.ex[ci].sets.push({kg:dr.kg,reps:dr.reps,t:''});go()},
 cp:()=>{ci=Math.max(0,ci-1);render()},cn:()=>{ci++;render()},
 rm:()=>{dr.reps=Math.max(1,dr.reps-1);syncPickers()},rpl:()=>{dr.reps=Math.min(30,dr.reps+1);syncPickers()},
-gr:d=>{refreshRanks();const name=String(d.v||'').trim(),k=name?S.rk[name]:null,u=k?k.u:S.set.unit||'kg',c=v=>fm(cv(v,u));gr=k?{n:name,w:c(k.w),r:String(k.r),b:c(k.b),h:String(k.h||S.set.heightCm||''),u,f:k.f,res:k}:{n:'',w:'',r:'',b:bw()?c(bw()):'',h:S.set.heightCm?String(S.set.heightCm):'',u,f:S.set.table,res:null};sheet()},
-gx:()=>{gr=null;sheet()},gs:d=>{gr.f=d.v;sheet()},
+gr:d=>{refreshRanks();const name=String(d.v||'').trim(),k=name?S.rk[name]:null,u=k?k.u:S.set.unit||'kg',c=v=>fm(cv(v,u)),assist=exerciseMeta(name)?.loadMode==='assisted',profileBw=bw(),storedBw=num(k?.b);gr=k?{n:name,w:c(k.w),r:String(k.r),b:c(assist&&profileBw>1?profileBw:(storedBw>1?storedBw:0)),h:String(k.h||S.set.heightCm||''),u,f:k.f,res:k}:{n:'',w:'',r:'',b:profileBw>0?c(profileBw):'',h:S.set.heightCm?String(S.set.heightCm):'',u,f:S.set.table,res:null};sheet()},\ngx:gx:()=>{gr=null;sheet()},gs:d=>{gr.f=d.v;sheet()},
 gu:d=>{if(gr.u==d.v)return;const k=d.v=='lb'?2.20462:1/2.20462,f=v=>v===''?'':String(fm(num(v)*k));gr.w=f(gr.w);gr.b=f(gr.b);gr.u=d.v;setRankingControl({unit:d.v},{redraw:false});sheet()},
-calc:async()=>{if(!gr)return toast('Open the rank form first');const n=String(gr.n||'').trim(),sex=gr.f==='F'?'F':'M',w=num(gr.w),r=Math.round(num(gr.r)),b=num(gr.b),h=num(gr.h)||num(S.set.heightCm)||null;if(!EX[n]||!rankThresholds(n))return toast('Choose a supported exercise from the list');if(!Number.isInteger(r)||r<1||r>12)return toast('Use 1–12 reps for ranked sets');if(!Number.isFinite(b)||b<=0)return toast('Enter bodyweight');if(h&&(!Number.isFinite(h)||h<120||h>230))return toast('Height must be between 120 and 230 cm');const oldSex=S.set.table;S.set.table=sex;const set={kg:w,reps:r,t:'',bw:b,height:h};const e=rankSetEst(n,set,b),x=rankScore(n,e,b,h),t=rankThresholds(n),i=LiftRankingEngine.rankIndex(x,t),rm=rankMetrics(i,x,t,b,h,1,e,exerciseMeta(n)?.loadMultiplier||1);S.rk[n]={n,w,r,b,u:'kg',f:sex,i,x,e,pc:rm.pc,need:rm.need,d:iso(),age:athleteAge(),h,rawX:e/b,auto:false,rankVersion:R.rankingVersion||8};gr.res=S.rk[n];S.set.table=oldSex;refreshRanks();await save();render();sheet();toast('Rank updated · ranks refreshed')},
+calc:async()=>{if(!gr)return toast('Open the rank form first');const n=String(gr.n||'').trim(),sex=gr.f==='F'?'F':'M',w=num(gr.w),r=Math.round(num(gr.r)),b=num(gr.b),h=num(gr.h)||num(S.set.heightCm)||null,assistRank=exerciseMeta(n)?.loadMode==='assisted';if(!EX[n]||!rankThresholds(n))return toast('Choose a supported exercise from the list');if(!Number.isInteger(r)||r<1||r>12)return toast('Use 1–12 reps for ranked sets');if(!Number.isFinite(b)||b<=0)return toast('Enter bodyweight');if(assistRank&&b<=1)return toast('Enter your real bodyweight for assisted exercises');if(h&&(!Number.isFinite(h)||h<120||h>230))return toast('Height must be between 120 and 230 cm');const oldSex=S.set.table;S.set.table=sex;const set={kg:w,reps:r,t:'',bw:b,height:h};const e=rankSetEst(n,set,b),x=rankScore(n,e,b,h),t=rankThresholds(n),i=LiftRankingEngine.rankIndex(x,t),rm=rankMetrics(i,x,t,b,h,1,e,exerciseMeta(n)?.loadMultiplier||1);S.rk[n]={n,w,r,b,u:'kg',f:sex,i,x,e,pc:rm.pc,need:rm.need,d:iso(),age:athleteAge(),h,rawX:e/b,auto:false,rankVersion:R.rankingVersion||8};gr.res=S.rk[n];S.set.table=oldSex;refreshRanks();await save();render();sheet();toast('Rank updated · ranks refreshed')},
 tab:d=>{view=d.v;nav();render();requestAnimationFrame(resetViewScroll)},
 start:d=>{ci=0;S.cur={id:Date.now(),d:iso(),split:d.v,ex:[]};go()},
 ds:d=>{const i=+d.i,j=+d.j;confirmAction('Delete set?','This will remove Set '+(j+1)+' from '+S.cur.ex[i].n+'.','Delete',()=>{S.cur.ex[i].sets.splice(j,1);go()})},
