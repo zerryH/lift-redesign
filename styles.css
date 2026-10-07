@@ -168,7 +168,7 @@ html.tutorial-open,body.tutorial-open{overflow:hidden!important}
 .install-guide-card{width:min(500px,100%);max-height:min(90vh,760px);overflow:auto;border:1px solid color-mix(in srgb,var(--ac) 30%,var(--ln) 70%);border-radius:30px;padding:18px;background:linear-gradient(180deg,color-mix(in srgb,var(--cd) 98%,#fff 2%),var(--cd));box-shadow:0 30px 100px rgba(0,0,0,.5)}
 .ig-top{display:flex;gap:12px;justify-content:space-between;align-items:flex-start}.ig-eyebrow{font-size:10px;letter-spacing:.16em;font-weight:900;color:var(--ac2)}.ig-top h2{margin:5px 0 7px;font-size:26px;line-height:1.06}.ig-top p{margin:0;color:var(--mu);font-size:13px;line-height:1.45;max-width:390px};.ig-warning{margin-top:8px!important;color:#ff5f57!important;font-size:11px!important;font-weight:800!important;line-height:1.35!important;max-width:390px!important}.ig-close{border:0;background:transparent;color:var(--mu);font-size:28px;line-height:1;padding:2px 6px;cursor:pointer}
 .ig-visual{position:relative;margin:17px 0 15px;padding:13px 16px 5px;border-radius:22px;background:color-mix(in srgb,var(--ac) 7%,var(--cd));border:1px solid color-mix(in srgb,var(--ln) 80%,transparent);overflow:hidden}
-.ig-browser{border-radius:16px;background:#111;color:#fff;box-shadow:0 10px 25px rgba(0,0,0,.24);overflow:hidden}.ig-browser-top{height:25px;display:flex;align-items:center;gap:5px;padding:0 9px;background:#202024}.ig-browser-top span{width:6px;height:6px;border-radius:50%;background:#68686e}.ig-browser-top b{margin-left:auto;margin-right:auto;font-size:9px;color:#a9a9af}.ig-browser-content{height:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.ig-browser-content strong{font-size:23px}.ig-browser-content strong span{font-weight:400}.ig-browser-content small{font-size:8px;color:#888}.ig-browser-toolbar{height:35px;display:flex;align-items:center;justify-content:space-around;color:#c7c7cc;font-size:16px;border-top:1px solid #29292e}.ig-browser-toolbar span{min-width:25px;text-align:center}.ig-share-target,.ig-menu-target,.ig-install-target{color:#fff;font-weight:900;position:relative}.ig-share-target:after,.ig-menu-target:after,.ig-install-target:after{content:'';position:absolute;left:50%;top:20px;width:2px;height:25px;background:var(--ac2);transform:translateX(-50%);animation:igArrow .9s ease-in-out infinite alternate}.ig-share-target:before,.ig-menu-target:before,.ig-install-target:before{content:'↓';position:absolute;left:50%;top:38px;color:var(--ac2);font-size:20px;transform:translateX(-50%);animation:igArrow .9s ease-in-out infinite alternate}.ig-arrow{height:30px;text-align:center;color:var(--ac2);font-size:25px;font-weight:900;animation:igArrow .9s ease-in-out infinite alternate}@keyframes igArrow{from{transform:translateY(-2px)}to{transform:translateY(5px)}}.ig-share-target:after,.ig-menu-target:after,.ig-install-target:after{transform:translateX(-50%)}
+.ig-browser{border-radius:16px;background:#111;color:#fff;box-shadow:0 10px 25px rgba(0,0,0,.24);overflow:hidden}.ig-browser-top{height:25px;display:flex;align-items:center;gap:5px;padding:0 9px;background:#202024}.ig-browser-top span{width:6px;height:6px;border-radius:50%;background:#68686e}.ig-browser-top b{margin-left:auto;margin-right:auto;font-size:9px;color:#a9a9af}.ig-browser-content{height:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.ig-browser-content strong{font-size:23px}.ig-browser-content strong span{font-weight:400}.ig-browser-content small{font-size:8px;color:#888}.ig-browser-toolbar{height:35px;display:flex;align-items:center;justify-content:space-around;color:#c7c7cc;font-size:16px;border-top:1px solid #29292e}.ig-browser-toolbar span{min-width:25px;text-align:center}.ig-share-target,.ig-menu-target,.ig-install-target{color:#fff;font-weight:900;position:relative}.ig-share-target:after,.ig-menu-target:after,.ig-install-target:after{content:'';position:absolute;left:50%;top:20px;width:2px;height:25px;background:var(--ac2);transform:translateX(-50%);animation:igArrow .9s ease-in-out infinite alternate}.ig-share-target:before,.ig-menu-target:before,.ig-install-target:before{content:'â';position:absolute;left:50%;top:38px;color:var(--ac2);font-size:20px;transform:translateX(-50%);animation:igArrow .9s ease-in-out infinite alternate}.ig-arrow{height:30px;text-align:center;color:var(--ac2);font-size:25px;font-weight:900;animation:igArrow .9s ease-in-out infinite alternate}@keyframes igArrow{from{transform:translateY(-2px)}to{transform:translateY(5px)}}.ig-share-target:after,.ig-menu-target:after,.ig-install-target:after{transform:translateX(-50%)}
 .ig-steps{display:grid;gap:8px}.ig-step{display:grid;grid-template-columns:32px 1fr 38px;align-items:center;gap:10px;padding:11px 10px;border-radius:17px;background:color-mix(in srgb,var(--cd) 86%,var(--ac) 14%);border:1px solid color-mix(in srgb,var(--ln) 80%,transparent)}.ig-step-num{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;background:var(--ac);color:#fff;font-weight:900;font-size:12px}.ig-step-copy{display:grid;gap:3px}.ig-step-copy b{font-size:14px}.ig-step-copy small{font-size:11px;color:var(--mu);line-height:1.35}.ig-step-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:color-mix(in srgb,var(--ac2) 14%,transparent);color:var(--ac2);font-size:20px;font-weight:900}.ig-share{font-size:20px}.ig-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}.ig-foot span{font-size:10px;color:var(--mu);line-height:1.35}.ig-foot .cta{width:auto;min-height:40px;margin:0;padding:0 16px;border-radius:13px}
 @media(max-width:500px){.install-guide-card{padding:16px;border-radius:25px}.ig-top h2{font-size:23px}.ig-visual{margin-top:14px}.ig-browser-content{height:65px}.ig-step{grid-template-columns:30px 1fr 34px;padding:10px 8px}.ig-step-copy b{font-size:13px}}
 
@@ -293,7 +293,7 @@ body.rank-list-open{touch-action:none!important}
 .range-wrap.dragging{cursor:grabbing}
 
 
-/* v5.5.70 · compact iOS-style UI polish */
+/* v5.5.70 Â· compact iOS-style UI polish */
 #v .chips{align-items:center}
 #v .pill{min-width:0;min-height:44px;padding:0 16px;font-size:14px}
 #v .add{align-items:flex-end;gap:10px;margin:14px 0}
@@ -341,7 +341,7 @@ body.rank-list-open{touch-action:none!important}
 
 
 
-/* v5.5.71 · authoritative mobile component layer */
+/* v5.5.71 Â· authoritative mobile component layer */
 /* Exercise library: native iOS button chrome must never style this overlay. */
 .exercise-library{position:fixed;inset:0;z-index:2000;display:flex;flex-direction:column;background:var(--bg);color:var(--fg);padding:max(env(safe-area-inset-top),10px) 0 max(env(safe-area-inset-bottom),8px);overflow:hidden;overscroll-behavior:contain}
 .exercise-library button,.exercise-library input,.exercise-library select{font:inherit;appearance:none;-webkit-appearance:none}
@@ -406,7 +406,7 @@ body.rank-list-open{touch-action:none!important}
 #v .range{height:54px!important}
 
 
-/* v5.5.73 · unified mobile UI polish
+/* v5.5.73 Â· unified mobile UI polish
    One final component layer: compact spacing, predictable widths, safe areas,
    and clear hierarchy across every primary view and overlay. */
 html,body{overflow-x:clip!important}
@@ -538,7 +538,7 @@ html,body{overflow-x:clip!important}
 }
 
 
-/* v5.5.74 · final mobile interaction + spacing layer */
+/* v5.5.74 Â· final mobile interaction + spacing layer */
 #v{width:100%!important;max-width:620px!important;min-width:0!important;overflow-x:hidden!important}
 #v>*{max-width:100%!important;min-width:0!important}
 #v button,#v input,#v select,#v textarea{max-width:100%!important}
@@ -585,7 +585,7 @@ html,body{overflow-x:clip!important}
 }
 
 
-/* v5.5.76 · mobile slider + Today spacing fixes */
+/* v5.5.76 Â· mobile slider + Today spacing fixes */
 #v .range-wrap{touch-action:pan-y!important;overscroll-behavior-x:none!important;cursor:grab!important}
 #v .range{pointer-events:auto!important;opacity:0!important;z-index:4!important;touch-action:pan-y!important;cursor:grab!important}
 #v .range:active{cursor:grabbing!important}
@@ -607,7 +607,7 @@ html,body{overflow-x:clip!important}
 }
 
 
-/* v5.5.77 · larger slider touch target */
+/* v5.5.77 Â· larger slider touch target */
 #v .range-wrap{overflow:visible!important}
 #v .range{top:-12px!important;bottom:-12px!important;height:calc(100% + 24px)!important;min-height:78px!important}
 #v .range-window{position:absolute!important;inset:0!important;z-index:1!important}
@@ -616,7 +616,7 @@ html,body{overflow-x:clip!important}
 #v .rep-limit-note{position:relative!important;z-index:6!important}
 
 
-/* v5.5.79 · centered wheel value picker
+/* v5.5.79 Â· centered wheel value picker
    The selected value stays centered; the tick strip moves underneath it like the reference picker. */
 #v .picker .phead{position:relative;display:flex;align-items:center;justify-content:center;min-height:58px;margin-bottom:2px;text-align:center}
 #v .picker .phead>span{position:absolute;left:0;top:50%;transform:translateY(-50%);font-size:11px;letter-spacing:.18em;font-weight:800;color:var(--mu)}
@@ -637,3 +637,21 @@ html,body{overflow-x:clip!important}
 #v .value-slider .range:focus-visible{outline:2px solid var(--ac2);outline-offset:4px}
 #v .range-wrap{display:none!important}
 @media(max-width:430px){#v .picker .phead{min-height:54px}#v .picker .phead b{font-size:52px}#v .picker .phead>span{font-size:10px}#v .value-slider{height:72px;border-radius:16px}}
+
+
+/* v5.5.83 · global card/tile breathing room
+   Slightly more vertical separation across primary tabs without shrinking touch targets. */
+#v .row{margin:9px 0!important;padding-top:14px!important;padding-bottom:14px!important;min-height:60px!important}
+#v .note{margin:10px 0!important;padding-top:12px!important;padding-bottom:12px!important}
+#v .sets{margin:12px 0!important;padding-top:6px!important;padding-bottom:6px!important}
+#v .srow{min-height:48px!important}
+#v .big{margin:12px 0 16px!important;padding-top:15px!important;padding-bottom:15px!important}
+#v .body-card{margin:12px 0 14px!important;padding-top:14px!important;padding-bottom:14px!important}
+#v .muscle-grid{gap:9px!important;margin:12px 0!important}
+#v .muscle-pill{padding-top:11px!important;padding-bottom:11px!important;min-height:48px!important}
+#v .standard-choice,#v .theme-choices{gap:9px!important}
+#v .credits-card{margin-top:7px!important;padding-top:14px!important;padding-bottom:14px!important}
+#v .build-card{padding-top:12px!important;padding-bottom:12px!important}
+#v .chips{row-gap:10px!important}
+#v .today-empty>.chips{row-gap:10px!important}
+#v .today-empty .exercise-add-bar{margin-bottom:17px!important}
