@@ -1,4 +1,4 @@
-// LiftLog ranking standards v9: assisted movements use exercise-specific effective-load anchors.
+// Slat ranking standards v9: assisted movements use exercise-specific effective-load anchors.
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 

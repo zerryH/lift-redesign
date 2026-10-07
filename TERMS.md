@@ -1,16 +1,16 @@
-# LiftLog Terms & Ranking Disclaimer
+# Slat Terms & Ranking Disclaimer
 
 **Last updated: 7 October 2026 · Build 5.5.94**
 
 ## Ownership
 
-LiftLog's original source code, UI, documentation, ranking configuration and original creative work are copyright © 2026 @o.r146 / LiftLog and are all rights reserved unless a separate license says otherwise. Third-party components and assets remain under their own licenses.
+Slat's original source code, UI, documentation, ranking configuration and original creative work are copyright © 2026 @o.r146 / Slat and are all rights reserved unless a separate license says otherwise. Third-party components and assets remain under their own licenses.
 
-No additional permission is granted to copy, republish, sell, redistribute, train a model on, or create derivative versions of proprietary LiftLog material unless the copyright holder gives permission or applicable law provides that right. Because the project is hosted in a public GitHub repository, GitHub's own Terms of Service and repository permissions still apply; this notice cannot override them.
+No additional permission is granted to copy, republish, sell, redistribute, train a model on, or create derivative versions of proprietary Slat material unless the copyright holder gives permission or applicable law provides that right. Because the project is hosted in a public GitHub repository, GitHub's own Terms of Service and repository permissions still apply; this notice cannot override them.
 
 ## Fitness and safety disclaimer
 
-LiftLog is a workout logging and comparison tool, not medical, rehabilitation, diagnosis or professional coaching advice. Do not treat a rank as a safety limit, treatment recommendation or guarantee of performance. Stop an exercise and seek appropriate professional help if you experience pain, injury symptoms or another medical concern.
+Slat is a workout logging and comparison tool, not medical, rehabilitation, diagnosis or professional coaching advice. Do not treat a rank as a safety limit, treatment recommendation or guarantee of performance. Stop an exercise and seek appropriate professional help if you experience pain, injury symptoms or another medical concern.
 
 ## Ranking disclaimer
 
@@ -26,7 +26,7 @@ The app is designed to work offline, but browser storage, device failure, browse
 
 ## Third-party material
 
-See `THIRD_PARTY_NOTICES.md` for assets and licenses that are not owned by LiftLog. Those licenses control the permitted use of the relevant material.
+See `THIRD_PARTY_NOTICES.md` for assets and licenses that are not owned by Slat. Those licenses control the permitted use of the relevant material.
 
 ## Contact
 

@@ -1,10 +1,10 @@
-# LiftLog Privacy Notice
+# Slat Privacy Notice
 
 **Last updated: 7 October 2026 · Build 5.5.94**
 
 ## Controller and contact
 
-LiftLog is created by **@o.r146**. Privacy questions or requests concerning LiftLog's own processing can be sent through Discord: `ejaculator2000`. This notice describes the product's current data flows in plain language and is not legal advice.
+Slat is created by **@o.r146**. Privacy questions or requests concerning Slat's own processing can be sent through Discord: `ejaculator2000`. This notice describes the product's current data flows in plain language and is not legal advice.
 
 ## What Lift stores locally
 
@@ -16,7 +16,7 @@ Lift processes and stores the information needed for the features you use, inclu
 - locally calculated ranking results and progress information; and
 - settings such as theme, motion, tutorial and rest-timer preferences.
 
-The app does not require an account and does not operate a Lift-owned workout database, analytics service, advertising system or telemetry service.
+The app does not require an account and does not operate a Slat-owned workout database, analytics service, advertising system or telemetry service.
 
 ## Purposes and legal basis
 
