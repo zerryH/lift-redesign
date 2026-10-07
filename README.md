@@ -1,6 +1,6 @@
-# LiftLog
+# Stjeno
 
-LiftLog is a local-first, offline strength-training logger. Workout data is stored on the device; the app does not require an account or a Lift-owned backend.
+Stjeno is a local-first, offline strength-training logger. Workout data is stored on the device; the app does not require an account or a Stjeno-owned backend.
 
 ## Current release
 
@@ -9,7 +9,7 @@ LiftLog is a local-first, offline strength-training logger. Workout data is stor
 - 468 catalogue exercises
 - 468 active ranking standards
 - 46 rank tiers
-- Ranking standards v9: Lift-owned exercise-specific heuristics
+- Ranking standards v9: Stjeno-owned exercise-specific heuristics
 
 The shipped app is a self-contained HTML build for GitHub Pages and a local `lift-local.html` file.
 
@@ -31,9 +31,9 @@ The shipped app is a self-contained HTML build for GitHub Pages and a local `lif
 
 ## Ranking system
 
-LiftLog uses 46 tiers from Wood I through Blue Gem. Each supported exercise has its own male/female threshold ladder. Ranking uses logged exercise performance relative to stored bodyweight, with optional age and height/ROM adjustments.
+Stjeno uses 46 tiers from Wood I through Blue Gem. Each supported exercise has its own male/female threshold ladder. Ranking uses logged exercise performance relative to stored bodyweight, with optional age and height/ROM adjustments.
 
-**Ranking standards v9 are Lift-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Lift progression. No Strength Level or ExRx threshold table is embedded in the v9 dataset. See `docs/rank-methodology-v9.md`.
+**Ranking standards v9 are Stjeno-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Lift progression. No Strength Level or ExRx threshold table is embedded in the v9 dataset. See `docs/rank-methodology-v9.md`.
 
 Ranks are estimates for training context, not medical advice, diagnosis, a biomechanical law, an official federation classification or a guarantee of performance.
 
@@ -41,7 +41,7 @@ Ranks are estimates for training context, not medical advice, diagnosis, a biome
 
 Use **Profile → Privacy & data** and **Profile → Terms & ranking** inside the app. Source-level notices are also provided in `PRIVACY.md`, `TERMS.md`, `LICENSE`, and `AI-USAGE-NOTICE.md`.
 
-LiftLog's original source and original creative work are **all rights reserved** unless a separate notice says otherwise. Third-party material keeps its own license; see `THIRD_PARTY_NOTICES.md`.
+Stjeno's original source and original creative work are **all rights reserved** unless a separate notice says otherwise. Third-party material keeps its own license; see `THIRD_PARTY_NOTICES.md`.
 
 Because the repository is public, GitHub's platform terms permit certain viewing/forking actions. An ownership notice cannot override those platform permissions. If the source itself must be inaccessible, the repository must be private and the deployment architecture must be changed accordingly.
 

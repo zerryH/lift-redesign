@@ -11,6 +11,6 @@ The attributed material is licensed as described by those notices. In particular
 
 **Important:** the current detailed anatomy implementation has not yet been replaced with independently authored anatomy artwork. Do not remove the Ryan Graves attribution merely because a later design goal calls the UI a "new 2D model". Replace and verify the actual bundled paths first.
 
-## LiftLog-owned material
+## Stjeno-owned material
 
-Original LiftLog code, UI, ranking configuration v9, documentation and original assets are copyright © 2026 @o.r146 / LiftLog and all rights reserved unless another notice says otherwise.
+Original Stjeno code, UI, ranking configuration v9, documentation and original assets are copyright © 2026 @o.r146 / Stjeno and all rights reserved unless another notice says otherwise.

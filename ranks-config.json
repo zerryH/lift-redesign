@@ -1,5 +1,5 @@
 {
-  "_": "Lift rank system v9. Every supported exercise has its own male/female 46-rank threshold ladder. Thresholds are Lift-owned heuristic benchmarks generated from exercise metadata, exercise-specific difficulty anchors, ROM class and load semantics. They are not population claims.",
+  "_": "Stjeno rank system v9. Every supported exercise has its own male/female 46-rank threshold ladder. Thresholds are Stjeno-owned heuristic benchmarks generated from exercise metadata, exercise-specific difficulty anchors, ROM class and load semantics. They are not population claims.",
   "tiers": [
     "Wood I",
     "Wood II",
@@ -46170,19 +46170,19 @@
       "capMax": 1.06
     },
     "sources": [
-      "Lift-owned exercise-family anchor model and explicit movement metadata; no third-party strength-standard table is copied into the threshold dataset.",
-      "General strength-training conventions are used only to choose broad movement-family anchors; Lift does not present them as measured population percentiles.",
+      "Stjeno-owned exercise-family anchor model and explicit movement metadata; no third-party strength-standard table is copied into the threshold dataset.",
+      "General strength-training conventions are used only to choose broad movement-family anchors; Stjeno does not present them as measured population percentiles.",
       "Obscure variations inherit a documented movement-family anchor from their explicit exercise metadata and remain editable in the source configuration."
     ],
     "topTierFactor": 1,
-    "topTierNote": "Blue Gem is the final Lift tier of the internal progression; it is not labeled as a population percentile.",
-    "exerciseStandardModel": "Lift-owned per-exercise male-female heuristic thresholds",
+    "topTierNote": "Blue Gem is the final Stjeno tier of the internal progression; it is not labeled as a population percentile.",
+    "exerciseStandardModel": "Stjeno-owned per-exercise male-female heuristic thresholds",
     "muscleAggregation": "weighted-exercise-percentile",
     "romCorrection": "height exponent by exercise ROM class; capped at ±10%",
     "ageCorrection": "smooth age curve; 25-40 baseline; youth and older-lifter bonus capped at 20%",
     "machineLeniency": "encoded in each exercise threshold ladder; no universal machine multiplier",
     "unilateralRule": "unilateral loads are scored per side; bilateral dumbbell loads use both dumbbells",
-    "thresholdGeneration": "referenceBW × movementFamilyAnchor × ROMFactor × unilateralFactor × 46-step Lift progression",
+    "thresholdGeneration": "referenceBW × movementFamilyAnchor × ROMFactor × unilateralFactor × 46-step Stjeno progression",
     "femaleReferenceFactor": 0.68,
     "romFactors": {
       "high": 1,
