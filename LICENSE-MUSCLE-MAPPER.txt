@@ -11,4 +11,4 @@ Advanced anatomy SVGs provided by Ryan Graves.
 CC BY 4.0 license:
 https://creativecommons.org/licenses/by/4.0/
 
-Important: the upstream muscle_mapper repository is MIT-licensed as a software project, but its README separately states that the advanced SVG assets are CC BY 4.0. This notice records the asset-specific license that applies to the anatomy SVGs bundled by Lift.
+Important: the upstream muscle_mapper repository is MIT-licensed as a software project, but its README separately states that the advanced SVG assets are CC BY 4.0. This notice records the asset-specific license that applies to the anatomy SVGs bundled by Slat.

@@ -1,6 +1,6 @@
 # Slat Terms & Ranking Disclaimer
 
-**Last updated: 7 October 2026 · Build 5.5.94**
+**Last updated: 7 October 2026 · Build 5.5.96**
 
 ## Ownership
 
@@ -14,9 +14,9 @@ Slat is a workout logging and comparison tool, not medical, rehabilitation, diag
 
 ## Ranking disclaimer
 
-Lift rankings are exercise-specific training heuristics. They are not medical advice, a diagnosis, a biomechanical law, an official federation classification, a scientifically validated population percentile or a guarantee of performance.
+Slat rankings are exercise-specific training heuristics. They are not medical advice, a diagnosis, a biomechanical law, an official federation classification, a scientifically validated population percentile or a guarantee of performance.
 
-The model can use bodyweight, age and height/ROM settings. Those adjustments are Lift product heuristics rather than claims about universal human physiology. Equipment geometry, technique, range of motion, execution, fatigue, rep quality and estimated-1RM error can materially change results.
+The model can use bodyweight, age and height/ROM settings. Those adjustments are Slat product heuristics rather than claims about universal human physiology. Equipment geometry, technique, range of motion, execution, fatigue, rep quality and estimated-1RM error can materially change results.
 
 Use rankings as a consistent progress reference, not as a safety threshold.
 
