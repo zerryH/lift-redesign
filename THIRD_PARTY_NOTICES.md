@@ -13,4 +13,4 @@ The attributed material is licensed as described by those notices. In particular
 
 ## LiftLog-owned material
 
-Original LiftLog code, UI, ranking configuration v7, documentation and original assets are copyright © 2026 @o.r146 / LiftLog and all rights reserved unless another notice says otherwise.
+Original LiftLog code, UI, ranking configuration v9, documentation and original assets are copyright © 2026 @o.r146 / LiftLog and all rights reserved unless another notice says otherwise.

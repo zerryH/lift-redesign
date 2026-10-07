@@ -1,20 +1,28 @@
 # LiftLog Terms & Ranking Disclaimer
 
-**Last updated: 7 October 2026 · Build 5.5.84**
+**Last updated: 7 October 2026 · Build 5.5.94**
 
 ## Ownership
 
-LiftLog's original source code and original creative work are copyright © 2026 @o.r146 / LiftLog and are all rights reserved unless a separate license says otherwise. Third-party components and assets remain under their own licenses.
+LiftLog's original source code, UI, documentation, ranking configuration and original creative work are copyright © 2026 @o.r146 / LiftLog and are all rights reserved unless a separate license says otherwise. Third-party components and assets remain under their own licenses.
 
-No additional permission is granted to copy, republish, sell, redistribute or create derivative versions of LiftLog's proprietary material. Public GitHub hosting is subject to GitHub's Terms of Service, including the platform permissions associated with public repositories.
+No additional permission is granted to copy, republish, sell, redistribute, train a model on, or create derivative versions of proprietary LiftLog material unless the copyright holder gives permission or applicable law provides that right. Because the project is hosted in a public GitHub repository, GitHub's own Terms of Service and repository permissions still apply; this notice cannot override them.
+
+## Fitness and safety disclaimer
+
+LiftLog is a workout logging and comparison tool, not medical, rehabilitation, diagnosis or professional coaching advice. Do not treat a rank as a safety limit, treatment recommendation or guarantee of performance. Stop an exercise and seek appropriate professional help if you experience pain, injury symptoms or another medical concern.
 
 ## Ranking disclaimer
 
-Lift rankings are exercise-specific training heuristics. They are not medical advice, a diagnosis, a biomechanical law, an official federation classification, or a scientifically validated population percentile.
+Lift rankings are exercise-specific training heuristics. They are not medical advice, a diagnosis, a biomechanical law, an official federation classification, a scientifically validated population percentile or a guarantee of performance.
 
-The model can use bodyweight, age and height/ROM settings, but those adjustments are product heuristics rather than claims about universal human physiology. Equipment geometry, technique, range of motion, execution, fatigue and estimated-1RM error can materially change the result.
+The model can use bodyweight, age and height/ROM settings. Those adjustments are Lift product heuristics rather than claims about universal human physiology. Equipment geometry, technique, range of motion, execution, fatigue, rep quality and estimated-1RM error can materially change results.
 
-Use rankings as a consistent progress reference, not as a safety limit or a promise of performance.
+Use rankings as a consistent progress reference, not as a safety threshold.
+
+## Availability and backups
+
+The app is designed to work offline, but browser storage, device failure, browser updates and platform behavior can affect availability. Users are responsible for keeping copies of backups they want to retain.
 
 ## Third-party material
 

@@ -4,7 +4,7 @@ LiftLog is a local-first, offline strength-training logger. Workout data is stor
 
 ## Current release
 
-**Build: 5.5.90**
+**Build: 5.5.94**
 
 - 468 catalogue exercises
 - 468 active ranking standards
