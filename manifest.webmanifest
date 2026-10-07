@@ -1,6 +1,6 @@
 {
   "id": "./",
-  "name": "Slat — Strength Tracker",
+  "name": "Slat",
   "short_name": "Slat",
   "description": "Offline workout logging and strength rankings.",
   "start_url": "./index.html?source=homescreen-v2",
