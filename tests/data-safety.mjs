@@ -57,7 +57,7 @@ const run=async()=>{
   assert.equal(persisted.set.heightAdjust,old.set.heightAdjust);
   assert.equal(persisted.set.ageAdjust,old.set.ageAdjust);
   assert.equal(persisted.set.birthYear,'','legacy age is migrated to birthYear when available');
-  assert.equal(persisted.rk,undefined,'rank cache must not be persisted');
+  assert.ok(persisted.rk && typeof persisted.rk==='object' && Object.values(persisted.rk).every(r=>r && r.auto!==1),'only manually calculated rank records may be persisted; derived rank cache must be rebuilt');
   const dbPersisted=dbAfter;
   assert.deepEqual(dbPersisted.workouts,old.workouts,'IndexedDB workouts must survive failed reset');
   assert.deepEqual(dbPersisted.custom,old.custom,'IndexedDB custom exercises must survive failed reset');
