@@ -1,98 +1,62 @@
-# Lift
+# LiftLog
 
-Lift is a local/offline strength-training logger. Workout data stays on the device; the app does not require an account or backend.
+LiftLog is a local-first, offline strength-training logger. Workout data is stored on the device; the app does not require an account or a Lift-owned backend.
 
 ## Current release
 
-Build: 5.5.28
+**Build: 5.5.84**
 
-The shipped app is a self-contained HTML build for GitHub Pages and a local lift-local.html file.
+- 468 catalogue exercises
+- 468 active ranking standards
+- 46 rank tiers
+- Ranking standards v7: Lift-owned exercise-specific heuristics
+
+The shipped app is a self-contained HTML build for GitHub Pages and a local `lift-local.html` file.
 
 ## Architecture
 
 - Vanilla HTML/CSS/JavaScript.
-- No Three.js, WebGL runtime, CDN dependency, or hosted API.
-- Anatomy is 2D SVG: two separate detailed models, front/anterior and back/posterior.
-- The workout catalogue is sourced from exercises.json.
-- Ranking standards and tier names are sourced from ranks-config.json.
-- app.js contains BEGIN:EXERCISES and BEGIN:RANKS markers; build.mjs injects the current JSON between those markers.
-- index.html and lift-local.html are generated self-contained builds and are kept byte-identical.
-- localStorage is written first and IndexedDB is used on supported hosted origins; saved timestamps prevent an older IndexedDB copy from rolling back newer local data.
-- The local file:// build intentionally uses localStorage because service workers and other secure-context APIs are unavailable there.
+- No Three.js, WebGL runtime, CDN dependency, hosted API, account system, analytics SDK or workout backend.
+- Anatomy is rendered as 2D SVG with front/anterior and back/posterior views. See `THIRD_PARTY_NOTICES.md` for current asset provenance.
+- The workout catalogue is sourced from `exercises.json`.
+- Ranking standards and tier names are sourced from `ranks-config.json`.
+- `app.js` contains `BEGIN:EXERCISES` and `BEGIN:RANKS` markers; `build.mjs` injects the current JSON between those markers.
+- `index.html` and `lift-local.html` are generated self-contained builds and are kept byte-identical.
+- `localStorage` is written first and IndexedDB is used on supported hosted origins; saved timestamps prevent an older IndexedDB copy from rolling back newer local data.
+- The local `file://` build intentionally uses localStorage because service workers and other secure-context APIs are unavailable there.
 
 ## Exercise catalogue
 
-exercises.json currently contains 469 rows and 469 unique exercise names after removing the duplicate JM Press and Tate Press rows.
-
-Retained variants:
-- JM Press — barbell (B)
-- Tate Press — dumbbell (D)
-
-The four-field exercise row format is:
-name | split | load/type code | muscle
+`exercises.json` contains **468 unique exercise names**. Equipment labels are derived from exercise names and load metadata. Dumbbells, cable/rope, machines, Smith machines, plate-loaded machines, bands, kettlebells, sleds, bodyweight and assisted movements are kept distinct.
 
 ## Ranking system
 
-The runtime contains 460 standards and 46 tiers.
+LiftLog uses 46 tiers from Wood I through Blue Gem. Each supported exercise has its own male/female threshold ladder. Ranking uses logged exercise performance relative to stored bodyweight, with optional age and height/ROM adjustments.
 
-Ranking uses logged exercise performance relative to bodyweight, with optional age and height/ROM adjustments. The 1RM/rank/PR estimator intentionally uses 1–12 reps. Sets above 12 reps are still logged but are explicitly excluded from rank and PR calculations.
+**Ranking standards v7 are Lift-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Lift progression. No Strength Level or ExRx threshold table is embedded in the v7 dataset. See `docs/rank-methodology-v7.md`.
 
-The overall rank shown on the Ranks screen is the arithmetic average of the rank indices for logged exercises that have a recognized standard and rankable data. It is not a separate hidden compound-only score.
+Ranks are estimates for training context, not medical advice, diagnosis, a biomechanical law, an official federation classification or a guarantee of performance.
 
-Muscle ranks are calculated separately from the exercise-to-muscle transfer model and displayed on the front/back anatomy maps.
+## Privacy and ownership
 
-The rank tier list is data-driven from ranks-config.json; there is no separate hardcoded tier-name list.
+Use **Profile → Privacy & data** and **Profile → Terms & ranking** inside the app. Source-level notices are also provided in `PRIVACY.md`, `TERMS.md`, `LICENSE`, and `AI-USAGE-NOTICE.md`.
 
-## Tutorial
+LiftLog's original source and original creative work are **all rights reserved** unless a separate notice says otherwise. Third-party material keeps its own license; see `THIRD_PARTY_NOTICES.md`.
 
-The current 10-step tutorial is:
+Because the repository is public, GitHub's platform terms permit certain viewing/forking actions. An ownership notice cannot override those platform permissions. If the source itself must be inaccessible, the repository must be private and the deployment architecture must be changed accordingly.
 
-1. Welcome to Lift
-2. Start a workout
-3. Add your exercises
-4. Log every set
-5. Review finished workouts
-6. Set your athlete data
-7. Calculate your rank
-8. Read the muscle map
-9. Standards, backups & updates
-10. That is the whole loop
+## Credits
 
-The hosted build can check for a newer service-worker build. In the local file:// build, the Profile action is labeled Reload because a local HTML file cannot download a replacement file by itself.
+- Made by **@o.r146**
+- TikTok: **@o.r146**
+- Discord: **ejaculator2000**
 
-## Build pipeline
+## Build and tests
 
-Edit source/config files, then run:
+Run `node build.mjs` for the canonical generated build. The build is idempotent and regenerates both `index.html` and `lift-local.html` plus the service-worker cache hash.
 
-    node build.mjs
+The release suite covers catalogue integrity, equipment classification, ranking shape/progression, state compatibility, mobile interactions, update behavior, generated-file parity, encoding, legal/ownership notices and release-version consistency.
 
-The build:
+## Third-party notices
 
-1. Reads exercises.json and ranks-config.json.
-2. Validates their expected shapes.
-3. Injects the JSON into the marked regions of app.js.
-4. Removes any existing lift-anatomy-map-style block and inserts exactly one current anatomy stylesheet.
-5. Regenerates both index.html and lift-local.html.
-6. Verifies those two HTML files are byte-identical.
-7. Computes a deterministic short content hash.
-8. Writes a clean service-worker cache name as liftlog-v<BUILD_VERSION>-<hash>.
-
-The build is idempotent: running it twice produces byte-identical generated files.
-
-## Tests
-
-Run:
-
-    node tests/smoke.mjs
-    node tests/rank-progression.mjs
-    node --check app.js
-    node --check sw.js
-    node build.mjs
-
-The smoke test checks embedded JSON parity, 46-tier configuration, single anatomy-style injection, generated-file parity, dead-3D cleanup removal, version consistency, duplicate exercise names, runtime SVG ID uniqueness after front/back namespacing, icon references, and build idempotence.
-
-## Anatomy licensing
-
-See ANATOMY_CREDITS.md and LICENSE-MUSCLE-MAPPER.txt.
-
-The upstream muscle_mapper repository is MIT-licensed as software, while its README states that the bundled advanced SVG assets are provided by Ryan Graves under CC BY 4.0. Lift preserves that attribution.
+See `THIRD_PARTY_NOTICES.md`, `ANATOMY_CREDITS.md`, and `LICENSE-MUSCLE-MAPPER.txt`. The repository currently retains attribution for the bundled advanced anatomy SVG material attributed to Ryan Graves; that attribution must remain until those assets are actually replaced with independently authored anatomy artwork.

@@ -28,7 +28,7 @@ for(const [name,sexes] of Object.entries(cfg.t)){
     assert.equal(got,45,name+' max');
   }
 }
-console.log('rank progression ok · 460 standards × 46 tiers');
+console.log('rank progression ok · 468 standards × 46 tiers');
 
 assert.match(app,/aria-controls="rank-list-modal"/);
 console.log('rank guide sheet regression passed');
