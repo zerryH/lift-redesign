@@ -28,4 +28,4 @@ assert(s.includes('const ok=await activateSW(waiting);'));
 assert(s.includes("reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed')promptSWUpdate(w)})},{once:true})"));
 console.log('fast event-driven update check regression passed');
 
-console.log('update-check regression passed · native SW update + staged explicit activation');
+console.log('update-check regression passed Â· native SW update + staged explicit activation');
