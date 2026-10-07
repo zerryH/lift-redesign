@@ -14,7 +14,7 @@ assert.match(css,/\.rank-icon svg path\{fill:var\(--c\)!important/);
 assert.match(css,/\.badge\{color:var\(--ct,#fff\)!important;background:var\(--c\)!important/);
 assert.match(colorCss,/\.muscle-zone-group\.unlocked path[\s\S]*fill:var\(--mc/);
 assert.match(colorCss,/stroke:var\(--ms,var\(--mc/);
-assert.match(html,/BUILD_VERSION='5\.5\.89'/);
+assert.match(html,/BUILD_VERSION='5\.5\.91'/);
 assert.match(html,/authoritative rank-color layer/);
 assert.match(html,/authoritative 2D anatomy color layer/);
 console.log('rank/anatomy color regression: ok');

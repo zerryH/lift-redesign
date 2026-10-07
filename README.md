@@ -9,7 +9,7 @@ LiftLog is a local-first, offline strength-training logger. Workout data is stor
 - 468 catalogue exercises
 - 468 active ranking standards
 - 46 rank tiers
-- Ranking standards v8: Lift-owned exercise-specific heuristics
+- Ranking standards v9: Lift-owned exercise-specific heuristics
 
 The shipped app is a self-contained HTML build for GitHub Pages and a local `lift-local.html` file.
 
@@ -33,7 +33,7 @@ The shipped app is a self-contained HTML build for GitHub Pages and a local `lif
 
 LiftLog uses 46 tiers from Wood I through Blue Gem. Each supported exercise has its own male/female threshold ladder. Ranking uses logged exercise performance relative to stored bodyweight, with optional age and height/ROM adjustments.
 
-**Ranking standards v8 are Lift-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Lift progression. No Strength Level or ExRx threshold table is embedded in the v8 dataset. See `docs/rank-methodology-v8.md`.
+**Ranking standards v9 are Lift-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Lift progression. No Strength Level or ExRx threshold table is embedded in the v9 dataset. See `docs/rank-methodology-v9.md`.
 
 Ranks are estimates for training context, not medical advice, diagnosis, a biomechanical law, an official federation classification or a guarantee of performance.
 

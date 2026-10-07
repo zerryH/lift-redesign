@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const R=JSON.parse(fs.readFileSync(new URL('../ranks-config.json',import.meta.url),'utf8'));
 const E=JSON.parse(fs.readFileSync(new URL('../exercises.json',import.meta.url),'utf8'));
-assert.equal(R.rankingVersion,8);
+assert.equal(R.rankingVersion,9);
 assert.equal(R.tiers.length,46);
 assert.equal(Object.keys(R.t).length,E.ex.length);
 for(const row of E.ex){

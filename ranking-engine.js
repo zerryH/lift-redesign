@@ -1,4 +1,4 @@
-/* Lift ranking engine — v8 exercise-specific scoring; no UI/state side effects. */
+/* Lift ranking engine — v9 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const lerp=(a,b,t)=>a+(b-a)*t;
