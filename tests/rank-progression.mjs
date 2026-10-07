@@ -4,7 +4,7 @@ const cfg=JSON.parse(fs.readFileSync('ranks-config.json','utf8'));
 const app=fs.readFileSync('app.js','utf8');
 const css=fs.readFileSync('styles.css','utf8');
 assert.equal(cfg.tiers.length,46);
-assert.equal(Object.keys(cfg.t).length,469);
+assert.equal(Object.keys(cfg.t).length,468);
 assert.match(app,/let TN=\[\]; let MAX_RANK=-1;/);
 assert.match(app,/TN=Array\.isArray\(R\.tiers\)\?R\.tiers\.slice\(\):\[\];MAX_RANK=TN\.length-1/);
 assert.match(app,/rankListOpen=\(\)=>/);
