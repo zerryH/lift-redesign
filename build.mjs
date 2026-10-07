@@ -56,4 +56,4 @@ sw = sw.replace(/const V='[^']+',F=/, "const V='" + cacheVersion + "',F=");
 sw = sw.replace(/F=\[[^\]]*\]/, "F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','ranking-engine.js','anatomy-map.css','manifest.webmanifest','lift-icon-photo-fit.png','apple-touch-icon-photo-fit.png']");
 write('sw.js', sw);
 write('version.json', JSON.stringify({version:BUILD_VERSION,cache:cacheVersion}));
-console.log('build ok · ' + BUILD_VERSION + ' Â· ' + cacheVersion);
+console.log('build ok · ' + BUILD_VERSION + ' · ' + cacheVersion);
