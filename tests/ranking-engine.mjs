@@ -33,4 +33,4 @@ assert.equal(E.rankIndex(score('Bench Press',0,1,68,'M'),R.t['Bench Press'][0]),
 assert.ok(score('Bench Press',100,1,75,'M',178,17)>score('Bench Press',100,1,75,'M',178,20),'age correction must distinguish 17 from 20');
 assert.equal(E.effectiveLoad(set(3.875,1),R.exerciseMeta['Dumbbell Bicep Curl'],75),7.75);
 assert.ok(E.rankIndex(7.75,R.t['Dumbbell Bicep Curl'][0])>=0,'DB threshold units must match effective-load units');
-console.log('ranking engine v8 regression tests passed');
+console.log('ranking engine v9 regression tests passed');
