@@ -11,7 +11,7 @@ assert.match(app,/rankListOpen=\(\)=>/);
 assert.match(app,/data-a=rankList/);
 assert.match(app,/class="rank-info-button"/);
 assert.match(app,/All ranks/);
-assert.match(app,/const rankMetrics=\(i,x,adj,b,h,diff=1,e=x\)/);
+assert.ok(app.includes('const rankMetrics=(i,x,adj,b,h,diff=1,e=x,loadDiv=1)=>'));
 assert.match(app,/if\(i>=MAX_RANK\)return\{pc:100,need:null,next:null,max:true\}/);
 for(const [name,sexes] of Object.entries(cfg.t)){
   for(const sex of sexes){

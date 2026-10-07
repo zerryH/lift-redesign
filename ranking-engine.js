@@ -1,10 +1,10 @@
-/* Lift ranking engine — v6 exercise-specific scoring; no UI/state side effects. */
+/* Lift ranking engine — v8 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const lerp=(a,b,t)=>a+(b-a)*t;
 const interp=(p,x)=>{if(!p?.length)return 1;if(x<=p[0][0])return p[0][1];for(let i=1;i<p.length;i++){if(x<=p[i][0]){const[x0,y0]=p[i-1],[x1,y1]=p[i];return lerp(y0,y1,(x-x0)/(x1-x0))}}return p[p.length-1][1]};
 const ageMultiplier=(age,c)=>{if(age===null||age===undefined||age==='')return 1;const a=finite(age,NaN);return Number.isFinite(a)&&a>=13?Math.min(c.ageCap??1.2,interp(c.ageCurve,a)):1};
-const heightMultiplier=(h,sex,rom,c)=>{const n=finite(h,NaN),ref=finite(c.referenceHeightCm?.[sex],NaN);if(!Number.isFinite(n)||!Number.isFinite(ref)||n<=0)return 1;const k=finite(c.height?.kByRom?.[rom],0);return Math.max(c.height?.capMin??.9,Math.min(c.height?.capMax??1.1,Math.pow(n/ref,k)))};
+const heightMultiplier=(h,sex,rom,c)=>{const n=finite(h,NaN),ref=finite(c.referenceHeightCm?.[sex],NaN);if(!Number.isFinite(n)||!Number.isFinite(ref)||n<=0)return 1;const k=finite(c.height?.kByRom?.[rom],0);return Math.max(c.height?.capMin??.9,Math.min(c.height?.capMax??1.1,Math.pow(ref/n,k)))};
 const repReliability=(r,c)=>interp(c.repReliability,finite(r,1));
 const effectiveLoad=(s,e,b)=>{const bw=finite(b),w=finite(s?.kg),mode=e?.loadMode||'normal';if(mode==='assisted')return Math.max(0,bw-w);if(mode==='bodyweight')return Math.max(0,bw+w);const m=e?.unilateral?1:finite(e?.loadMultiplier,1);return Math.max(0,w*m)};
 const estimate1RM=(s,e,b,c)=>{const r=Math.round(finite(s?.reps));if(s?.t==='w'||r<1||r>finite(c.epleyMaxReps,12))return 0;const load=effectiveLoad(s,e,b);if(load<=0)return 0;const x=r===1?load:load*(1+r/30);return x*repReliability(r,c)};
