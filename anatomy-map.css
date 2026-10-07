@@ -68,3 +68,22 @@
 .rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent)!important;stroke:var(--c)!important;stroke-width:1.7!important;stroke-linejoin:round!important}
 .rank-icon b{position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;font-size:9px!important;line-height:1!important;font-weight:900!important;color:var(--c)!important;pointer-events:none!important}
 .overall-rank-title .rank-icon{--rank-icon-size:34px}.rank-result-title .rank-icon{--rank-icon-size:30px}.rank-badge .rank-icon{--rank-icon-size:26px}
+
+
+/* v5.5.86 · authoritative 2D anatomy color layer. Ranked muscle zones always use their rank color. */
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path,
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path[fill]{
+  fill:var(--mc,#687083)!important;
+  fill-opacity:1!important;
+  stroke:var(--ms,var(--mc,#9299a8))!important;
+  stroke-opacity:1!important;
+  filter:drop-shadow(0 0 5px var(--mc,#687083))!important;
+}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path,
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path[fill]{
+  fill:#596072!important;
+  fill-opacity:1!important;
+  stroke:#858c9d!important;
+  stroke-opacity:.82!important;
+  filter:none!important;
+}

@@ -658,3 +658,14 @@ html,body{overflow-x:clip!important}
 
 /* v5.5.84 legal/ownership sheets */
 .legal-sheet{position:fixed;inset:0;z-index:1200;display:grid;align-items:end}.legal-sheet .bd{position:absolute;inset:0;background:rgba(0,0,0,.48)}.legal-sheet-card{position:relative;z-index:1;width:min(720px,100%);max-height:min(88vh,760px);margin:0 auto;border-radius:26px 26px 0 0;overflow:hidden;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom)}.legal-grip{width:38px;height:4px;border-radius:999px;background:var(--mu);opacity:.35;margin:9px auto 2px}.legal-sheet-body{overflow:auto;overscroll-behavior:contain;padding:4px 20px 24px;line-height:1.55}.legal-sheet-body h2{margin:.2rem 0 .8rem;font-size:24px}.legal-sheet-body p{margin:.75rem 0}.legal-kicker{display:block;letter-spacing:.12em;text-transform:uppercase;font-weight:800;opacity:.65}.legal-note{font-size:12px;opacity:.72}@media(max-width:480px){.legal-sheet-card{max-height:90vh}.legal-sheet-body{padding-left:16px;padding-right:16px}}
+
+
+/* v5.5.86 · authoritative rank-color layer — never render rank state as monochrome. */
+.rank-icon{color:var(--c)!important}
+.rank-icon svg path{fill:var(--c)!important;fill-opacity:.24!important;stroke:var(--c)!important;stroke-opacity:1!important}
+.rank-icon b{color:var(--ct,#fff)!important;text-shadow:0 1px 2px rgba(0,0,0,.22)}
+.badge{color:var(--ct,#fff)!important;background:var(--c)!important;border-color:var(--c)!important;box-shadow:0 3px 10px color-mix(in srgb,var(--c) 22%,transparent)}
+.bar u{background:var(--c,var(--ac))!important}
+.rank-list-item{border-color:color-mix(in srgb,var(--c) 45%,var(--ln))!important;background:color-mix(in srgb,var(--c) 13%,var(--cd))!important}
+.rank-list-item .rank-list-copy b{color:var(--c)!important}
+.rank-guide-row{border-color:color-mix(in srgb,var(--c) 36%,var(--ln))!important}
