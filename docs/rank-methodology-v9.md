@@ -1,9 +1,9 @@
-# LiftLog ranking methodology v9
+# Slat ranking methodology v9
 
 **Release:** 5.5.91  ·  **Standards:** 468 exercises  ·  **Tiers:** 46
 
 ## Purpose
-LiftLog v9 is an exercise-specific heuristic ranking system. It compares a logged estimated 1RM against a dedicated threshold ladder for each supported exercise without claiming to represent measured population percentiles.
+Slat v9 is an exercise-specific heuristic ranking system. It compares a logged estimated 1RM against a dedicated threshold ladder for each supported exercise without claiming to represent measured population percentiles.
 
 ## Calculation
 1. A set is converted to estimated 1RM using Epley for 1–12 reps and the configured rep-reliability curve. A zero/negative load never produces a ranked result.
@@ -24,7 +24,7 @@ The visible ladder remains 46 tiers: Wood I–V, Bronze I–V, Silver I–V, Gol
 - It does not imply that a rank is an objectively true measure of strength.
 
 ## Reproducibility
-`tools/generate-rank-standards-v9.mjs --check` regenerates all 468 ladders from the checked-in exercise metadata and documented Lift-owned anchors and verifies that the checked-in thresholds match.
+`tools/generate-rank-standards-v9.mjs --check` regenerates all 468 ladders from the checked-in exercise metadata and documented Slat-owned anchors and verifies that the checked-in thresholds match.
 
 ## Versioning
 Changing anchors, the tier curve, reference factors or exercise metadata increments the ranking version and invalidates cached rank results so they are recalculated from the saved workouts.

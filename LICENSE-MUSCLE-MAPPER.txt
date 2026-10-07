@@ -1,6 +1,6 @@
 ANATOMY ASSET LICENSE NOTICE
 
-The bundled advanced anatomy SVG assets used by Lift are attributed to Ryan Graves and are licensed under the Creative Commons Attribution 4.0 International license (CC BY 4.0).
+The bundled advanced anatomy SVG assets used by Slat are attributed to Ryan Graves and are licensed under the Creative Commons Attribution 4.0 International license (CC BY 4.0).
 
 Source repository:
 https://github.com/suryamolly/muscle_mapper

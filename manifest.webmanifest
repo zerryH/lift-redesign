@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Lift — Strength Tracker",
-  "short_name": "Lift",
+  "name": "Slat — Strength Tracker",
+  "short_name": "Slat",
   "description": "Offline workout logging and strength rankings.",
   "start_url": "./index.html?source=homescreen-v2",
   "scope": "./",

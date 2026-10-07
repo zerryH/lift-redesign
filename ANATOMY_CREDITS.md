@@ -1,6 +1,6 @@
 # Anatomy asset attribution
 
-Lift embeds modified copies of the male front/anterior and male back/posterior advanced 2D anatomy SVGs from https://github.com/suryamolly/muscle_mapper.
+Slat embeds modified copies of the male front/anterior and male back/posterior advanced 2D anatomy SVGs from https://github.com/suryamolly/muscle_mapper.
 
 The upstream project states that its advanced SVG assets are provided under the CC BY 4.0 license by Ryan Graves. The upstream repository itself is MIT-licensed, but that MIT license does not replace the separate CC BY 4.0 attribution requirement for these advanced SVG assets.
 
