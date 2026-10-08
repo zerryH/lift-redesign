@@ -770,7 +770,7 @@ html,body{overflow-x:clip!important}
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.5.102';
+const BUILD_VERSION='5.5.103';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v9 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -785,7 +785,7 @@ const adjustedScore=(e,b,sex,h,age,ex,c)=>{const bw=finite(b),ref=finite(c.refer
 const rankIndex=(score,t)=>{if(!Array.isArray(t)||!Number.isFinite(score)||score<=0)return -1;let i=-1;for(let j=0;j<t.length;j++)if(score+Math.max(1e-9,Math.abs(t[j])*1e-12)>=t[j])i=j;return i};
 const percentileScore=(score,t,c)=>{if(!Array.isArray(t)||!t.length||!Number.isFinite(score)||score<=0)return 0;const p=c?.rankPercentiles||[];if(score<t[0])return 0;for(let i=1;i<t.length;i++){if(score<t[i]){const p0=Number(p[i-1]??i-1),p1=Number(p[i]??i);return p0+(p1-p0)*(score-t[i-1])/Math.max(1e-9,t[i]-t[i-1])}}return Number(p[t.length-1]??99)};
 const percentileToRankIndex=(p,c)=>{const q=Math.max(0,Math.min(99.9,finite(p,0))),a=c?.rankPercentiles||[];if(!a.length)return -1;let i=-1;for(let j=0;j<a.length;j++)if(q>=a[j])i=j;return i};
-const thresholds=(c,n,sex)=>c.t?.[c.alias?.[n]||n]?.[sex==='F'?1:0]||null;
+const thresholds=(c,n,sex)=>c.t?.[n]?.[sex==='F'?1:0]||null;
 return{interp,ageMultiplier,heightMultiplier,repReliability,effectiveLoad,estimate1RM,adjustedScore,rankIndex,percentileScore,percentileToRankIndex,thresholds}
 })();
 /*END:RANKING_ENGINE*/const BUILD_LABEL='v'+BUILD_VERSION;const $=s=>document.querySelector(s),iso=()=>new Date().toISOString().slice(0,10);
