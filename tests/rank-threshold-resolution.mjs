@@ -1,1 +1,13 @@
-__TEST_CONTENT__
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const src=fs.readFileSync('ranking-engine.js','utf8');
+const ctx={console}; vm.runInNewContext(src,ctx);
+const E=ctx.LiftRankingEngine;
+const R=JSON.parse(fs.readFileSync('ranks-config.json','utf8'));
+assert.deepEqual(E.thresholds(R,'Standing Cable Chest Press','M'),R.t['Standing Cable Chest Press'][0]);
+assert.notDeepEqual(E.thresholds(R,'Standing Cable Chest Press','M'),R.t['Cable Fly'][0]);
+assert.deepEqual(E.thresholds(R,'Cable Squat','M'),R.t['Cable Squat'][0]);
+assert.notDeepEqual(E.thresholds(R,'Cable Squat','M'),R.t['Romanian Deadlift'][0]);
+assert.deepEqual(E.thresholds(R,'Cable Lateral Raise','M'),R.t['Cable Lateral Raise'][0]);
+console.log('exact exercise threshold regression passed');
