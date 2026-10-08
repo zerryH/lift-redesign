@@ -1,0 +1,23 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+
+const app=fs.readFileSync('app.js','utf8');
+const html=fs.readFileSync('index.html','utf8');
+const importStart=app.indexOf("document.addEventListener('change',async e=>{const t=e.target;if(t.id!='imp'");
+assert.ok(importStart>=0,'backup import handler exists');
+const importEnd=app.indexOf("document.addEventListener('keydown'",importStart);
+assert.ok(importEnd>importStart,'backup import handler has a bounded source region');
+const handler=app.slice(importStart,importEnd);
+assert.ok(handler.includes("const cleared=await clearStoredState()"),'import clears persisted storage before applying backup');
+assert.ok(handler.includes('const next=resetDefaults()'),'import starts from empty defaults rather than current state');
+assert.ok(handler.includes('S=next'),'import replaces the live state object');
+assert.ok(handler.includes("await save()"),'replacement state is persisted');
+assert.ok(!handler.includes('Merge with current data?'),'merge confirmation is removed');
+assert.ok(!handler.includes('mergeBackupWorkouts'),'merge workout helper is removed');
+assert.ok(!handler.includes('S.workouts.push'),'import does not append workouts to existing state');
+assert.ok(!handler.includes('S.custom.push'),'import does not append custom exercises to existing state');
+assert.ok(!handler.includes('S.bw=['),'import does not merge bodyweight history into existing state');
+assert.ok(!handler.includes('S.rk={...'),'import does not merge ranks into existing state');
+assert.ok(html.includes("Replace ALL current Slat data with this backup?"),'generated HTML contains replacement import UX');
+assert.ok(!html.includes('Merge with current data?'),'generated HTML has no merge import UX');
+console.log('backup import replacement regression passed');
