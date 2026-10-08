@@ -205,7 +205,11 @@
     "Cable Curtsy Lunge": "Romanian Deadlift",
     "Cable Reverse Step-Up": "Romanian Deadlift",
     "Cable Hip Hinge": "Romanian Deadlift",
-    "Cable Kickstand RDL": "Romanian Deadlift"
+    "Cable Kickstand RDL": "Romanian Deadlift",
+    "Close-Grip Bench Press": "Bench Press",
+    "Sumo Deadlift": "Deadlift",
+    "Trap Bar Deadlift": "Deadlift",
+    "Machine Row": "Seated Cable Row"
   },
   "t": {
     "Bench Press": [

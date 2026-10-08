@@ -10,4 +10,6 @@ assert.notDeepEqual(E.thresholds(R,'Standing Cable Chest Press','M'),R.t['Cable 
 assert.deepEqual(E.thresholds(R,'Cable Squat','M'),R.t['Cable Squat'][0]);
 assert.notDeepEqual(E.thresholds(R,'Cable Squat','M'),R.t['Romanian Deadlift'][0]);
 assert.deepEqual(E.thresholds(R,'Cable Lateral Raise','M'),R.t['Cable Lateral Raise'][0]);
+assert(R.t['Deadlift'],'base deadlift standard missing');
+assert(R.alias['Sumo Deadlift']==='Deadlift','runtime staple alias must map to Deadlift');
 console.log('exact exercise threshold regression passed');
