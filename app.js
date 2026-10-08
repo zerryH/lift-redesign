@@ -6,7 +6,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.5.99';
+const BUILD_VERSION='5.5.100';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v9 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -373,7 +373,7 @@ legalClose:()=>$('#legal-sheet')?.remove(),
 retryRender:async()=>{try{repairState();S.bw=(Array.isArray(S.bw)?S.bw:[]).filter(b=>b&&typeof b==='object'&&typeof b.d==='string'&&Number.isFinite(num(b.kg))).map(b=>({d:String(b.d).slice(0,10),kg:num(b.kg)})).sort((a,b)=>a.d.localeCompare(b.d));S.rk=Object.fromEntries(Object.entries(S.rk).filter(([n,r])=>r&&typeof r==='object'&&Number.isFinite(Number(r.i))&&Number.isFinite(Number(r.x))));refreshRanks(true);await save();nav();render();toast('State repaired · ranks ready')}catch(err){console.error('Slat repair failed',err);S.rk={};try{await save()}catch{};nav();render();toast('Rank data repaired · try again')}},
 anim:()=>{S.set.motion=+!S.set.motion;document.documentElement.dataset.motion=S.set.motion?'1':'0';go()},
 reset:()=>confirmReset(),
-exp:async()=>{const j=JSON.stringify({app:'liftlog',version:2,date:iso(),workouts:S.workouts,custom:S.custom,bw:S.bw,settings:S.set,rk:S.rk,cur:S.cur,editingId:S.editingId,rankingVersion:S.rankingVersion}),f=new File([j],`slat-backup-${iso()}.json`,{type:'application/json'});
+exp:async()=>{const backupWeight=Array.isArray(S.bw)&&S.bw.length?S.bw[S.bw.length-1].kg:null;const backupProfile={age:athleteAge(),weight:backupWeight,heightCm:S.set.heightCm??null};const j=JSON.stringify({app:'slat',version:3,date:iso(),profile:backupProfile,workouts:S.workouts,custom:S.custom,bw:S.bw,settings:S.set,rk:S.rk,cur:S.cur,editingId:S.editingId,rankingVersion:S.rankingVersion}),f=new File([j],`slat-backup-${iso()}.json`,{type:'application/json'});
  try{if(navigator.canShare?.({files:[f]}))await navigator.share({files:[f]});else throw 0}catch(e){if(e&&e.name=='AbortError')return;const a=document.createElement('a');const url=URL.createObjectURL(f);a.href=url;a.download=f.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),0)}
  S.lastBackup=Date.now();go()}};
 const addCustom=c=>{const n=safeName(c.n);if(n){c.n=n;EX[n]=EX[n]||{g:'Custom',t:['B','D','W','M','U'].includes(c.t)?c.t:'B',c:c.c||'Custom'}}};
