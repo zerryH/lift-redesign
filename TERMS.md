@@ -1,6 +1,6 @@
 # Slat Terms & Ranking Disclaimer
 
-**Last updated: 7 October 2026 · Build 5.5.96**
+**Last updated: 7 October 2026 · Build 5.5.105**
 
 ## Ownership
 

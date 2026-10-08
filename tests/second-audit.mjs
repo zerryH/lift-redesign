@@ -20,5 +20,5 @@ assert(s.includes('const scorePerE=Number.isFinite(e)&&e>0&&Number.isFinite(x)?x
 assert(s.includes("S.rk=S.rk&&typeof S.rk==='object'&&!Array.isArray(S.rk)?S.rk:{}"));
 assert(s.includes("('custom' in d&&!Array.isArray(d.custom))"));
 assert(s.includes('cur:S.cur,editingId:S.editingId,rankingVersion:S.rankingVersion'));
-assert(s.includes("S.cur=d.cur&&typeof d.cur==='object'?d.cur:null"));
+assert(s.includes("next.cur=d.cur&&typeof d.cur==='object'?JSON.parse(JSON.stringify(d.cur)):null"));
 console.log('full-audit fix regression guards passed');
