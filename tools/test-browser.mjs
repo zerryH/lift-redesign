@@ -74,7 +74,7 @@ try{
   await check(name+': narrow/light/dark/reduced-motion layouts and anatomy',async()=>{
    await open({...base(),workouts:[workout()]});await page.emulateMedia({reducedMotion:'reduce'});
    for(const width of [320,390,768])for(const dark of [0,1]){
-    await page.setViewportSize({width,height:844});await clickTab('settings');await clickControl(page.locator('[data-a=theme][data-v='+ (dark?'dark':'light')+']'));assert.equal(await page.locator('html').getAttribute('data-d'),String(dark),'selected theme is actually applied');
+    await page.setViewportSize({width,height:844});await clickTab('settings');await clickControl(page.locator('[data-a=theme][data-v='+ (dark?'dark':'light')+']'));await page.waitForFunction(d=>document.documentElement.dataset.d===d,String(dark));assert.equal(await page.locator('html').getAttribute('data-d'),String(dark),'selected theme is actually applied');
     for(const tab of ['today','history','ranks','settings']){await clickTab(tab);assert(await page.locator('#v').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'horizontal overflow '+tab+' '+width);}
    }
    await clickTab('ranks');assert.equal(await page.locator('.anatomy-svg').count(),2);assert.equal(await page.locator('.anatomy-svg [data-muscles=tibialis]').count(),1);assert.equal(await page.locator('.anatomy-svg [data-muscles=adductors]').count(),1);
@@ -97,7 +97,7 @@ try{
   await check(name+': themed mobile tools and direct anatomy selection',async()=>{
    await open({...base(),workouts:[workout()]},{width:320,height:720});await clickTab('settings');
    for(const dark of [0,1]){
-    await clickControl(page.locator('[data-a=theme][data-v='+ (dark?'dark':'light')+']'));
+    await clickControl(page.locator('[data-a=theme][data-v='+ (dark?'dark':'light')+']'));await page.waitForFunction(d=>document.documentElement.dataset.d===d,String(dark));
     await clickControl(page.getByRole('button',{name:'Plate calculator',exact:true}));
     for(const selector of ['#qol-plate-target','#qol-plate-bar','#qol-bar-preset'])assert(await page.locator(selector).evaluate(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect(),card=el.closest('.action-card').getBoundingClientRect();return s.color===getComputedStyle(document.body).color&&s.fontFamily===getComputedStyle(document.body).fontFamily&&r.left>=card.left&&r.right<=card.right&&r.height>=44;}),'themed control fits: '+selector);
     assert(await page.locator('.action-card').evaluate(el=>el.scrollWidth<=el.clientWidth+1));await page.screenshot({path:path.join(out,name+'-plate-'+dark+'.png')});await page.keyboard.press('Escape');
