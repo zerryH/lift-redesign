@@ -10,3 +10,5 @@ Advanced anatomy SVGs provided by Ryan Graves, licensed under Creative Commons A
 
 Source: https://github.com/suryamolly/muscle_mapper
 License: https://creativecommons.org/licenses/by/4.0/
+
+5.6 maintenance: source SVGs now live in `anatomy-front.svg` and `anatomy-back.svg` and are embedded by the build. Slat separates anterior tibialis from calf coloring, adds schematic medial-thigh adductor regions and a neutral back-of-head silhouette, repairs the posterior group nesting, removes duplicate outline artifacts, and assigns unique element IDs. New regions are diagram conventions, not a diagnostic anatomical model. Existing source attribution remains retained.

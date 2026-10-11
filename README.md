@@ -4,12 +4,12 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.5.105**
+**Build: 5.6.0**
 
-- 468 catalogue exercises
-- 468 active ranking standards
+- 472 compatible names, grouped into 447 distinct browse identities
+- 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
-- Ranking standards v9: Slat-owned exercise-specific heuristics
+- Ranking standards v10: Slat-owned exercise-specific heuristics
 
 The shipped app is a self-contained HTML build for GitHub Pages and a local `lift-local.html` file.
 
@@ -20,20 +20,22 @@ The shipped app is a self-contained HTML build for GitHub Pages and a local `lif
 - Anatomy is rendered as 2D SVG with front/anterior and back/posterior views. See `THIRD_PARTY_NOTICES.md` for current asset provenance.
 - The workout catalogue is sourced from `exercises.json`.
 - Ranking standards and tier names are sourced from `ranks-config.json`.
-- `app.js` contains `BEGIN:EXERCISES` and `BEGIN:RANKS` markers; `build.mjs` injects the current JSON between those markers.
+- `data-integrity.js` validates backup candidates before replacement. A previous-state recovery copy is retained; imports never clear the current state first.
+- Saves are serialized. A newer saved revision in another tab pauses stale writes and offers draft export.
+- `app.js` contains data and anatomy source markers; `build.mjs` injects JSON and `anatomy-front.svg` / `anatomy-back.svg` into the self-contained build.
 - `index.html` and `lift-local.html` are generated self-contained builds and are kept byte-identical.
-- `localStorage` is written first and IndexedDB is used on supported hosted origins; saved timestamps prevent an older IndexedDB copy from rolling back newer local data.
+- Hosted writes use an IndexedDB transaction with revision checks, followed by the localStorage recovery copy. Either acknowledged store can preserve a save; conflicting tabs pause, and failed saves offer retry. Local-file mode uses localStorage.
 - The local `file://` build intentionally uses localStorage because service workers and other secure-context APIs are unavailable there.
 
 ## Exercise catalogue
 
-`exercises.json` contains **468 unique exercise names**. Equipment labels are derived from exercise names and load metadata. Dumbbells, cable/rope, machines, Smith machines, plate-loaded machines, bands, kettlebells, sleds, bodyweight and assisted movements are kept distinct.
+`exercises.json` contains 472 compatible names and an explicit catalogue with stable IDs, synonyms, equipment, muscles, tracking modes and input instructions. Browse shows 447 distinct movements. Search, split, muscle and equipment filters use the same records. Legacy names remain importable without discarding sets.
 
 ## Ranking system
 
-Slat uses 46 tiers from Wood I through Blue Gem. Each supported exercise has its own male/female threshold ladder. Ranking uses logged exercise performance relative to stored bodyweight, with optional age and height/ROM adjustments.
+Slat uses 46 tiers from Wood I through Blue Gem. Each supported exercise has its own male/female threshold ladder. Completed workouts earn ranks using recorded bodyweight and height, with optional age and height adjustments. Rank previews and explicitly saved checks remain separate from earned exercise and muscle ranks.
 
-**Ranking standards v9 are Slat-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Slat progression. No Strength Level or ExRx threshold table is embedded in the v9 dataset. See `docs/rank-methodology-v9.md`.
+**Ranking standards v10 are Slat-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Slat progression. No Strength Level or ExRx threshold table is embedded in the v10 dataset. See `docs/rank-methodology-v10.md`.
 
 Ranks are estimates for training context, not medical advice, diagnosis, a biomechanical law, an official federation classification or a guarantee of performance.
 
@@ -49,7 +51,7 @@ Because the repository is public, GitHub's platform terms permit certain viewing
 
 - Made by **@o.r146**
 - TikTok: **@o.r146**
-- Discord: **ejaculator2000**
+- Support: [Slat support and feedback](https://github.com/zerryH/lift-redesign/issues)
 
 ## Build and tests
 
@@ -60,3 +62,9 @@ The release suite covers catalogue integrity, equipment classification, ranking 
 ## Third-party notices
 
 See `THIRD_PARTY_NOTICES.md`, `ANATOMY_CREDITS.md`, and `LICENSE-MUSCLE-MAPPER.txt`. The repository currently retains attribution for the bundled advanced anatomy SVG material attributed to Ryan Graves; that attribution must remain until those assets are actually replaced with independently authored anatomy artwork.
+
+## Validation and audit traceability
+
+Install the test dependency with `npm install --no-save --ignore-scripts playwright@1.64.0`, then `npx playwright install chromium webkit`. Run `SLAT_BROWSERS=chromium,webkit node tools/check-release.mjs` for all independent regression scripts, reproducible standards/build checks and real-browser journeys. Missing browser binaries fail the gate. GitHub Actions runs these checks on pull requests and review-branch pushes.
+
+For focused checks, use `node tools/test-release.mjs` or `node tools/test-browser.mjs`. Browser reports/screenshots are written to `test-results/browser/`. Alternate local runtime paths can be supplied with `SLAT_PLAYWRIGHT_PATH` and `SLAT_CHROMIUM_PATH`. See [the implementation register](docs/audit-implementation-5.6.md) and [plan completion record](docs/plan-completion.md) for evidence and outstanding device/product gates.

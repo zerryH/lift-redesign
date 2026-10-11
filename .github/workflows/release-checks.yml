@@ -1,0 +1,42 @@
+name: Release checks
+on:
+  pull_request:
+  push:
+    branches: [main, 'fix/audit-reliability-*']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: release-checks-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node tools/test-release.mjs
+      - run: node tools/generate-rank-standards-v9.mjs --check
+      - run: node build.mjs && git diff --exit-code
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --ignore-scripts --no-audit --no-fund playwright@1.64.0
+      - run: npx playwright install --with-deps chromium webkit
+      - run: node tools/test-browser.mjs
+        env:
+          SLAT_BROWSERS: chromium,webkit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-evidence
+          path: test-results/browser
+          retention-days: 14

@@ -1,7 +1,6 @@
-import fs from 'node:fs';
 import assert from 'node:assert/strict';
-const app=fs.readFileSync('app.js','utf8');
-assert.ok(app.includes('S.rk={...manual,...rebuilt};'),'workout-derived ranks must override manual Get Rank records');
-assert.ok(!app.includes('S.rk={...rebuilt,...manual};'),'manual Get Rank records must not override logged lifts');
-assert.ok(app.includes("refreshRanks();gr.res=S.rk[n];render();sheet();"),'Get Rank UI must reflect the authoritative rank after refresh');
-console.log('get-rank/logged-lift precedence regression passed');
+import {boot,base,workout} from './support/runtime.mjs';
+const z=await boot({...base(),workouts:[workout()]});
+const before=JSON.stringify(z.h.S.rk);
+for(const weight of [40,180]){z.h.gr={n:'Bench Press',w:String(weight),r:'5',b:'80',h:'178',u:'kg',f:'M'};await z.h.A.calc();assert.equal(z.h.gr.res.w,weight);await z.h.A.saveCheck();assert.equal(JSON.stringify(z.h.S.rk),before);assert.equal(z.h.S.checks['Bench Press'].w,weight);}
+console.log('rank preview/saved check/earned workout separation passed');

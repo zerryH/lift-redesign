@@ -1,0 +1,1 @@
+Exact published-source HTML from zerryH/lift-redesign commit 241b138da2840f3a8f7f36ba90b9018352ad3f62 (5.5.106). Used only to exercise existing-data migration in real browsers. Service workers are blocked in this one case; installed update lifecycle is exercised separately.

@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {boot,base,workout} from './support/runtime.mjs';
+const database={value:null};const z=await boot(base(),{delay:1,database});
+z.failWrites.add('liftlog-state');z.h.S.cur=workout('Cable Curl',25);
+assert.equal(await z.h.save(),true,'IndexedDB acknowledges a write when localStorage is full');
+const revision=database.value.revision;z.h.S.cur.ex[0].sets[0].kg=30;
+assert.equal(await z.h.save(),true,'a second IndexedDB-only write remains writable');assert(database.value.revision>revision);assert.equal(database.value.cur.ex[0].sets[0].kg,30);
+const latest=structuredClone(database.value);latest.savedAt+=100;latest.revision++;latest.cur.ex[0].sets[0].kg=40;database.value=latest;
+z.h.S.cur.ex[0].sets[0].kg=99;assert.equal(await z.h.save(),false,'transaction rejects a stale IndexedDB-only writer');assert.equal(z.h.conflict,true);assert.equal(database.value.cur.ex[0].sets[0].kg,40);
+const reloaded=await boot(base(),{delay:1,database});assert.equal(reloaded.h.S.cur.ex[0].sets[0].kg,40,'startup chooses the latest durable copy');
+console.log('IndexedDB-only repeated saves, monotonic revisions, stale-writer rejection and recovery passed');

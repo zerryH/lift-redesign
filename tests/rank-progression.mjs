@@ -4,7 +4,7 @@ const cfg=JSON.parse(fs.readFileSync('ranks-config.json','utf8'));
 const app=fs.readFileSync('app.js','utf8');
 const css=fs.readFileSync('styles.css','utf8');
 assert.equal(cfg.tiers.length,46);
-assert.equal(Object.keys(cfg.t).length,468);
+assert.equal(Object.keys(cfg.t).length,472);
 assert.match(app,/let TN=\[\]; let MAX_RANK=-1;/);
 assert.match(app,/TN=Array\.isArray\(R\.tiers\)\?R\.tiers\.slice\(\):\[\];MAX_RANK=TN\.length-1/);
 assert.match(app,/rankListOpen=\(\)=>/);
@@ -28,14 +28,14 @@ for(const [name,sexes] of Object.entries(cfg.t)){
     assert.equal(got,45,name+' max');
   }
 }
-console.log('rank progression ok · 468 standards × 46 tiers');
+console.log('rank progression ok · 472 standards × 46 tiers');
 
 assert.match(app,/aria-controls="rank-list-modal"/);
 console.log('rank guide sheet regression passed');
 
-assert.ok(app.includes("className='sheet rank-guide-sheet'")); 
-assert.ok(app.includes('class="rank-guide-list"')); 
-assert.ok(css.includes('.rank-guide-list{min-height:0;flex:1 1 auto;overflow-y:auto')); 
+assert.ok(app.includes("className='sheet rank-guide-sheet'"));
+assert.ok(app.includes('class="rank-guide-list"'));
+assert.ok(css.includes('.rank-guide-list{min-height:0;flex:1 1 auto;'));assert.match(css,/\.rank-guide-list\{overflow-y:auto;/);
 console.log('tutorial-style rank guide regression passed');
 
 assert.ok(app.includes('rank-info-glyph'));
@@ -47,9 +47,9 @@ assert.ok(app.includes('class=\"rank-info-button\"'));
 assert.ok(css.includes('.rank-heading{position:relative'));
 console.log('rank info placement regression passed');
 
-assert.ok(css.includes('authoritative Safari-safe rank info control'));
-assert.ok(css.includes('background:transparent!important'));
-assert.ok(css.includes('-webkit-appearance:none!important'));
+assert.match(css,/\.rank-heading>\.rank-info-button\{/);
+assert.ok(css.includes('background:transparent'));
+assert.ok(css.includes('-webkit-appearance:none'));
 console.log('rank info Safari styling regression passed');
 
 assert.ok(app.includes('role=\"button\" tabindex=\"0\" data-a=rankList')); assert.ok(app.includes("keydown")); console.log('native-button regression passed');

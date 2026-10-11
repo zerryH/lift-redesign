@@ -14,7 +14,7 @@ assert(!s.includes("toast('Already up to date')"));
 assert(s.includes("Offline — update check skipped; your current app is still available"));
 assert(s.includes("w.postMessage({type:'SKIP_WAITING'})"));
 assert(s.includes("Update available — tap to reload"));
-assert(s.includes("if(f){t.onclick=()=>{try{f()}finally{t.remove()}") || s.includes("if(f){t.onclick=()=>{try{f()}finally{t.remove()}}"));
+assert(s.includes("button.type='button'")&&s.includes("await f();t.remove()"),'notification actions must be keyboard-accessible and await activation');
 assert(!s.includes("reg.unregister()"));
 assert(!s.includes("sw.js?force="));
 assert(!s.includes("sw.js?v='+BUILD_VERSION"));

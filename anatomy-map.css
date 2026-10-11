@@ -1,89 +1,53 @@
-/* Premium 2D anatomy map — detailed individual muscle surfaces, no 3D runtime */
-.body-stage{height:455px;display:grid;place-items:center;overflow:hidden;position:relative;background:radial-gradient(ellipse at 50% 42%,rgba(105,112,180,.11),transparent 68%);border-radius:24px}
-.anatomy-pair{width:min(610px,100%);height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;align-items:center;justify-items:center;padding:4px 12px 2px}
-.anatomy-figure{margin:0;display:grid;justify-items:center;align-content:center;min-width:0;width:100%;height:100%}
-.anatomy-figure .anatomy-svg{width:min(250px,100%);height:424px;display:block;overflow:visible;filter:drop-shadow(0 12px 18px rgba(0,0,0,.24))}
-.anatomy-figure figcaption{margin-top:0;font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:900;color:var(--mu);opacity:.72}
-.anatomy-svg{shape-rendering:geometricPrecision;overflow:visible}
-.anatomy-svg .real-body-base path{fill:#34384b!important;fill-opacity:1!important;stroke:#70778b!important;stroke-width:1.15!important;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
-.muscle-zone-group{opacity:var(--ma,.98);transition:opacity .18s ease,filter .18s ease}
-.muscle-zone-group path{fill:var(--mc)!important;fill-opacity:1!important;stroke:var(--ms)!important;stroke-width:1.35!important;stroke-linejoin:round;stroke-linecap:round;paint-order:stroke fill;vector-effect:non-scaling-stroke}
-.muscle-zone-group.locked path{fill:#35394c!important;stroke:#6d7488!important;filter:drop-shadow(0 1px 1px rgba(0,0,0,.20))}
-.muscle-zone-group.unlocked path{filter:drop-shadow(0 0 5px color-mix(in srgb,var(--mc) 38%,transparent))}
-@media(max-width:480px){.body-stage{height:450px}.anatomy-pair{gap:0;padding:2px 4px 0}.anatomy-figure .anatomy-svg{height:416px;width:min(225px,100%)}}
-@media(min-width:640px){.body-stage{height:475px}.anatomy-figure .anatomy-svg{height:442px}.anatomy-pair{width:610px}}
-
-/* v5.5.28 visibility fix: the embedded detailed asset uses real muscle-zone-group SVGs.
-   Force the SVG and every anatomy layer visible; do not rely on inherited app rules. */
-.anatomy-map-stage .anatomy-svg{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  overflow:visible!important;
-  flex:none!important;
+/* Slat 5.6 style contract: foundation defaults in one named layer;
+   authoritative component rules follow without importance escalation.
+   Only reduced-motion overrides use !important to suppress inline animation. */
+@layer slat-foundation {
+.body-stage{height:455px;display:grid;place-items:center;overflow:hidden;position:relative;background:radial-gradient(ellipse at 50% 42%,rgba(105,112,180,.11),transparent 68%);border-radius:24px;}
+.anatomy-pair{width:min(610px,100%);height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;align-items:center;justify-items:center;padding:4px 12px 2px;}
+.anatomy-figure{margin:0;display:grid;justify-items:center;align-content:center;min-width:0;width:100%;height:100%;}
+.anatomy-figure .anatomy-svg{width:min(250px,100%);height:424px;display:block;overflow:visible;filter:drop-shadow(0 12px 18px rgba(0,0,0,.24));}
+.anatomy-figure figcaption{margin-top:0;font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:900;color:var(--mu);opacity:.72;}
+.anatomy-svg{shape-rendering:geometricPrecision;overflow:visible;}
+.anatomy-svg .real-body-base path{stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;}
+.muscle-zone-group{opacity:var(--ma,.98);transition:opacity .18s ease,filter .18s ease;}
+.muscle-zone-group path{stroke-linejoin:round;stroke-linecap:round;paint-order:stroke fill;vector-effect:non-scaling-stroke;}
+.muscle-zone-group.locked path{filter:drop-shadow(0 1px 1px rgba(0,0,0,.20));}
+.muscle-zone-group.unlocked path{filter:drop-shadow(0 0 5px color-mix(in srgb,var(--mc) 38%,transparent));}
+@media(max-width:480px){
+.body-stage{height:450px;}
+.anatomy-pair{gap:0;padding:2px 4px 0;}
+.anatomy-figure .anatomy-svg{height:416px;width:min(225px,100%);}
 }
-.anatomy-map-stage .anatomy-svg .real-body-base{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
+@media(min-width:640px){
+.body-stage{height:475px;}
+.anatomy-figure .anatomy-svg{height:442px;}
+.anatomy-pair{width:610px;}
 }
-.anatomy-map-stage .anatomy-svg .real-body-base path{
-  display:inline!important;
-  visibility:visible!important;
-  fill:#4b5263!important;
-  fill-opacity:1!important;
-  stroke:#858c9d!important;
-  stroke-opacity:.9!important;
-  stroke-width:1.2!important;
-}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group path{
-  display:inline!important;
-  visibility:visible!important;
-  fill:var(--mc,#687083)!important;
-  fill-opacity:1!important;
-  stroke:var(--ms,#9299a8)!important;
-  stroke-opacity:.95!important;
-  stroke-width:1.25!important;
-  vector-effect:non-scaling-stroke;
-}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{
-  fill:#596072!important;
-  fill-opacity:1!important;
-  stroke:#858c9d!important;
-  stroke-opacity:.82!important;
+.anatomy-map-stage .anatomy-svg .muscle-zone-group path{vector-effect:non-scaling-stroke;}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--mc) 42%,transparent));}
+.rank-icon{--rank-icon-size:28px;}
+.overall-rank-title .rank-icon{--rank-icon-size:34px;}
+.rank-result-title .rank-icon{--rank-icon-size:30px;}
+.rank-badge .rank-icon{--rank-icon-size:26px;}
 }
 
-/* v5.5.28: rank state is applied directly to each anatomical zone. */
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path{fill:var(--mc)!important;fill-opacity:1!important;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--mc) 42%,transparent))}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{fill:#596072!important;fill-opacity:1!important;filter:none!important}
-
-/* v5.5.28: compact rank icons with explicit rank-color rendering. */
-.rank-icon{--rank-icon-size:28px;display:inline-flex!important;width:var(--rank-icon-size)!important;height:var(--rank-icon-size)!important;min-width:var(--rank-icon-size)!important;max-width:var(--rank-icon-size)!important;flex:0 0 var(--rank-icon-size)!important;align-items:center!important;justify-content:center!important;position:relative!important;vertical-align:middle!important;color:var(--c)!important;line-height:1!important}
-.rank-icon svg{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;overflow:visible!important}
-.rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent)!important;stroke:var(--c)!important;stroke-width:1.7!important;stroke-linejoin:round!important}
-.rank-icon b{position:absolute!important;inset:0!important;display:grid!important;place-items:center!important;font-size:9px!important;line-height:1!important;font-weight:900!important;color:var(--c)!important;pointer-events:none!important}
-.overall-rank-title .rank-icon{--rank-icon-size:34px}.rank-result-title .rank-icon{--rank-icon-size:30px}.rank-badge .rank-icon{--rank-icon-size:26px}
-
-
-/* v5.5.86 · authoritative 2D anatomy color layer. Ranked muscle zones always use their rank color. */
+/* Authoritative 2D anatomy color layer */
+.anatomy-svg .real-body-base path{fill:#34384b;fill-opacity:1;stroke:#70778b;stroke-width:1.15;}
+.muscle-zone-group path{fill:var(--mc);fill-opacity:1;stroke:var(--ms);stroke-width:1.35;}
+.muscle-zone-group.locked path{fill:#35394c;stroke:#6d7488;}
+.anatomy-map-stage .anatomy-svg{display:block;visibility:visible;opacity:1;overflow:visible;flex:none;}
+.anatomy-map-stage .anatomy-svg .real-body-base{display:block;visibility:visible;opacity:1;}
+.anatomy-map-stage .anatomy-svg .real-body-base path{display:inline;visibility:visible;fill:#4b5263;fill-opacity:1;stroke:#858c9d;stroke-opacity:.9;stroke-width:1.2;}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group{display:block;visibility:visible;opacity:1;}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group path{display:inline;visibility:visible;fill:var(--mc,#687083);fill-opacity:1;stroke:var(--ms,#9299a8);stroke-opacity:.95;stroke-width:1.25;}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{stroke:#858c9d;stroke-opacity:.82;}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path{fill:var(--mc);fill-opacity:1;}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{fill:#596072;fill-opacity:1;filter:none;}
+.rank-icon{display:inline-flex;width:var(--rank-icon-size);height:var(--rank-icon-size);min-width:var(--rank-icon-size);max-width:var(--rank-icon-size);flex:0 0 var(--rank-icon-size);align-items:center;justify-content:center;position:relative;vertical-align:middle;color:var(--c);line-height:1;}
+.rank-icon svg{display:block;width:100%;height:100%;max-width:100%;max-height:100%;overflow:visible;}
+.rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent);stroke:var(--c);stroke-width:1.7;stroke-linejoin:round;}
+.rank-icon b{position:absolute;inset:0;display:grid;place-items:center;font-size:9px;line-height:1;font-weight:900;color:var(--c);pointer-events:none;}
 .anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path,
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path[fill]{
-  fill:var(--mc,#687083)!important;
-  fill-opacity:1!important;
-  stroke:var(--ms,var(--mc,#9299a8))!important;
-  stroke-opacity:1!important;
-  filter:drop-shadow(0 0 5px var(--mc,#687083))!important;
-}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path[fill]{fill:var(--mc,#687083);fill-opacity:1;stroke:var(--ms,var(--mc,#9299a8));stroke-opacity:1;filter:drop-shadow(0 0 5px var(--mc,#687083));}
 .anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path,
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path[fill]{
-  fill:#596072!important;
-  fill-opacity:1!important;
-  stroke:#858c9d!important;
-  stroke-opacity:.82!important;
-  filter:none!important;
-}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path[fill]{fill:#596072;fill-opacity:1;stroke:#858c9d;stroke-opacity:.82;filter:none;}
