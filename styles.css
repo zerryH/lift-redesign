@@ -919,3 +919,10 @@ button.muscle-pill:hover{border-color:var(--mc)}
 .routine-progress>small{display:block;margin-bottom:10px;}
 .routine-progress .enhanced-heading{flex-wrap:wrap;}
 .routine-progress .enhanced-heading span{color:var(--mu);font-size:13px;}
+
+/* Keep the previous-set label, measurement and context readable. */
+#v .logging-card .qol-last{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.qol-last>div{min-width:0;}
+.qol-last>div>small,.qol-last>div>b{display:block;overflow-wrap:anywhere;}
+.qol-last>div>b{margin:4px 0;line-height:1.35;}
+.qol-last>button{flex-shrink:0;}
