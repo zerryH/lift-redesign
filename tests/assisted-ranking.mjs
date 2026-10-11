@@ -13,7 +13,7 @@ for(const n of names){
   const m=R.exerciseMeta[n];
   assert.equal(m.kind,'assisted',n);
   assert.equal(m.loadMode,'assisted',n);
-  assert.equal(m.standardsVersion,10,n);
+  assert.equal(m.standardsVersion,11,n);
   const t=R.t[n];
   assert.equal(t.length,2,n);
   assert.equal(t[0].length,46,n);

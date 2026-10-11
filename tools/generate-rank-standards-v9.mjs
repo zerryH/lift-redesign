@@ -26,5 +26,5 @@ const generate=(name,m)=>{
  return out;
 };
 const expected=Object.fromEntries(Object.entries(R.exerciseMeta).map(([n,m])=>[n,generate(n,m)]));
-if(process.argv.includes('--check')){assert.deepEqual(expected,R.t,'rank v10 thresholds do not match the documented generator');console.log(`rank v10 generator check passed · ${Object.keys(expected).length} exercises`);}
-else{R.t=expected;R.rankingVersion=10;R.ranking={...R.ranking,ageCurve:[[13,1.08],[15,1.06],[18,1.03],[20,1],[40,1],[45,1.03],[50,1.06],[60,1.10],[70,1.12],[100,1.12]],ageCap:1.12,height:{...(R.ranking.height||{}),kByRom:{high:.08,medium:.06,low:.04},capMin:.94,capMax:1.06}};fs.writeFileSync('ranks-config.json',JSON.stringify(R,null,2)+'\n');console.log(`wrote ${Object.keys(expected).length} rank v10 ladders`);}
+if(process.argv.includes('--check')){assert.deepEqual(expected,R.t,'rank v11 thresholds do not match the documented generator');console.log(`rank v11 generator check passed · ${Object.keys(expected).length} exercises`);}
+else{R.t=expected;R.rankingVersion=11;R.ranking={...R.ranking,ageCurve:[[13,1.08],[15,1.06],[18,1.03],[20,1],[40,1],[45,1.03],[50,1.06],[60,1.10],[70,1.12],[100,1.12]],ageCap:1.12,height:{...(R.ranking.height||{}),kByRom:{high:.08,medium:.06,low:.04},capMin:.94,capMax:1.06}};fs.writeFileSync('ranks-config.json',JSON.stringify(R,null,2)+'\n');console.log(`wrote ${Object.keys(expected).length} rank v11 ladders`);}

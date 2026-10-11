@@ -4,12 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.6.2**
+**Build: 5.7.0**
 
-- 472 compatible names, grouped into 447 distinct browse identities
+- 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
-- Ranking standards v10: Slat-owned exercise-specific heuristics
+- Ranking standards v11: Slat-owned exercise-specific heuristics
+
+New in 5.7: editable session dates/names, saved ordered routines, tracking-mode progress charts, equipment setup labels, timer controls, History search/details, and weekly/monthly training summaries. See `docs/audit-5.7.0.md` and `docs/catalogue-review-5.7.0.md`.
 
 The shipped app is a self-contained HTML build for GitHub Pages and a local `lift-local.html` file.
 
@@ -29,13 +31,13 @@ The shipped app is a self-contained HTML build for GitHub Pages and a local `lif
 
 ## Exercise catalogue
 
-`exercises.json` contains 472 compatible names and an explicit catalogue with stable IDs, synonyms, equipment, muscles, tracking modes and input instructions. Browse shows 447 distinct movements. Search, split, muscle and equipment filters use the same records. Legacy names remain importable without discarding sets.
+`exercises.json` contains 475 compatible names and an explicit catalogue with stable IDs, synonyms, equipment, muscles, tracking modes and input instructions. Browse shows 450 distinct movements. Search, split, muscle and equipment filters use the same records. Legacy names remain importable without discarding sets.
 
 ## Ranking system
 
 Slat uses 46 tiers from Wood I through Blue Gem. Each supported exercise has its own male/female threshold ladder. Completed workouts earn ranks using recorded bodyweight and height, with optional age and height adjustments. Rank previews and explicitly saved checks remain separate from earned exercise and muscle ranks.
 
-**Ranking standards v10 are Slat-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Slat progression. No Strength Level or ExRx threshold table is embedded in the v10 dataset. See `docs/rank-methodology-v10.md`.
+**Ranking standards v11 are Slat-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Slat progression. No Strength Level or ExRx threshold table is embedded in the v11 dataset. See `docs/rank-methodology-v11.md`.
 
 Ranks are estimates for training context, not medical advice, diagnosis, a biomechanical law, an official federation classification or a guarantee of performance.
 
