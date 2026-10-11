@@ -790,3 +790,10 @@ button.muscle-pill:hover{border-color:var(--mc)}
 .has-rest #v{padding-bottom:120px;scroll-padding-bottom:100px}
 .dialog-open #qol-rest{visibility:hidden}
 .toast>.pill{margin-left:10px;min-height:40px}
+
+/* Dialog controls use one compositing layer and fit the padded viewport. */
+.qol-modal-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;}
+.qol-modal-head>b{text-align:left;font-size:18px;line-height:1.3;}
+.action-modal .pill{backdrop-filter:none;-webkit-backdrop-filter:none;}
+.action-modal .modal-close{flex:none;width:44px;min-width:44px;height:44px;padding:0;display:grid;place-items:center;}
+.modal-close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;pointer-events:none;}

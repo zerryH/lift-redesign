@@ -20,6 +20,15 @@ async function open(state=base(),viewport={width:390,height:844},ready='[data-a=
  await page.goto(url);await page.bringToFront();await page.locator(ready).first().waitFor();
 }
 async function check(name,fn){await fn();report.checks.push(name);console.log('PASS '+name);}
+async function clickBackupControl(engine,locator){
+ if(engine!=='webkit')return locator.click();
+ // The WebKit runner stalled before pointer dispatch despite visible, enabled, inert-free controls.
+ // Native pointer input keeps browser hit testing; it does not dispatch a synthetic DOM click.
+ assert(await locator.isVisible());assert(await locator.isEnabled());
+ const point=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {x,y,hit:hit===el||el.contains(hit),inert:!!el.closest('[inert]')};});
+ assert(point.hit&&!point.inert,'backup control must receive native pointer input');
+ await page.mouse.click(point.x,point.y);
+}
 const clickTab=name=>page.locator('[data-a=tab][data-v="'+name+'"]').click();
 const saved=()=>page.evaluate(async()=>{await saveTail;return JSON.parse(localStorage.getItem('liftlog-state'));});
 try{
@@ -49,8 +58,8 @@ try{
    await open({...base(),workouts:[workout()]});await clickTab('settings');const raw=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
    await page.locator('#imp').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({workouts:[{d:'2026-10-10',ex:{}}],bw:[]}))});assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
    const backup={version:4,workouts:[{...workout('Cable Curl',30),id:9}],bw:base().bw,settings:base().set};const file={name:'valid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))};
-   await page.locator('#imp').setInputFiles(file);await page.bringToFront();await page.locator('#confirm-import').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);await page.getByRole('button',{name:'Cancel',exact:true}).click();assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
-   await page.locator('#imp').setInputFiles(file);await page.locator('#confirm-import').click();await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal((await saved()).workouts[0].ex[0].n,'Cable Curl');assert(await page.evaluate(()=>localStorage.getItem('liftlog-import-recovery')));
+   await page.locator('#imp').setInputFiles(file);await page.bringToFront();await page.locator('#confirm-import').waitFor();assert(await page.locator('.action-card').evaluate(el=>el.getBoundingClientRect().right<=innerWidth&&el.getBoundingClientRect().left>=0),'backup dialog fits viewport');assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);await clickBackupControl(name,page.getByRole('button',{name:'Cancel',exact:true}));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
+   await page.locator('#imp').setInputFiles(file);await clickBackupControl(name,page.locator('#confirm-import'));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal((await saved()).workouts[0].ex[0].n,'Cable Curl');assert(await page.evaluate(()=>localStorage.getItem('liftlog-import-recovery')));
   });
   await check(name+': two real tabs block the stale writer',async()=>{
    await open();const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();await page.locator('[data-a=start][data-v=Empty]').click();await second.locator('#storage-conflict').waitFor();assert.equal(await second.locator('#storage-conflict').getAttribute('role'),'alert');await second.close();

@@ -72,3 +72,11 @@ See [the 21-section completion record](plan-completion.md) for feature acceptanc
 ## Product inspiration
 
 Liftoff's publicly described relationship between logged lifts, per-exercise progress and a muscle map informed clearer provenance and the logging hierarchy. No Liftoff artwork, proprietary thresholds or source code is used. Reference reviewed 10 October 2026: https://liftoffrank.com/.
+
+## Browser automation and dialog follow-up
+
+The review follow-up clamps shared dialogs to their padded viewport, gives their close control a styled SVG button, and removes redundant button backdrop filters. The backup browser journey checks dialog bounds before acting.
+
+The WebKit 27.2 runner stalled in its pre-pointer stability polling after file selection while diagnostics showed visible, enabled, focused, inert-free controls. This journey therefore uses native mouse input after checking visibility, enabled state, browser hit testing and inert ancestors. It does not force a locator click or dispatch a synthetic DOM click. Successful cancellation/replacement and unchanged/replaced stored data are still required. Other browser journeys retain normal locator actions.
+
+Playwright is pinned to 1.64.0 to include the upstream WebKit offline-emulation fix (https://github.com/microsoft/playwright/pull/42894). Physical Safari/PWA validation remains open. CI reports and failures retain exact browser versions, dialogs and control geometry; configured checks are not certification.
