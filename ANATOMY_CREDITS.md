@@ -12,3 +12,5 @@ Source: https://github.com/suryamolly/muscle_mapper
 License: https://creativecommons.org/licenses/by/4.0/
 
 5.6 maintenance: source SVGs now live in `anatomy-front.svg` and `anatomy-back.svg` and are embedded by the build. Slat separates anterior tibialis from calf coloring, adds schematic medial-thigh adductor regions and a neutral back-of-head silhouette, repairs the posterior group nesting, removes duplicate outline artifacts, and assigns unique element IDs. New regions are diagram conventions, not a diagnostic anatomical model. Existing source attribution remains retained.
+
+5.6.1 presentation repair: adds continuous neutral torso/limb contours, front patellae, posterior spinal erectors, sacrum, soleus/Achilles and heels; replaces the medial-thigh schematic with longus/gracilis regions; keeps sartorius neutral rather than coloring it as a quadriceps head. Original muscle geometry receives clipped fiber lines and surface lighting. Neutral details are illustrative anatomy, without invented earned ranks. Front/back selection and named keyboard/touch targets use the same muscle details as the rank list. Upstream attribution remains unchanged.
