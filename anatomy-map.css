@@ -25,7 +25,11 @@
 .anatomy-map-stage .anatomy-svg [role="button"]:is(:hover,:focus-visible)>path{stroke:var(--fg);stroke-width:1.7;stroke-opacity:1;}
 [data-d="0"] .anatomy-map-stage .anatomy-svg .anatomy-contours path{fill:#d5d2df;stroke:#8b8498;}
 [data-d="0"] .anatomy-map-stage .anatomy-svg .real-body-base path{fill:#b6b1c2;stroke:#8b8498;}
-.rank-icon{display:inline-flex;width:var(--rank-icon-size);height:var(--rank-icon-size);min-width:var(--rank-icon-size);max-width:var(--rank-icon-size);flex:0 0 var(--rank-icon-size);align-items:center;justify-content:center;position:relative;vertical-align:middle;color:var(--c);line-height:1;}
+.rank-icon{--rank-icon-size:28px;display:inline-flex;width:var(--rank-icon-size);height:var(--rank-icon-size);min-width:var(--rank-icon-size);max-width:var(--rank-icon-size);flex:0 0 var(--rank-icon-size);align-items:center;justify-content:center;position:relative;vertical-align:middle;color:var(--c);line-height:1;}
 .rank-icon svg{display:block;width:100%;height:100%;max-width:100%;max-height:100%;overflow:visible;}
 .rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent);stroke:var(--c);stroke-width:1.7;stroke-linejoin:round;}
 .rank-icon b{position:absolute;inset:0;display:grid;place-items:center;font-size:9px;line-height:1;font-weight:900;color:var(--c);pointer-events:none;}
+
+.overall-rank-title .rank-icon{--rank-icon-size:34px;}
+.rank-result-title .rank-icon{--rank-icon-size:30px;}
+.rank-badge .rank-icon{--rank-icon-size:26px;}
