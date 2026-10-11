@@ -6,7 +6,7 @@ Release 5.6.0 uses a versioned, explicit exercise catalogue. There are 472 reada
 
 Weights are stored in kilograms. Pounds are converted at input and presentation boundaries using 2.20462 lb per kg. Each catalogue record declares equipment, split, primary muscle, muscle contributions, tracking mode, implement count, and an input instruction. The engine uses the corresponding explicit metadata rather than inferring it from a display name.
 
-Working sets of 1–12 reps use Epley estimated 1RM and the configured rep-reliability curve. Warm-ups, timed holds, distance sets and band sets never enter estimated strength ranking. Assisted load is max(0, bodyweight − assistance). Weighted bodyweight movements add external load to the configured bodyweight fraction; push-up variants use a 0.65 approximation. Most bodyweight core and conditioning movements remain tracking-only because a full-bodyweight strength protocol would be misleading.
+Working sets of 1–12 reps use Epley estimated 1RM and the configured rep-reliability curve. Warm-ups, timed holds, distance sets and band sets never enter estimated strength ranking. Assisted load is max(0, bodyweight − absolute assistance). Legacy negative assistance entries represent assistance magnitude; their original values are retained. Weighted bodyweight movements add external load to the configured bodyweight fraction; push-up variants use a 0.65 approximation. Most bodyweight core and conditioning movements remain tracking-only because a full-bodyweight strength protocol would be misleading.
 
 Normal load equals the entered load times the recorded implement multiplier. Explicit one-implement and unilateral movements count one implement. Paired dumbbell movements instruct the user to enter weight per dumbbell. Machine and cable performance depends on pulley setup and equipment; comparisons remain approximate.
 
@@ -18,13 +18,14 @@ Estimated strength is normalized to reference bodyweight with exponent 0.67. Opt
 - Save check explicitly keeps raw inputs, reference, bodyweight, height and date in `checks`. Checks recalculate under current age/adjustment settings, retaining their saved sex reference, bodyweight and height. They do not contribute to earned overall or muscle ranks.
 - Only completed workouts contribute to earned ranks. A draft or in-progress edit has no effect until Finish saves it. Each set keeps its recorded bodyweight and height.
 - Earned ranks are derived caches. They rebuild from completed sets; only raw records and saved checks are persisted.
-- Synonyms resolve exercise identity. Benchmark inheritance is independent and never creates an achievement on a different exercise.
+- Synonyms resolve exercise identity. Benchmark inheritance is independent and never creates an achievement on a different exercise. Custom mappings require compatible equipment type and load conventions. Incompatible legacy mappings keep their sets but cannot earn a mismatched rank.
+- Custom names may be changed and movements retired without changing identity or deleting history. Sets and workout entries carry stable IDs; recoverable removals survive reload until another removal replaces the undo record.
 
 ## Tier and muscle aggregation
 
 Each ranked exercise retains 46 ascending thresholds from Wood I through Blue Gem. A below-first-threshold result is Unranked and receives a first-tier target. A maximum result is explicitly marked as maximum. Remaining load is a change in estimated 1RM, not an instruction to add that amount to the next set.
 
-Overall rank is the mean earned exercise tier, rounded for its label. Muscle rank is the weighted mean continuous tier position of its explicitly contributing earned exercises. It uses the weights in `exercises.json`, never equality between benchmark aliases. Forearms, adductors and tibialis have list summaries; their SVG coverage is not complete. A muscle without a supported earned performance stays unranked even if an unranked activity has been logged.
+Overall rank is the mean earned exercise tier, rounded for its label. Muscle rank is the weighted mean continuous tier position of its explicitly contributing earned exercises. It uses the weights in `exercises.json`, never equality between benchmark aliases. All 16 muscle groups have SVG zones. Tibialis and adductor regions are schematic additions; muscle detail lists the actual earned contributors and relative weights. A muscle without a supported earned performance stays unranked even if an unranked activity has been logged.
 
 ## Reproducibility and limitations
 

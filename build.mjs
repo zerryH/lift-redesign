@@ -28,6 +28,12 @@ function validateData(ex, ranks) {
   for (const [alias, target] of Object.entries(ranks.alias || {})) if (!ranks.t[target]) throw new Error('Alias target missing: ' + alias + ' -> ' + target);
 }
 function injectData(appSource, ex, ranks, engineSource) {
+  for (const side of ['FRONT','BACK']) {
+    const svg=read('anatomy-'+side.toLowerCase()+'.svg');
+    const marker=new RegExp('/\\*BEGIN:ANATOMY_'+side+'\\*/[\\s\\S]*?/\\*END:ANATOMY_'+side+'\\*/');
+    if(!marker.test(appSource)) throw new Error('Missing anatomy source marker: '+side);
+    appSource=appSource.replace(marker,()=> '/*BEGIN:ANATOMY_'+side+'*/'+JSON.stringify(svg)+'/*END:ANATOMY_'+side+'*/');
+  }
   const exRe = /\/\*BEGIN:EXERCISES\*\/[\s\S]*?\/\*END:EXERCISES\*\//;
   const rankRe = /\/\*BEGIN:RANKS\*\/[\s\S]*?\/\*END:RANKS\*\//;
   if (!exRe.test(appSource) || !rankRe.test(appSource)) throw new Error('Missing required data markers in app.js');

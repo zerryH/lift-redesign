@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {boot,base,workout} from './support/runtime.mjs';
+const z=await boot({...base(),cur:workout()});const h=z.h,x=h.S.cur.ex[0],set={...x.sets[0]};
+h.S.undo={type:'set',record:set,workoutId:h.S.cur.id,entryId:x.entryId,index:0,removedAt:Date.now()};x.sets=[];await h.save();
+const restart=await boot(JSON.parse(z.store.get('liftlog-state')));restart.h.A.undo();await restart.h.flush();assert.equal(restart.h.S.cur.ex[0].sets[0].id,set.id);assert.equal(restart.h.S.cur.ex[0].sets[0].kg,100);assert.equal(restart.h.S.undo,null);
+const custom=await boot({...base(),custom:[{n:"Oskar's Cable Curl",t:'M',g:'Pull',c:'Biceps',rank:'Cable Curl'},{n:'Wrong protocol',t:'M',g:'Pull',c:'Biceps',rank:'Dumbbell Curl'}]});assert(custom.h.rankThresholds("Oskar's Cable Curl"));assert.equal(custom.h.rankThresholds('Wrong protocol'),null);assert.equal(custom.h.S.custom[0].n,"Oskar's Cable Curl");
+const raw=custom.store.get('liftlog-state');await assert.rejects(()=>custom.h.importBackup({workouts:[workout('__proto__')],bw:[]}));assert.equal(custom.store.get('liftlog-state'),raw);
+await assert.rejects(()=>custom.h.importBackup({workouts:[],bw:[],undo:{type:'set',record:{},workoutId:1,index:0}}));assert.equal(custom.store.get('liftlog-state'),raw);
+assert.equal(custom.h.rankSetEst('Assisted Pull-Up Machine',{kg:-20,reps:5},80),custom.h.rankSetEst('Assisted Pull-Up Machine',{kg:20,reps:5},80));assert(!custom.h.setSummary('Assisted Pull-Up Machine',{kg:-20,reps:5}).includes('-20'));
+console.log('durable undo, stable custom names, compatible standards, reserved-name rejection and legacy assistance checks passed');

@@ -1,0 +1,41 @@
+{
+  "browser": [
+    {
+      "name": "chromium",
+      "version": "131.0.6778.0"
+    }
+  ],
+  "checks": [
+    "chromium: log, edit, finish and reload a workout",
+    "chromium: all filters and hidden-details focus containment",
+    "chromium: rank preview and saved check keep earned results separate",
+    "chromium: backup preview cancels safely and confirms atomic replacement",
+    "chromium: two real tabs block the stale writer",
+    "chromium: narrow/light/dark/reduced-motion layouts and anatomy",
+    "chromium: removals undo after reload and custom labels retain identity",
+    "chromium: muscle detail identifies earned contributing lifts",
+    "chromium: corrupt startup exports the untouched raw recovery copy",
+    "chromium: offline reopening and waiting-worker activation preserve a draft",
+    "chromium: every canonical exercise logs through its real rendered form",
+    "chromium: 100, 1000 and 10000 sessions preserve records with bounded history rendering"
+  ],
+  "errors": [],
+  "catalogueFormMs": 52836,
+  "historyPerformance": [
+    {
+      "name": "chromium",
+      "count": 100,
+      "startAndHistoryMs": 355
+    },
+    {
+      "name": "chromium",
+      "count": 1000,
+      "startAndHistoryMs": 910
+    },
+    {
+      "name": "chromium",
+      "count": 10000,
+      "startAndHistoryMs": 2613
+    }
+  ]
+}

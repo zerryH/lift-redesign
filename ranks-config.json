@@ -1,5 +1,5 @@
 {
-  "_": "Slat rank system v9. Every supported exercise has its own male/female 46-rank threshold ladder. Thresholds are Slat-owned heuristic benchmarks generated from exercise metadata, exercise-specific difficulty anchors, ROM class and load semantics. They are not population claims.",
+  "_": "Slat rank system v10. Every supported exercise has its own male/female 46-rank threshold ladder. Thresholds are Slat-owned heuristic benchmarks generated from exercise metadata, exercise-specific difficulty anchors, ROM class and load semantics. They are not population claims.",
   "tiers": [
     "Wood I",
     "Wood II",
@@ -53672,8 +53672,8 @@
     }
   },
   "muscleModel": {
-    "aggregation": "weighted_percentile",
-    "rankPercentileMap": "ranking.rankPercentiles",
-    "note": "Each muscle is scored only from its mapped exercises; transfer weights remain exercise-specific in app.js."
+    "aggregation": "weighted_continuous_tier_mean",
+    "contributions": "exercises.json.catalogue.muscles",
+    "note": "Earned exercise tier positions are averaged with explicit muscle contribution weights and rounded down. Preview checks and unfinished workouts are excluded; tiers are not population percentiles."
   }
 }

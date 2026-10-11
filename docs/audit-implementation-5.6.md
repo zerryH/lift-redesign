@@ -7,7 +7,7 @@ This change implements the behavior fixes from the 10 October 2026 audit against
 | ID | Implementation | Validation / remaining work |
 |---|---|---|
 | F01 | Deep backup validation, isolated preparation, retained recovery copy, overwrite without clearing first, failed-write rollback | Executable invalid nested data, successful replacement and quota tests; device interruption check pending |
-| F02 | One awaited startup sequence; QoL installs once after storage and migration | Executed 0, 50, 500 and 1500 ms delays per storage stage |
+| F02 | One awaited startup sequence; QoL installs once after storage and migration | Executed 0, 50, 500 and 3000 ms delays per storage stage |
 | F03 | Calculator converts lb to canonical kg before scoring | Equivalent kg/lb fixtures pass |
 | F04 | Preview, explicit saved check and earned workout result use separate state | High and low previews never replace earned ranks |
 | F05 | Pure calculation context takes reference as an argument | Preview/save/reload preserves profile reference |
@@ -15,7 +15,7 @@ This change implements the behavior fixes from the 10 October 2026 audit against
 | F07 | All progress calculations consume adjusted score; labels specify estimated 1RM | Progress result agrees across calculation and earned list |
 | F08 | Explicit unranked, first-tier target and maximum handling | Below-threshold and valid first-target fixtures |
 | F09 | Earned records keyed by canonical exercise identity; no benchmark alias fallback | Single Bench Press produces one earned record |
-| F10 | Every catalogue row declares muscle contributions; unsupported tracking has an exclusion reason | Catalogue-wide checks; forearm/adductor/tibialis SVG coverage remains limited to list summaries |
+| F10 | Every catalogue row declares muscle contributions; unsupported tracking has an exclusion reason | All 16 muscle zones have SVG coverage; tibialis and adductors separated from calf/quadriceps zones; earned contributor details tested in browser |
 | F11 | Anatomy reads explicit contribution weights, independent from benchmark inheritance | Calf/shoulder/core isolation fixtures |
 | F12 | Corrected muscle labels, split consistency and independent equipment/muscle facets | All 472 compatible entries covered by schema checks |
 | F13 | Explicit movement families, including hip isolation, shrugs and wrists; corrected squat/curl anchors | Version 10 ladders regenerated and checked; empirical standard validation remains outside this patch |
@@ -23,27 +23,27 @@ This change implements the behavior fixes from the 10 October 2026 audit against
 | F15 | Single-implement and unilateral records specify count and input instruction | Single dumbbell extension and concentration curl fixtures |
 | F16 | Duration, distance, bands and bodyweight reps have separate inputs; unsupported modes cannot earn estimated-1RM ranks | Tracking-mode and engine exclusion fixtures |
 | F17 | Bodyweight and timed movements start at zero added load | Default-input fixtures |
-| F18 | Stable catalogue IDs, 25 true synonym mappings, display names separate from legacy keys | Old sets retain their contents and map to shared IDs; 447 browse identities |
+| F18 | Stable catalogue IDs, 25 true synonym mappings, display names separate from legacy keys | Old sets retain their contents and map to shared IDs; unique entry/set IDs survive restart and historical editing; 447 browse identities |
 | F19 | Removed 180-result truncation; separate split, muscle and equipment filters; Core/Full Body rank tabs | Full 447-item browse output and all split checks |
-| F20 | Registry and benchmark aliases rebuild from base data on import | Removed custom name and alias do not survive replacement |
+| F20 | Registry and benchmark aliases rebuild from base data on import | Removed custom name and alias do not survive replacement; custom rename/retire retains IDs and logged sets; incompatible benchmark mappings remain unranked |
 | F21 | Shared kg/lb presentation for logging, history summaries, rank rows, profile and charts | Conversion fixtures; rendered mobile presentation still requires device checks |
 | F22 | PR baseline excludes current workout and edited original | New current-session record displays PR |
 | F23 | Removed the self-triggering MutationObserver; QoL uses the render hook | No observer is installed; startup and render tests pass |
-| F24 | Set value opens an edit form for load, reps/duration/distance and note | Handler and data persistence paths implemented; browser focus check pending |
+| F24 | Set value opens an edit form for load, reps/duration/distance and note | Browser log → edit → finish → reload passes; set RPE/band/note edits and durable removal undo covered |
 | F25 | Nested types normalize only after preserving raw recovery state; invalid JSON stops at recovery view | Malformed nested state and invalid JSON tested |
 | F26 | Calculator/rank/history names and form values escaped; reserved object keys rejected | Injected image markup cannot reach raw result HTML |
-| F27 | Serialized writes check last saved revision; Web Locks used when available; stale tab pauses with export/reload | Stale-writer fixture passes; simultaneous physical browser contexts still need verification |
+| F27 | Serialized writes check last saved revision; Web Locks used when available; stale tab pauses with export/reload | Two real Chromium tabs detect the stale writer; controlled concurrent-write fixtures pass; physical-device interruption remains a release gate |
 | F28 | Blank birth year correctly migrates legacy age; profile typing remains a draft until Save | Migration and import/restart fixtures |
 | F29 | Workout date uses local calendar; earned result date comes from the winning set's workout | Device-calendar fixture |
-| F30 | Shared time axis, independent recorded bodyweight series, padded value scale, point markers, unit labels and accessible data table | Source/logic implemented; canvas painting and screen-reader check pending |
+| F30 | Shared time axis, independent recorded bodyweight series, padded value scale, point markers, unit labels and accessible data table | Chart scale/data-table logic and real view rendering checked; screen-reader interpretation remains a device gate |
 | F31 | Empty imperial bar input resolves to 20 kg, avoiding double conversion | Shared unit helpers and plate decomposition retained |
 | F32 | Version 5.6.0 comes from build source; generated outputs identical; cache includes integrity module | Exact cache hash, parity and release-version tests |
-| F33 | Update handler receives the actual button; local-file Reload reloads after pending saves | Update regression suite; installed service-worker upgrade pending |
-| F34 | Shared dialog roles, focus return, Tab containment, Escape and background inertness | Structural implementation; VoiceOver/TalkBack and nested dialogs pending |
+| F33 | Update handler receives the actual button; local-file Reload reloads after pending saves | Real offline reopening and synthetic waiting-worker activation preserve draft/rest; upgrade from the actual public 5.5.106 installation remains a release gate |
+| F34 | Shared dialog roles, focus return, Tab containment, Escape and background inertness | Real keyboard containment, closed-details exclusion, Escape/inert restoration and native timer focus retention pass; VoiceOver/TalkBack pending |
 | F35 | Slider permits native vertical panning while horizontal adjustments remain explicit | Gesture-source checks; real touch arbitration pending |
-| F36 | Shared interaction tokens and new logging layout; duplicate profile adjustment switches removed | Partial: legacy CSS cascade retained to avoid unverified wholesale visual changes; broader consolidation needs rendered baselines |
-| F37 | New reusable runtime harness, 22 audit behavior checks, updated contradictory tests, isolated release runner | Full suite documented below; no false claim that mocked DOM tests are browser tests |
-| F38 | Rest deadline, note, RPE, band and numeric draft persist per active exercise | Restart fixture |
+| F36 | Shared interaction tokens and new logging layout; duplicate profile adjustment switches removed | Foundation cascade layer and authoritative component rules replace legacy importance pileup; only five reduced-motion declarations remain important; 27 computed-style comparisons showed no migration differences |
+| F37 | 40 isolated regression scripts, 25 audit scenarios, catalogue-wide protocols/boundaries and real-browser journeys; Chromium/WebKit CI configured | Full suite documented below; no false claim that mocked DOM tests are browser tests |
+| F38 | Rest deadline, note, RPE, band and numeric draft persist per active exercise | Restart fixture and real offline/reload journey; timer controls retain keyboard focus |
 | F40 | Empty/repeated finish guarded; edit replaces by ID; failed save restores draft | Empty, concurrent duplicate, edit and quota fixtures |
 | F39 | Versioned methodology now matches tier averaging, contribution weights, factors and data-source policy | README, notices and methodology consistency checks |
 
@@ -55,17 +55,19 @@ Protocols describe the implementation convention rather than asserting scientifi
 
 ## Test evidence and release gate
 
-Verification on 11 October 2026: **38 of 38 regression scripts passed**, including 22 new audit behavior scenarios. The generator check passed for all 472 retained ladders. Generated HTML parity, exact service-worker cache hashing and release-version checks passed.
+Verification on 11 October 2026: **40 of 40 regression scripts passed**, including 25 audit behavior scenarios. All 447 canonical protocols log and round-trip through the actual application handlers; all 400 ranked movements are checked against both references and 46 tier boundaries. The generator check passes for all 472 retained ladders. Generated HTML parity, exact service-worker cache hashing and release-version checks pass.
 
-Run `node tools/test-release.mjs` for the full independent-workspace suite. Run `node tools/generate-rank-standards-v9.mjs --check` to check every retained ladder. `tests/audit-regressions.mjs` executes the actual app with controlled storage and DOM stubs; it is not a browser rendering test.
+**12 real-browser journeys passed in Chromium 131.0.6778.0** on this host. They include all 447 rendered exercise forms, editing/reload, rank isolation, import preview/cancel/replace, recovery download, two tabs, offline/update activation, durable undo/custom identity, muscle contributors, responsive layouts and 100/1,000/10,000 retained sessions. History renders batches of 50. The 10,000-session startup plus History navigation took about 3.0 seconds on this host; this is not a phone performance claim. The service-worker update journey uses a synthetic old/waiting worker, not a previously installed public build.
 
-Browser testing was attempted, but the runtime's Chromium download returned a truncated archive and the remote browser could not reach the workspace's local HTTP server. Therefore this candidate must complete these checks before public release:
+`node tools/check-release.mjs` runs the complete local release gate after Playwright and browser binaries are installed. It fails if generated outputs are stale or a browser is unavailable. `tools/test-release.mjs` provides the isolated source/runtime suite; its DOM stubs are not browser evidence. `tools/test-browser.mjs` writes versioned browser evidence, screenshots and timings to `test-results/browser/`. GitHub Actions is configured to run regression/build checks plus Chromium and WebKit journeys and retain the report. A configured workflow is not a completed CI run.
 
-1. iOS Safari and installed PWA: cold start, import/export picker, interrupted save, update and offline reopening.
-2. Android Chrome and desktop Chrome: complete workout, edit, delete, calculator kg/lb, custom mapping, filters and progress chart.
-3. Small screens, large text, landscape, dark/light mode, reduced motion, keyboard navigation, VoiceOver and TalkBack.
-4. Two real tabs saving simultaneously; storage quota; reload during import; recovery export.
-5. Check the service worker upgrades from 5.5.106 without replacing or losing saved data.
+See [the 21-section completion record](plan-completion.md) for feature acceptance and the remaining public-release gates. These remain open:
+
+1. Physical iOS Safari/installed PWA and Android Chrome: native import/export pickers, real touch, virtual keyboard, orientation and interrupted saves.
+2. Large text/text zoom, VoiceOver and TalkBack; keyboard checks on desktop do not certify screen-reader usability.
+3. Representative copies of real 5.5.106 user data and a real installed upgrade; fixtures and synthetic service workers cannot replace a migration cohort.
+4. Midrange-phone performance, storage quota/interruption and browser-specific persistence behavior.
+5. Owner/content review of exercise instructions, empirical ranking standards, branded support contact and anatomy legibility. The added anatomy regions are schematic.
 
 ## Product inspiration
 

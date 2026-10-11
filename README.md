@@ -22,7 +22,7 @@ The shipped app is a self-contained HTML build for GitHub Pages and a local `lif
 - Ranking standards and tier names are sourced from `ranks-config.json`.
 - `data-integrity.js` validates backup candidates before replacement. A previous-state recovery copy is retained; imports never clear the current state first.
 - Saves are serialized. A newer saved revision in another tab pauses stale writes and offers draft export.
-- `app.js` contains `BEGIN:EXERCISES` and `BEGIN:RANKS` markers; `build.mjs` injects the current JSON between those markers.
+- `app.js` contains data and anatomy source markers; `build.mjs` injects JSON and `anatomy-front.svg` / `anatomy-back.svg` into the self-contained build.
 - `index.html` and `lift-local.html` are generated self-contained builds and are kept byte-identical.
 - `localStorage` is written first and IndexedDB is used on supported hosted origins; saved timestamps prevent an older IndexedDB copy from rolling back newer local data.
 - The local `file://` build intentionally uses localStorage because service workers and other secure-context APIs are unavailable there.
@@ -65,4 +65,6 @@ See `THIRD_PARTY_NOTICES.md`, `ANATOMY_CREDITS.md`, and `LICENSE-MUSCLE-MAPPER.t
 
 ## Validation and audit traceability
 
-Run `node tools/test-release.mjs` to run every regression script in an independent copy. Run `node tools/generate-rank-standards-v9.mjs --check` for reproducible standards. See [the implementation register](docs/audit-implementation-5.6.md) for audit IDs, changes and remaining device verification.
+Install the test dependency with `npm install --no-save --ignore-scripts playwright@1.62.1`, then `npx playwright install chromium webkit`. Run `SLAT_BROWSERS=chromium,webkit node tools/check-release.mjs` for all independent regression scripts, reproducible standards/build checks and real-browser journeys. Missing browser binaries fail the gate. GitHub Actions runs these checks on pull requests and review-branch pushes.
+
+For focused checks, use `node tools/test-release.mjs` or `node tools/test-browser.mjs`. Browser reports/screenshots are written to `test-results/browser/`. Alternate local runtime paths can be supplied with `SLAT_PLAYWRIGHT_PATH` and `SLAT_CHROMIUM_PATH`. See [the implementation register](docs/audit-implementation-5.6.md) and [plan completion record](docs/plan-completion.md) for evidence and outstanding device/product gates.
