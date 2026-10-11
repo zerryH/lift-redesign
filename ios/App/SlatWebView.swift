@@ -32,6 +32,7 @@ struct SlatWebView: UIViewRepresentable {
         private weak var web: WKWebView?
         private let rest = RestActivityController()
         private var openRest: AnyCancellable?
+        private var foreground: AnyCancellable?
         private var downloads: [ObjectIdentifier: URL] = [:]
 
         static func owns(_ url: URL?) -> Bool {
@@ -47,6 +48,9 @@ struct SlatWebView: UIViewRepresentable {
             }
             openRest = NotificationCenter.default.publisher(for: .slatOpenRest).sink { [weak self] _ in
                 self?.web?.evaluateJavaScript("window.dispatchEvent(new Event('slat-native-rest-open'));")
+            }
+            foreground = NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification).sink { [weak self] _ in
+                self?.web?.evaluateJavaScript("window.dispatchEvent(new Event('slat-native-rest-resume'));")
             }
         }
         func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {

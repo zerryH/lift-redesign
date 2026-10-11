@@ -24,6 +24,10 @@ app.h.qolRestStart(90);assert.equal(messages.at(-1).action,'sync');assert.equal(
 const deadline=app.h.S.cur.restEndAt;
 for(const fn of app.listeners.click||[])fn({target:{classList:{contains:()=>false},closest:s=>s==='[data-qol]'?{dataset:{qol:'restPlus'}}:null}});
 assert.equal(messages.at(-1).endAt,deadline+30000);
+const beforeResume=messages.length;
+for(const fn of app.listeners['slat-native-rest-resume']||[])fn({});
+assert(messages.length>beforeResume);assert.equal(messages.at(-1).endAt,deadline+30000);
+assert.equal(app.intervals.size,1,'resuming replaces the clock rather than starting duplicate intervals');
 app.h.A.nativeRestToggle();assert.equal(app.h.S.set.nativeRestLiveActivity,false);assert.equal(messages.at(-1).action,'stop');
 app.h.A.nativeRestToggle();assert.equal(app.h.S.set.nativeRestLiveActivity,true);assert.equal(messages.at(-1).action,'sync');
 for(const fn of app.listeners['slat-native-rest-status']||[])fn({detail:{allowed:false,error:'Allow Live Activities for Slat in iPhone Settings.'}});
