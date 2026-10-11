@@ -12,7 +12,7 @@ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const url='http://127.0.0.1:'+server.address().port;
 const report={browser:[],checks:[],errors:[]},out=path.resolve(process.env.SLAT_BROWSER_OUTPUT||'test-results/browser');await fs.mkdir(out,{recursive:true});
 const options=process.env.SLAT_CHROMIUM_PATH?{executablePath:process.env.SLAT_CHROMIUM_PATH,args:['--disable-gpu']}:{},names=(process.env.SLAT_BROWSERS||'chromium').split(',');
-let browser,context,page;
+let browser,context,page,engineName;
 async function open(state=base(),viewport={width:390,height:844},ready='[data-a=start]'){
  if(context)await context.close();context=await browser.newContext({viewport});page=await context.newPage();page.setDefaultTimeout(12000);
  page.on('pageerror',e=>report.errors.push(e.message));
@@ -20,54 +20,54 @@ async function open(state=base(),viewport={width:390,height:844},ready='[data-a=
  await page.goto(url);await page.bringToFront();await page.locator(ready).first().waitFor();
 }
 async function check(name,fn){await fn();report.checks.push(name);console.log('PASS '+name);}
-async function clickBackupControl(engine,locator){
- if(engine!=='webkit')return locator.click();
+async function clickControl(locator){
+ if(engineName!=='webkit')return locator.click();
  // The WebKit runner stalled before pointer dispatch despite visible, enabled, inert-free controls.
  // Native pointer input keeps browser hit testing; it does not dispatch a synthetic DOM click.
  assert(await locator.isVisible());assert(await locator.isEnabled());
- const point=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {x,y,hit:hit===el||el.contains(hit),inert:!!el.closest('[inert]')};});
- assert(point.hit&&!point.inert,'backup control must receive native pointer input');
+ const point=await locator.evaluate(el=>{el.scrollIntoView({block:"center",inline:"nearest",behavior:"instant"});const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {x,y,hit:hit===el||el.contains(hit),inert:!!el.closest('[inert]')};});
+ assert(point.hit&&!point.inert,'control must receive native pointer input');
  await page.mouse.click(point.x,point.y);
 }
-const clickTab=name=>page.locator('[data-a=tab][data-v="'+name+'"]').click();
+const clickTab=name=>clickControl(page.locator('[data-a=tab][data-v="'+name+'"]'));
 const saved=()=>page.evaluate(async()=>{await saveTail;return JSON.parse(localStorage.getItem('liftlog-state'));});
 try{
- for(const name of names){
+ for(const name of names){engineName=name;
   browser=await playwright[name].launch(name==='chromium'?options:{});report.browser.push({name,version:browser.version()});
   await check(name+': log, edit, finish and reload a workout',async()=>{
-   await open();await page.getByRole('button',{name:'Free workout',exact:true}).click();await page.getByRole('button',{name:'+ Add exercise',exact:true}).click();
-   await page.locator('#ex-search').fill('Cable Curl');await page.locator('.exercise-option[data-v="Cable Curl"]').click();
+   await open();await clickControl(page.getByRole('button',{name:'Free workout',exact:true}));await clickControl(page.getByRole('button',{name:'+ Add exercise',exact:true}));
+   await page.locator('#ex-search').fill('Cable Curl');await clickControl(page.locator('.exercise-option[data-v="Cable Curl"]'));
    await page.locator('#qol-weight').fill('25');await page.locator('#qol-reps').fill('8');await page.locator('#qol-note').fill('Controlled tempo');await page.locator('#qol-rpe').fill('8');
-   await page.locator('[data-a=log]').click();await page.getByRole('button',{name:'Add 30 seconds',exact:true}).focus();const clock=await page.locator('[data-rest-clock]').textContent();await page.waitForFunction(c=>document.querySelector('[data-rest-clock]')?.textContent!==c,clock);assert.equal(await page.evaluate(()=>document.activeElement.dataset.qol),'restPlus');await page.getByRole('button',{name:'Stop rest timer',exact:true}).click();await page.getByRole('button',{name:'Edit set 1',exact:true}).click();await page.locator('#edit-weight').fill('27.5');await page.locator('#save-set-edit').click();
-   await page.locator('[data-a=fin]').click();await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).workouts[0].ex[0].sets[0].kg,27.5);
+   await clickControl(page.locator('[data-a=log]'));await page.getByRole('button',{name:'Add 30 seconds',exact:true}).focus();const clock=await page.locator('[data-rest-clock]').textContent();await page.waitForFunction(c=>document.querySelector('[data-rest-clock]')?.textContent!==c,clock);assert.equal(await page.evaluate(()=>document.activeElement.dataset.qol),'restPlus');await clickControl(page.getByRole('button',{name:'Stop rest timer',exact:true}));await clickControl(page.getByRole('button',{name:'Edit set 1',exact:true}));await page.locator('#edit-weight').fill('27.5');await clickControl(page.locator('#save-set-edit'));
+   await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).workouts[0].ex[0].sets[0].kg,27.5);
    await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).workouts[0].ex[0].sets[0].note,'Controlled tempo');await clickTab('history');assert.equal(await page.locator('[data-a=he]').count(),1);
   });
   await check(name+': all filters and hidden-details focus containment',async()=>{
-   await open();await page.locator('[data-a=start][data-v=Empty]').click();await page.locator('[data-a=openx]').click();assert.equal(await page.locator('.exercise-option').count(),447);
+   await open();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await clickControl(page.locator('[data-a=openx]'));assert.equal(await page.locator('.exercise-option').count(),447);
    await page.locator('#ex-muscle').selectOption('Biceps');await page.locator('#ex-equipment').selectOption('Cable / rope');assert((await page.locator('.exercise-option').count())>0);
    for(const text of await page.locator('.exercise-option small').allTextContents())assert(text.includes('Biceps')&&text.includes('Cable / rope'));
    await page.locator('.exercise-custom summary').focus();await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.className),'exercise-library-close');await page.keyboard.press('Escape');assert.equal(await page.locator('.exercise-library').count(),0);
    assert.equal(await page.locator('#v').evaluate(el=>el.inert),false);
   });
   await check(name+': rank preview and saved check keep earned results separate',async()=>{
-   await open({...base(),workouts:[workout()]});const before=await saved();await clickTab('ranks');await page.locator('[data-a=gr]').first().click();await page.locator('[data-g=n]').fill('Bench Press');await page.locator('[data-g=w]').fill('180');await page.locator('[data-g=r]').fill('5');await page.locator('[data-g=b]').fill('80');await page.locator('[data-a=calc]').click();assert((await page.locator('.res').textContent()).includes('est. 1RM'));
-   await page.locator('[data-a=saveCheck]').click();const after=await saved();assert.equal(after.checks['Bench Press'].w,180);assert.deepEqual(after.workouts,before.workouts);assert.equal(after.set.table,'M');await page.keyboard.press('Escape');
-   await page.locator('[data-a=rankList]').click();await page.keyboard.press('Escape');assert.equal(await page.locator('#rank-list-modal').count(),0);
+   await open({...base(),workouts:[workout()]});const before=await saved();await clickTab('ranks');await clickControl(page.locator('[data-a=gr]').first());await page.locator('[data-g=n]').fill('Bench Press');await page.locator('[data-g=w]').fill('180');await page.locator('[data-g=r]').fill('5');await page.locator('[data-g=b]').fill('80');await clickControl(page.locator('[data-a=calc]'));assert((await page.locator('.res').textContent()).includes('est. 1RM'));
+   await clickControl(page.locator('[data-a=saveCheck]'));const after=await saved();assert.equal(after.checks['Bench Press'].w,180);assert.deepEqual(after.workouts,before.workouts);assert.equal(after.set.table,'M');await page.keyboard.press('Escape');
+   await clickControl(page.locator('[data-a=rankList]'));await page.keyboard.press('Escape');assert.equal(await page.locator('#rank-list-modal').count(),0);
   });
   await check(name+': backup preview cancels safely and confirms atomic replacement',async()=>{
    await open({...base(),workouts:[workout()]});await clickTab('settings');const raw=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
    await page.locator('#imp').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({workouts:[{d:'2026-10-10',ex:{}}],bw:[]}))});assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
    const backup={version:4,workouts:[{...workout('Cable Curl',30),id:9}],bw:base().bw,settings:base().set};const file={name:'valid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))};
-   await page.locator('#imp').setInputFiles(file);await page.bringToFront();await page.locator('#confirm-import').waitFor();assert(await page.locator('.action-card').evaluate(el=>el.getBoundingClientRect().right<=innerWidth&&el.getBoundingClientRect().left>=0),'backup dialog fits viewport');assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);await clickBackupControl(name,page.getByRole('button',{name:'Cancel',exact:true}));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
-   await page.locator('#imp').setInputFiles(file);await clickBackupControl(name,page.locator('#confirm-import'));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal((await saved()).workouts[0].ex[0].n,'Cable Curl');assert(await page.evaluate(()=>localStorage.getItem('liftlog-import-recovery')));
+   await page.locator('#imp').setInputFiles(file);await page.bringToFront();await page.locator('#confirm-import').waitFor();assert(await page.locator('.action-card').evaluate(el=>el.getBoundingClientRect().right<=innerWidth&&el.getBoundingClientRect().left>=0),'backup dialog fits viewport');assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);await clickControl(page.getByRole('button',{name:'Cancel',exact:true}));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
+   await page.locator('#imp').setInputFiles(file);await clickControl(page.locator('#confirm-import'));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal((await saved()).workouts[0].ex[0].n,'Cable Curl');assert(await page.evaluate(()=>localStorage.getItem('liftlog-import-recovery')));
   });
   await check(name+': two real tabs block the stale writer',async()=>{
-   await open();const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();await page.locator('[data-a=start][data-v=Empty]').click();await second.locator('#storage-conflict').waitFor();assert.equal(await second.locator('#storage-conflict').getAttribute('role'),'alert');await second.close();
+   await open();const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await second.locator('#storage-conflict').waitFor();assert.equal(await second.locator('#storage-conflict').getAttribute('role'),'alert');await second.close();
   });
   await check(name+': narrow/light/dark/reduced-motion layouts and anatomy',async()=>{
    await open({...base(),workouts:[workout()]});await page.emulateMedia({reducedMotion:'reduce'});
    for(const width of [320,390,768])for(const dark of [0,1]){
-    await page.setViewportSize({width,height:844});await clickTab('settings');await page.locator('[data-a=theme][data-v='+ (dark?'dark':'light')+']').click();
+    await page.setViewportSize({width,height:844});await clickTab('settings');await clickControl(page.locator('[data-a=theme][data-v='+ (dark?'dark':'light')+']'));assert.equal(await page.locator('html').getAttribute('data-d'),String(dark),'selected theme is actually applied');
     for(const tab of ['today','history','ranks','settings']){await clickTab(tab);assert(await page.locator('#v').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'horizontal overflow '+tab+' '+width);}
    }
    await clickTab('ranks');assert.equal(await page.locator('.anatomy-svg').count(),2);assert.equal(await page.locator('.anatomy-svg [data-muscles=tibialis]').count(),1);assert.equal(await page.locator('.anatomy-svg [data-muscles=adductors]').count(),1);
@@ -76,16 +76,16 @@ try{
   });
   await check(name+': removals undo after reload and custom labels retain identity',async()=>{
    const custom={n:'My Cable Curl',t:'M',c:'Biceps',g:'Pull',rank:'Cable Curl'};await open({...base(),custom:[custom],cur:{...workout('My Cable Curl',25),id:88}},undefined,'[data-a=log]');
-   await page.locator('[data-a=ds]').click();await page.locator('[data-action-confirm]').click();await page.locator('[data-a=undo]').waitFor();await page.evaluate(()=>saveTail);await page.reload();await page.locator('[data-a=undo]').click();assert.equal(await page.locator('.srow').count(),1);
-   const old=(await saved()).cur.ex[0].exerciseId;await clickTab('settings');await page.locator('[data-a=manageCustom]').click();await page.locator('#custom-rename').fill('My Consistent Curl');await page.locator('#save-custom-name').click();await page.evaluate(()=>saveTail);const state=await saved();assert.equal(state.cur.ex[0].n,'My Consistent Curl');assert.equal(state.cur.ex[0].exerciseId,old);assert.equal(state.cur.ex[0].sets[0].kg,25);
-   await page.locator('[data-a=manageCustom]').click();await page.locator('#custom-retire').click();await clickTab('today');await page.locator('[data-a=openx]').click();assert.equal(await page.locator('.exercise-option[data-v="My Consistent Curl"]').count(),0);await page.keyboard.press('Escape');assert.equal((await saved()).cur.ex[0].sets.length,1);
-   await page.locator('[data-a=fin]').click();await page.locator('[data-a=start]').first().waitFor();await clickTab('history');await page.locator('[data-a=hd]').click();await page.locator('[data-action-confirm]').click();assert.equal(await page.locator('[data-a=he]').count(),0);await page.locator('[data-a=undo]').click();assert.equal(await page.locator('[data-a=he]').count(),1);
+   await clickControl(page.locator('[data-a=ds]'));await clickControl(page.locator('[data-action-confirm]'));await page.locator('[data-a=undo]').waitFor();await page.evaluate(()=>saveTail);await page.reload();await clickControl(page.locator('[data-a=undo]'));assert.equal(await page.locator('.srow').count(),1);
+   const old=(await saved()).cur.ex[0].exerciseId;await clickTab('settings');await clickControl(page.locator('[data-a=manageCustom]'));await page.locator('#custom-rename').fill('My Consistent Curl');await clickControl(page.locator('#save-custom-name'));await page.evaluate(()=>saveTail);const state=await saved();assert.equal(state.cur.ex[0].n,'My Consistent Curl');assert.equal(state.cur.ex[0].exerciseId,old);assert.equal(state.cur.ex[0].sets[0].kg,25);
+   await clickControl(page.locator('[data-a=manageCustom]'));await clickControl(page.locator('#custom-retire'));await clickTab('today');await clickControl(page.locator('[data-a=openx]'));assert.equal(await page.locator('.exercise-option[data-v="My Consistent Curl"]').count(),0);await page.keyboard.press('Escape');assert.equal((await saved()).cur.ex[0].sets.length,1);
+   await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();await clickTab('history');await clickControl(page.locator('[data-a=hd]'));await clickControl(page.locator('[data-action-confirm]'));assert.equal(await page.locator('[data-a=he]').count(),0);await clickControl(page.locator('[data-a=undo]'));assert.equal(await page.locator('[data-a=he]').count(),1);
   });
   await check(name+': muscle detail identifies earned contributing lifts',async()=>{
-   await open({...base(),workouts:[workout()]});await clickTab('ranks');await page.locator('[data-a=muscleInfo][data-v=chest]').click();assert((await page.locator('.action-card').textContent()).includes('Bench Press'));assert((await page.locator('.action-card').textContent()).includes('Relative weight'));await page.keyboard.press('Escape');
+   await open({...base(),workouts:[workout()]});await clickTab('ranks');await clickControl(page.locator('[data-a=muscleInfo][data-v=chest]'));assert((await page.locator('.action-card').textContent()).includes('Bench Press'));assert((await page.locator('.action-card').textContent()).includes('Relative weight'));await page.keyboard.press('Escape');
   });
   await check(name+': corrupt startup exports the untouched raw recovery copy',async()=>{
-   await open('{broken',undefined,'#boot-export');assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),'{broken');const download=page.waitForEvent('download');await page.locator('#boot-export').click();const file=await download;assert.equal(await fs.readFile(await file.path(),'utf8'),'{broken');
+   await open('{broken',undefined,'#boot-export');assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),'{broken');const download=page.waitForEvent('download');await clickControl(page.locator('#boot-export'));const file=await download;assert.equal(await fs.readFile(await file.path(),'utf8'),'{broken');
   });
   await check(name+': offline reopening and waiting-worker activation preserve a draft',async()=>{
    workerTag='old-test';const draft={...workout('Cable Curl',25),id:77,drafts:{'Cable Curl':{kg:30,reps:8,note:'Unsaved set draft',rpe:8}},restEndAt:Date.now()+120000};
@@ -93,10 +93,10 @@ try{
    assert(!(await page.locator('.toast').allTextContents()).some(t=>t.includes('Update available')),'first installation must not offer a spurious update');
    await context.setOffline(true);await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-note').inputValue(),'Unsaved set draft');await context.setOffline(false);
    await page.evaluate(()=>caches.open('unrelated-cache'));workerTag='upgrade-test';await page.evaluate(async()=>{const reg=await navigator.serviceWorker.getRegistration();await reg.update();});await page.waitForFunction(async()=>!!(await navigator.serviceWorker.getRegistration())?.waiting);
-   await clickTab('settings');await page.locator('[data-a=update]').click();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-note').inputValue(),'Unsaved set draft');assert.equal((await saved()).cur.id,77);assert((await page.evaluate(()=>caches.keys())).includes('unrelated-cache'));workerTag='';
+   await clickTab('settings');await clickControl(page.locator('[data-a=update]'));await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-note').inputValue(),'Unsaved set draft');assert.equal((await saved()).cur.id,77);assert((await page.evaluate(()=>caches.keys())).includes('unrelated-cache'));workerTag='';
   });
   if(name==='chromium')await check(name+': every canonical exercise logs through its real rendered form',async()=>{
-   const entries=Object.values(JSON.parse(await fs.readFile('exercises.json','utf8')).catalogue).filter(c=>!c.canonicalName);await open();await page.locator('[data-a=start][data-v=Empty]').click();
+   const entries=Object.values(JSON.parse(await fs.readFile('exercises.json','utf8')).catalogue).filter(c=>!c.canonicalName);await open();await clickControl(page.locator('[data-a=start][data-v=Empty]'));
    const started=Date.now();
    for(const [i,c] of entries.entries()){
     // Each record uses the same application action as a picker choice; form input and logging use real DOM events.
@@ -106,17 +106,17 @@ try{
     if(await page.locator('#log-seconds').count())await page.locator('#log-seconds').fill('45');
     if(await page.locator('#log-meters').count())await page.locator('#log-meters').fill('25');
     if(await page.locator('#log-band').count())await page.locator('#log-band').fill('red band');
-    await page.locator('[data-a=log]').click();assert.equal(await page.locator('.srow').count(),1,c.name);
+    await clickControl(page.locator('[data-a=log]'));assert.equal(await page.locator('.srow').count(),1,c.name);
     if((i+1)%100===0)console.log('Catalogue forms '+(i+1)+'/'+entries.length);
    }
-   await page.evaluate(()=>saveTail);assert.equal((await saved()).cur.ex.length,447);await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal((await saved()).cur.ex.flatMap(x=>x.sets).length,447);await page.locator('[data-a=fin]').click();await page.locator('[data-a=start]').first().waitFor();assert.equal(await page.evaluate(()=>Object.keys(S.rk).length),400);report.catalogueFormMs=Date.now()-started;
+   await page.evaluate(()=>saveTail);assert.equal((await saved()).cur.ex.length,447);await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal((await saved()).cur.ex.flatMap(x=>x.sets).length,447);await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();assert.equal(await page.evaluate(()=>Object.keys(S.rk).length),400);report.catalogueFormMs=Date.now()-started;
   });
   await check(name+': 100, 1000 and 10000 sessions preserve records with bounded history rendering',async()=>{
    report.historyPerformance??=[];
-   for(const count of [100,1000,10000]){const state={...base(),workouts:Array.from({length:count},(_,i)=>({...workout(),id:i+1}))},start=Date.now();await open(state);await clickTab('history');assert.equal(await page.locator('[data-a=he]').count(),50);await page.locator('[data-a=moreHistory]').click();assert.equal(await page.locator('[data-a=he]').count(),100);assert.equal((await saved()).workouts.length,count);report.historyPerformance.push({name,count,startAndHistoryMs:Date.now()-start});}
+   for(const count of [100,1000,10000]){const state={...base(),workouts:Array.from({length:count},(_,i)=>({...workout(),id:i+1}))},start=Date.now();await open(state);await clickTab('history');assert.equal(await page.locator('[data-a=he]').count(),50);await clickControl(page.locator('[data-a=moreHistory]'));assert.equal(await page.locator('[data-a=he]').count(),100);assert.equal((await saved()).workouts.length,count);report.historyPerformance.push({name,count,startAndHistoryMs:Date.now()-start});}
   });
   await context.close();context=null;await browser.close();browser=null;
  }
  assert.deepEqual(report.errors,[],'uncaught browser errors');
-}catch(error){report.failure=error.stack;console.error(error);if(page){report.diagnostics=await page.evaluate(()=>({hidden:document.hidden,focused:document.hasFocus(),active:document.activeElement?.outerHTML,dialogs:[...document.querySelectorAll('[role=dialog]')].map(el=>({label:el.getAttribute('aria-label'),rect:el.getBoundingClientRect().toJSON(),inert:el.inert,buttons:[...el.querySelectorAll('button')].map(b=>({text:b.textContent,disabled:b.disabled,rect:b.getBoundingClientRect().toJSON(),visible:b.checkVisibility?.(),inertAncestor:!!b.closest('[inert]'),animation:getComputedStyle(b).animation,transform:getComputedStyle(b).transform}))}))})).catch(e=>({error:e.message}));console.error('Browser diagnostics:',JSON.stringify(report.diagnostics));}if(page)await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});process.exitCode=1;}
+}catch(error){report.failure=error.stack;console.error(error);if(page){report.diagnostics=await page.evaluate(()=>({hidden:document.hidden,focused:document.hasFocus(),active:{tag:document.activeElement?.tagName,id:document.activeElement?.id,role:document.activeElement?.getAttribute('role'),text:document.activeElement?.textContent?.slice(0,120)},dialogs:[...document.querySelectorAll('[role=dialog]')].map(el=>({label:el.getAttribute('aria-label'),rect:el.getBoundingClientRect().toJSON(),inert:el.inert,buttons:[...el.querySelectorAll('button')].map(b=>({text:b.textContent,disabled:b.disabled,rect:b.getBoundingClientRect().toJSON(),visible:b.checkVisibility?.(),inertAncestor:!!b.closest('[inert]'),animation:getComputedStyle(b).animation,transform:getComputedStyle(b).transform}))}))})).catch(e=>({error:e.message}));console.error('Browser diagnostics:',JSON.stringify(report.diagnostics));}if(page)await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});process.exitCode=1;}
 finally{await fs.writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));if(context)await context.close();if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}
