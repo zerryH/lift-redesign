@@ -789,7 +789,25 @@ button.muscle-pill:hover{border-color:var(--mc)}
 #qol-custom-map select{max-width:50%;min-width:0;min-height:44px;color:var(--fg);background:var(--cd);border:1px solid var(--ln);border-radius:10px;padding:8px;font-size:16px}
 .toast{white-space:normal;max-width:calc(100vw - 24px);width:max-content;z-index:110000;text-align:center}
 @media(max-width:380px){.backup-summary{font-size:12px}.backup-summary th,.backup-summary td{padding:8px 4px}}
-.has-rest #v{padding-bottom:120px;scroll-padding-bottom:100px}
+/* The timer owns a grid row; it cannot cover a workout action or navigation. */
+body.has-rest{grid-template-rows:minmax(0,1fr) auto auto;}
+body.has-rest nav{grid-row:3;}
+.has-rest #v{padding-bottom:24px;scroll-padding-bottom:24px;}
+#qol-rest{grid-row:2;min-width:0;align-self:stretch;position:relative;z-index:4;background:var(--cd);border-top:1px solid var(--ln);color:var(--fg);padding:6px max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left));}
+.rest-dock-inner{max-width:760px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;}
+.rest-readout{display:flex;align-items:center;gap:10px;min-width:0;line-height:1.2;}
+.rest-readout svg{width:20px;height:20px;flex:none;fill:none;stroke:var(--ac);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.rest-readout>span{color:var(--mu);font-size:13px;}
+.rest-readout>b{font-size:18px;font-weight:650;font-variant-numeric:tabular-nums;min-width:48px;letter-spacing:.2px;}
+.rest-actions{display:flex;gap:6px;flex:none;}
+.rest-actions button{font-family:inherit;font-size:13px;font-weight:600;line-height:1;min-width:48px;min-height:44px;padding:0 12px;color:var(--fg);background:color-mix(in srgb,var(--ac) 8%,var(--cd));border:1px solid var(--ln);border-radius:12px;cursor:pointer;box-shadow:none;}
+.rest-actions button:hover{border-color:var(--ac);}
+.rest-track{height:2px;max-width:760px;margin:4px auto 0;background:var(--ln);border-radius:2px;overflow:hidden;}
+.rest-track i{display:block;height:100%;background:var(--ac);transform-origin:left;transform:scaleX(var(--rest-left,1));}
+.rest-notification-settings{margin-top:16px;padding-top:16px;border-top:1px solid var(--ln);}
+.rest-notification-settings>small{display:block;margin-top:12px;line-height:1.6;}
+@media(min-width:800px){body.has-rest{grid-template-rows:auto minmax(0,1fr) auto;}body.has-rest nav{grid-row:1;}#qol-rest{grid-row:3;padding-bottom:max(8px,env(safe-area-inset-bottom));}}
+@media(max-width:350px){.rest-readout{gap:6px;}.rest-actions button{padding:0 8px;}.rest-dock-inner{gap:8px;}}
 .dialog-open #qol-rest{visibility:hidden}
 .toast>.pill{margin-left:10px;min-height:40px}
 

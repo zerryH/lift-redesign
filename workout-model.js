@@ -3,7 +3,7 @@ globalThis.SlatWorkout=(()=>{
  const phase=(state,saving=false)=>saving?'saving':!state.cur?'idle':state.editingId!=null?'editing':'active';
  function complete(current){
   if(!current?.ex?.some(x=>x.sets?.length))throw new Error('Log at least one set before finishing');
-  const done=JSON.parse(JSON.stringify(current));delete done.drafts;delete done.restEndAt;return done;
+  const done=JSON.parse(JSON.stringify(current));delete done.drafts;delete done.restEndAt;delete done.restStartedAt;return done;
  }
  function replace(workouts,done,editingId){
   const next=workouts.slice();
