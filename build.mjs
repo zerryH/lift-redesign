@@ -1,7 +1,7 @@
 /* SLAT COPYRIGHT CANARY — OR146 / ZERRYH — proprietary source marker */
 import fs from 'node:fs';
 import crypto from 'node:crypto';
-const BUILD_VERSION = '5.5.105';
+const BUILD_VERSION = '5.6.0';
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => fs.writeFileSync(p, s);
 function validateData(ex, ranks) {
@@ -12,6 +12,14 @@ function validateData(ex, ranks) {
     const name = row.split('|')[0];
     if (names.has(name)) throw new Error('Duplicate exercise name: ' + name);
     names.add(name);
+    const record=ex.catalogue?.[name],meta=ranks.exerciseMeta?.[name];
+    if(!record?.id || !meta || record.name!==name) throw new Error('Missing exercise protocol: '+name);
+    if(!['load_reps','reps','duration','load_distance','band_reps'].includes(record.tracking)) throw new Error('Invalid tracking: '+name);
+    if(record.rankable!==meta.rankable || record.tracking!==meta.tracking) throw new Error('Protocol mismatch: '+name);
+    if(!Object.keys(record.muscles||{}).length || Object.values(record.muscles).some(w=>!Number.isFinite(w)||w<=0||w>1)) throw new Error('Invalid muscle routing: '+name);
+    if(record.canonicalName && ex.catalogue[record.canonicalName]?.id!==record.id) throw new Error('Invalid synonym: '+name);
+    if(!record.rankable && !record.rankingExclusion) throw new Error('Missing ranking exclusion: '+name);
+
   }
   const tierCount = ranks.tiers.length;
   for (const [name, sexes] of Object.entries(ranks.t)) {
@@ -23,6 +31,7 @@ function injectData(appSource, ex, ranks, engineSource) {
   const exRe = /\/\*BEGIN:EXERCISES\*\/[\s\S]*?\/\*END:EXERCISES\*\//;
   const rankRe = /\/\*BEGIN:RANKS\*\/[\s\S]*?\/\*END:RANKS\*\//;
   if (!exRe.test(appSource) || !rankRe.test(appSource)) throw new Error('Missing required data markers in app.js');
+  appSource = appSource.replace(/\/\*BEGIN:DATA_INTEGRITY\*\/[\s\S]*?\/\*END:DATA_INTEGRITY\*\//, '/*BEGIN:DATA_INTEGRITY*/'+read('data-integrity.js')+'/*END:DATA_INTEGRITY*/');
   appSource = appSource.replace(exRe, '/*BEGIN:EXERCISES*/' + JSON.stringify(ex) + '/*END:EXERCISES*/');
   appSource = appSource.replace(rankRe, '/*BEGIN:RANKS*/' + JSON.stringify(ranks) + '/*END:RANKS*/');
   appSource = appSource.replace(/\/\*BEGIN:RANKING_ENGINE\*\/[\s\S]*?\/\*END:RANKING_ENGINE\*\//, '/*BEGIN:RANKING_ENGINE*/' + engineSource + '/*END:RANKING_ENGINE*/');
@@ -48,12 +57,12 @@ const anatomyCss = read('anatomy-map.css');
 const stylesCss = read('styles.css');
 for (const name of ['index.html', 'lift-local.html']) write(name, buildHtml(name, app, anatomyCss, stylesCss));
 if (read('index.html') !== read('lift-local.html')) throw new Error('index.html and lift-local.html diverged');
-const hashInput = [app, stylesCss, read('index.html'), read('exercises.json'), read('ranks-config.json'), read('ranking-engine.js'), anatomyCss, read('manifest.webmanifest'), fs.readFileSync('lift-icon-photo-fit.png').toString('base64'), fs.readFileSync('apple-touch-icon-photo-fit.png').toString('base64')].join('\n');
+const hashInput = [app, stylesCss, read('index.html'), read('exercises.json'), read('ranks-config.json'), read('ranking-engine.js'), read('data-integrity.js'), anatomyCss, read('manifest.webmanifest'), fs.readFileSync('lift-icon-photo-fit.png').toString('base64'), fs.readFileSync('apple-touch-icon-photo-fit.png').toString('base64')].join('\n');
 const shortHash = crypto.createHash('sha256').update(hashInput).digest('hex').slice(0, 12);
 const cacheVersion = 'liftlog-v' + BUILD_VERSION + '-' + shortHash;
 let sw = read('sw.js');
 sw = sw.replace(/const V='[^']+',F=/, "const V='" + cacheVersion + "',F=");
-sw = sw.replace(/F=\[[^\]]*\]/, "F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','ranking-engine.js','anatomy-map.css','manifest.webmanifest','lift-icon-photo-fit.png','apple-touch-icon-photo-fit.png']");
+sw = sw.replace(/F=\[[^\]]*\]/, "F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','ranking-engine.js','data-integrity.js','anatomy-map.css','manifest.webmanifest','lift-icon-photo-fit.png','apple-touch-icon-photo-fit.png']");
 write('sw.js', sw);
 write('version.json', JSON.stringify({version:BUILD_VERSION,cache:cacheVersion}));
 console.log('build ok · ' + BUILD_VERSION + ' · ' + cacheVersion);

@@ -41,7 +41,7 @@ nav button.on{color:var(--ac)}nav svg{width:24px;height:24px;stroke:currentColor
 .ruler-tick.major i{height:25px;width:3px;background:color-mix(in srgb,var(--fg) 70%,transparent)}
 .ruler-tick span{position:absolute;left:50%;bottom:29px;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--mu);white-space:nowrap;opacity:.8}
 .ruler-center{position:absolute;left:50%;bottom:13px;width:3px;height:48px;transform:translateX(-50%);border-radius:99px;background:var(--ac2);z-index:3;box-shadow:0 0 0 2px color-mix(in srgb,var(--ac2) 22%,transparent),0 0 18px color-mix(in srgb,var(--ac2) 45%,transparent);pointer-events:none}
-.range{position:absolute;inset:0;width:100%;height:100%;margin:0;background:transparent;appearance:none;-webkit-appearance:none;z-index:4;cursor:grab;touch-action:none;opacity:0;pointer-events:none}
+.range{position:absolute;inset:0;width:100%;height:100%;margin:0;background:transparent;appearance:none;-webkit-appearance:none;z-index:4;cursor:grab;touch-action:pan-y;opacity:0;pointer-events:none}
 .range:active{cursor:grabbing}.range::-webkit-slider-runnable-track{height:100%;background:transparent}.range::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:28px;height:100%;margin:0;border:0;background:transparent}.range::-moz-range-track{height:100%;background:transparent}.range::-moz-range-thumb{width:28px;height:100%;border:0;background:transparent}
 .range-wrap::marker{display:none}
 .reps-picker .range-wrap{margin-top:2px}
@@ -177,7 +177,7 @@ html.tutorial-open,body.tutorial-open{overflow:hidden!important}
 
 
 html.rank-list-open,body.rank-list-open{overflow:hidden!important}
-body.rank-list-open{touch-action:none!important}
+body.rank-list-open{touch-action:pan-y!important}
 .rank-list-modal{
  position:fixed!important;inset:0!important;z-index:100000!important;
  width:100vw!important;height:100dvh!important;min-height:100vh!important;
@@ -399,7 +399,7 @@ body.rank-list-open{touch-action:none!important}
 }
 
 /* Slider: compact vertical gesture region, slower value change, same smooth pointer capture. */
-#v .range-wrap{height:54px!important;margin:5px 0 0!important;border-radius:13px!important;touch-action:none!important}
+#v .range-wrap{height:54px!important;margin:5px 0 0!important;border-radius:13px!important;touch-action:pan-y!important}
 #v .range-window{border-radius:13px!important}
 #v .range-window:before{left:9%!important;right:9%!important;bottom:12px!important}
 #v .ruler-track{bottom:9px!important;height:42px!important;transition:transform .06s linear!important}
@@ -628,14 +628,14 @@ html,body{overflow-x:clip!important}
 #v .picker .phead b{font-size:56px;line-height:.9;letter-spacing:-2px;font-weight:900}
 #v .picker .phead small{font-size:13px;color:var(--mu)}
 #v .value-slider-wrap{width:100%;margin:8px 0 4px}
-#v .value-slider{position:relative;width:100%;height:76px;overflow:hidden;border-radius:18px;background:linear-gradient(180deg,color-mix(in srgb,var(--cd) 92%,transparent),color-mix(in srgb,var(--cd) 70%,transparent));touch-action:none;-webkit-user-select:none;user-select:none;cursor:grab}
+#v .value-slider{position:relative;width:100%;height:76px;overflow:hidden;border-radius:18px;background:linear-gradient(180deg,color-mix(in srgb,var(--cd) 92%,transparent),color-mix(in srgb,var(--cd) 70%,transparent));touch-action:pan-y;-webkit-user-select:none;user-select:none;cursor:grab}
 #v .value-slider:before{content:'';position:absolute;left:8%;right:8%;bottom:16px;height:2px;border-radius:99px;background:color-mix(in srgb,var(--fg) 16%,transparent);pointer-events:none}
 #v .value-picker-window{position:absolute;inset:0;overflow:hidden;pointer-events:none}
 #v .value-picker-ticks{position:absolute;left:0;right:0;bottom:17px;height:38px;pointer-events:none}
 #v .value-picker-tick{position:absolute;left:50%;bottom:0;width:2px;height:11px;border-radius:99px;background:color-mix(in srgb,var(--mu) 72%,transparent);transform:translateX(calc(-50% + var(--tick-x)));opacity:.72}
 #v .value-picker-tick.major{height:20px;width:2px;background:color-mix(in srgb,var(--fg) 58%,transparent);opacity:.9}
 #v .value-picker-center{position:absolute;left:50%;top:7px;bottom:12px;width:3px;transform:translateX(-50%);border-radius:99px;background:var(--ac2);box-shadow:0 0 0 2px color-mix(in srgb,var(--ac2) 18%,transparent),0 0 16px color-mix(in srgb,var(--ac2) 48%,transparent);z-index:3}
-#v .value-slider .range{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;opacity:0!important;appearance:none!important;-webkit-appearance:none!important;background:transparent!important;pointer-events:none!important;z-index:5!important;cursor:grab!important;touch-action:none!important}
+#v .value-slider .range{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;opacity:0!important;appearance:none!important;-webkit-appearance:none!important;background:transparent!important;pointer-events:none!important;z-index:5!important;cursor:grab!important;touch-action:pan-y!important}
 #v .value-slider.dragging{cursor:grabbing}
 #v .value-slider.dragging .value-picker-center{box-shadow:0 0 0 3px color-mix(in srgb,var(--ac2) 22%,transparent),0 0 22px color-mix(in srgb,var(--ac2) 62%,transparent)}
 #v .value-slider .range:focus-visible{outline:2px solid var(--ac2);outline-offset:4px}
@@ -673,3 +673,29 @@ html,body{overflow-x:clip!important}
 .rank-list-item{border-color:color-mix(in srgb,var(--c) 45%,var(--ln))!important;background:color-mix(in srgb,var(--c) 13%,var(--cd))!important}
 .rank-list-item .rank-list-copy b{color:var(--c)!important}
 .rank-guide-row{border-color:color-mix(in srgb,var(--c) 36%,var(--ln))!important}
+/* Shared interaction tokens and audit fixes (5.6). */
+:root{--control-height:48px;--panel-radius:20px;--space-unit:8px}
+#v .logging-card{background:var(--cd);border:1px solid var(--ln);border-radius:var(--panel-radius);padding:20px;margin:18px 0}
+#v .exercise-title h2{font-size:24px;line-height:1.2;margin:8px 0;letter-spacing:-.5px}
+#v .exercise-title p,.support-copy{color:var(--mu);font-size:13px;line-height:1.6}
+#v .log-fields,.exercise-facets{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+#v .log-fields label,.exercise-facets label{display:grid;gap:7px;font-size:12px;color:var(--mu)}
+#v .log-fields input,.exercise-facets select,#v .qol-notes input,#v .qol-notes select{width:100%;min-width:0;min-height:var(--control-height);border:1px solid var(--ln);border-radius:12px;background:var(--bg);color:var(--fg);padding:12px;font:inherit;font-size:16px}
+#v .log-fields input{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+#v .workout-exercise-tabs{display:flex;gap:8px;overflow-x:auto;padding:6px 0 12px;scrollbar-width:thin}
+#v .workout-exercise-tabs .pill{flex-shrink:0;gap:10px;max-width:280px}
+#v .set-value{background:transparent;border:0;text-align:left;min-height:44px;color:var(--fg);padding:4px 0;cursor:pointer}
+#v .srow{grid-template-columns:42px minmax(90px,1fr) auto auto auto;gap:6px}
+#v .srow .qol-meta{grid-column:2/-1;white-space:normal;overflow-wrap:anywhere}
+#v .workout-actions{display:flex;align-items:center;gap:10px;margin:20px 0}
+#v .workout-actions .cta{flex:1}
+#v .logging-policy{display:block;line-height:1.5;margin:12px 0 0}
+#v .logging-card .picker{box-shadow:none;border:0;padding:8px 0;background:transparent}
+#v .logging-card .qol-last{padding:12px 0;border-bottom:1px solid var(--ln)}
+.exercise-facets{padding:0 20px}
+.dialog-open #v,.dialog-open #n{pointer-events:none}
+.storage-conflict{position:fixed;inset:auto 12px calc(env(safe-area-inset-bottom) + 12px);padding:20px;z-index:3000;background:var(--cd);color:var(--fg);border:2px solid var(--ac);border-radius:16px;box-shadow:0 12px 40px #0005;max-width:600px;margin:auto}
+#v .value-slider,#v .value-slider .range{touch-action:pan-y!important}
+button,input,select{scroll-margin:20px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media(max-width:380px){#v .logging-card{padding:14px}#v .log-fields{gap:8px}#v .exercise-title h2{font-size:21px}}

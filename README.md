@@ -4,12 +4,12 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.5.105**
+**Build: 5.6.0**
 
-- 468 catalogue exercises
-- 468 active ranking standards
+- 472 compatible names, grouped into 447 distinct browse identities
+- 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
-- Ranking standards v9: Slat-owned exercise-specific heuristics
+- Ranking standards v10: Slat-owned exercise-specific heuristics
 
 The shipped app is a self-contained HTML build for GitHub Pages and a local `lift-local.html` file.
 
@@ -20,6 +20,8 @@ The shipped app is a self-contained HTML build for GitHub Pages and a local `lif
 - Anatomy is rendered as 2D SVG with front/anterior and back/posterior views. See `THIRD_PARTY_NOTICES.md` for current asset provenance.
 - The workout catalogue is sourced from `exercises.json`.
 - Ranking standards and tier names are sourced from `ranks-config.json`.
+- `data-integrity.js` validates backup candidates before replacement. A previous-state recovery copy is retained; imports never clear the current state first.
+- Saves are serialized. A newer saved revision in another tab pauses stale writes and offers draft export.
 - `app.js` contains `BEGIN:EXERCISES` and `BEGIN:RANKS` markers; `build.mjs` injects the current JSON between those markers.
 - `index.html` and `lift-local.html` are generated self-contained builds and are kept byte-identical.
 - `localStorage` is written first and IndexedDB is used on supported hosted origins; saved timestamps prevent an older IndexedDB copy from rolling back newer local data.
@@ -27,13 +29,13 @@ The shipped app is a self-contained HTML build for GitHub Pages and a local `lif
 
 ## Exercise catalogue
 
-`exercises.json` contains **468 unique exercise names**. Equipment labels are derived from exercise names and load metadata. Dumbbells, cable/rope, machines, Smith machines, plate-loaded machines, bands, kettlebells, sleds, bodyweight and assisted movements are kept distinct.
+`exercises.json` contains 472 compatible names and an explicit catalogue with stable IDs, synonyms, equipment, muscles, tracking modes and input instructions. Browse shows 447 distinct movements. Search, split, muscle and equipment filters use the same records. Legacy names remain importable without discarding sets.
 
 ## Ranking system
 
-Slat uses 46 tiers from Wood I through Blue Gem. Each supported exercise has its own male/female threshold ladder. Ranking uses logged exercise performance relative to stored bodyweight, with optional age and height/ROM adjustments.
+Slat uses 46 tiers from Wood I through Blue Gem. Each supported exercise has its own male/female threshold ladder. Completed workouts earn ranks using recorded bodyweight and height, with optional age and height adjustments. Rank previews and explicitly saved checks remain separate from earned exercise and muscle ranks.
 
-**Ranking standards v9 are Slat-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Slat progression. No Strength Level or ExRx threshold table is embedded in the v9 dataset. See `docs/rank-methodology-v9.md`.
+**Ranking standards v10 are Slat-owned heuristics, not population percentiles.** The thresholds are generated from exercise metadata, movement-family anchor values, reference bodyweights, ROM class, unilateral handling and a fixed 46-step Slat progression. No Strength Level or ExRx threshold table is embedded in the v10 dataset. See `docs/rank-methodology-v10.md`.
 
 Ranks are estimates for training context, not medical advice, diagnosis, a biomechanical law, an official federation classification or a guarantee of performance.
 
@@ -60,3 +62,7 @@ The release suite covers catalogue integrity, equipment classification, ranking 
 ## Third-party notices
 
 See `THIRD_PARTY_NOTICES.md`, `ANATOMY_CREDITS.md`, and `LICENSE-MUSCLE-MAPPER.txt`. The repository currently retains attribution for the bundled advanced anatomy SVG material attributed to Ryan Graves; that attribution must remain until those assets are actually replaced with independently authored anatomy artwork.
+
+## Validation and audit traceability
+
+Run `node tools/test-release.mjs` to run every regression script in an independent copy. Run `node tools/generate-rank-standards-v9.mjs --check` for reproducible standards. See [the implementation register](docs/audit-implementation-5.6.md) for audit IDs, changes and remaining device verification.

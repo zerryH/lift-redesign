@@ -13,4 +13,4 @@ The attributed material is licensed as described by those notices. In particular
 
 ## Slat-owned material
 
-Original Slat code, UI, ranking configuration v9, documentation and original assets are copyright © 2026 @o.r146 / Slat and all rights reserved unless another notice says otherwise.
+Original Slat code, UI, ranking configuration v10, documentation and original assets are copyright © 2026 @o.r146 / Slat and all rights reserved unless another notice says otherwise.
