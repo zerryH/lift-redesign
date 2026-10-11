@@ -17,5 +17,5 @@ canvas.getContext=()=>({clearRect(){},setTransform(){},fillText(t,x,y){draws.pus
 z.get('#qol-progress-lift').value='Bench Press';z.get('#qol-progress-window').value='all';
 vm.runInContext('qolDrawProgress()',z.ctx);assert.equal(canvas.width,640);assert.equal(canvas.height,440);assert(draws.every(p=>p.x>=0&&p.x<=320));
 assert(z.get('#qol-progress-data').innerHTML.includes('Estimated 1RM'));
-z.h.S.workouts=[];z.h.S.bw=[];vm.runInContext('qolDrawProgress()',z.ctx);assert.equal(z.get('#qol-progress-data').innerHTML,'','empty window removes stale chart rows');
+z.h.S.workouts=[];z.h.S.bw=[];vm.runInContext('qolDrawProgress()',z.ctx);assert.match(z.get('#qol-progress-data').innerHTML,/No matching recorded sets/,'empty window replaces stale chart rows with its empty state');
 assert.deepEqual(z.errors,[]);console.log('interactive complete anatomy, namespaced surfaces and responsive chart passed');

@@ -25,7 +25,7 @@ for(const [i,c] of entries.entries()){
  }
 }
 h.S.workouts=sessions;await h.save();const raw=JSON.parse(z.store.get('liftlog-state')),next=await boot(raw);
-assert.equal(next.h.S.workouts.length,447);assert.equal(new Set(next.h.S.workouts.flatMap(w=>w.ex.flatMap(x=>x.sets.map(s=>s.id)))).size,447);
+assert.equal(next.h.S.workouts.length,450);assert.equal(new Set(next.h.S.workouts.flatMap(w=>w.ex.flatMap(x=>x.sets.map(s=>s.id)))).size,450);
 for(const [i,w] of next.h.S.workouts.entries()){const c=entries[i],set=w.ex[0].sets[0];assert.equal(w.ex[0].exerciseId,c.id);assert.equal(set.id,sessions[i].ex[0].sets[0].id);assert.equal(set.note,'Protocol check');assert.equal(set.rpe,8);}
 assert.deepEqual(next.errors,[]);
-console.log('447 canonical logging protocols round-trip; 400 ranked movements × 2 references × 46 progress boundaries; all 16 map zones covered');
+console.log('450 canonical logging protocols round-trip; 400 ranked movements × 2 references × 46 progress boundaries; all 16 map zones covered');
