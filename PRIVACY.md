@@ -4,7 +4,7 @@
 
 ## Controller and contact
 
-Slat is created by **@o.r146**. Privacy questions or requests concerning Slat's own processing can be sent through Discord: `ejaculator2000`. This notice describes the product's current data flows in plain language and is not legal advice.
+Slat is created by **@o.r146**. Privacy questions or requests concerning Slat's own processing can be sent through the [Slat support tracker](https://github.com/zerryH/lift-redesign/issues). Do not include workout backups or sensitive personal data in public reports. This notice describes the product's current data flows in plain language and is not legal advice.
 
 ## What Slat stores locally
 

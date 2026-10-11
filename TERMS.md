@@ -30,4 +30,4 @@ See `THIRD_PARTY_NOTICES.md` for assets and licenses that are not owned by Slat.
 
 ## Contact
 
-Creator: @o.r146 · Discord `ejaculator2000`
+Creator: @o.r146 · [Slat support and feedback](https://github.com/zerryH/lift-redesign/issues)

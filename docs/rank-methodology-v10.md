@@ -16,7 +16,7 @@ Estimated strength is normalized to reference bodyweight with exponent 0.67. Opt
 
 - The calculator always previews the submitted inputs. It does not mutate profile settings or workout ranks.
 - Save check explicitly keeps raw inputs, reference, bodyweight, height and date in `checks`. Checks recalculate under current age/adjustment settings, retaining their saved sex reference, bodyweight and height. They do not contribute to earned overall or muscle ranks.
-- Only completed workouts contribute to earned ranks. A draft or in-progress edit has no effect until Finish saves it. Each set keeps its recorded bodyweight and height.
+- Only completed workouts contribute to earned ranks. A draft or in-progress edit has no effect until Finish saves it. Each new set keeps recorded bodyweight and height, immutable exercise and benchmark IDs, catalogue/standards versions, source unit, canonical measurement units, load convention and reference/age/adjustment/date/timezone context. Historical comparison caches still rebuild with the current disclosed methodology.
 - Earned ranks are derived caches. They rebuild from completed sets; only raw records and saved checks are persisted.
 - Synonyms resolve exercise identity. Benchmark inheritance is independent and never creates an achievement on a different exercise. Custom mappings require compatible equipment type and load conventions. Incompatible legacy mappings keep their sets but cannot earn a mismatched rank.
 - Custom names may be changed and movements retired without changing identity or deleting history. Sets and workout entries carry stable IDs; recoverable removals survive reload until another removal replaces the undo record.
@@ -29,6 +29,8 @@ Overall rank is the mean earned exercise tier, rounded for its label. Muscle ran
 
 ## Reproducibility and limitations
 
-`node tools/generate-rank-standards-v9.mjs --check` verifies all retained ladders. The filename is retained for existing automation; the generator writes ranking version 10. Anchors are Slat-owned estimates. New hip-isolation, shrug and wrist families replace unrelated fallback families. Catalogue and protocol changes can change displayed ranks while preserving original recorded loads.
+`node tools/generate-rank-standards-v9.mjs --check` verifies all retained ladders. The filename is retained for existing automation; the generator writes ranking version 10. Catalogue version 3 records explicit anchors and a provisional evidence note for every record. Anchors are Slat-owned estimates, not independently measured population percentiles. This follow-up preserves all current numerical ladders. New hip-isolation, shrug and wrist families replace unrelated fallback families. Catalogue and protocol changes can change displayed ranks while preserving original recorded loads.
 
 Automated tests check identity, routing, shape, conversions, boundaries, preview isolation, imports and persistence. They cannot validate the empirical fairness of these standards. Device gesture, screen-reader and service-worker lifecycle checks remain separate release gates.
+
+Legacy timed, distance and band entries without typed measurements remain labelled as legacy repetition entries. Their raw values and migration provenance are retained; no duration or distance is fabricated. Custom creation lets users specify equipment, tracking and total/per-implement entry before logging. Renaming preserves identity and does not silently alter a recorded load convention.

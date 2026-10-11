@@ -24,7 +24,7 @@ The shipped app is a self-contained HTML build for GitHub Pages and a local `lif
 - Saves are serialized. A newer saved revision in another tab pauses stale writes and offers draft export.
 - `app.js` contains data and anatomy source markers; `build.mjs` injects JSON and `anatomy-front.svg` / `anatomy-back.svg` into the self-contained build.
 - `index.html` and `lift-local.html` are generated self-contained builds and are kept byte-identical.
-- `localStorage` is written first and IndexedDB is used on supported hosted origins; saved timestamps prevent an older IndexedDB copy from rolling back newer local data.
+- Hosted writes use an IndexedDB transaction with revision checks, followed by the localStorage recovery copy. Either acknowledged store can preserve a save; conflicting tabs pause, and failed saves offer retry. Local-file mode uses localStorage.
 - The local `file://` build intentionally uses localStorage because service workers and other secure-context APIs are unavailable there.
 
 ## Exercise catalogue
@@ -51,7 +51,7 @@ Because the repository is public, GitHub's platform terms permit certain viewing
 
 - Made by **@o.r146**
 - TikTok: **@o.r146**
-- Discord: **ejaculator2000**
+- Support: [Slat support and feedback](https://github.com/zerryH/lift-redesign/issues)
 
 ## Build and tests
 

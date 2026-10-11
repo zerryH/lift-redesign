@@ -36,16 +36,16 @@ This change implements the behavior fixes from the 10 October 2026 audit against
 | F28 | Blank birth year correctly migrates legacy age; profile typing remains a draft until Save | Migration and import/restart fixtures |
 | F29 | Workout date uses local calendar; earned result date comes from the winning set's workout | Device-calendar fixture |
 | F30 | Shared time axis, independent recorded bodyweight series, padded value scale, point markers, unit labels and accessible data table | Chart scale/data-table logic and real view rendering checked; screen-reader interpretation remains a device gate |
-| F31 | Empty imperial bar input resolves to 20 kg, avoiding double conversion | Shared unit helpers and plate decomposition retained |
+| F31 | Empty imperial bar input resolves to 20 kg; common bar presets, finite plate-pair counts and explicit below-bar warnings | Shared unit helpers, finite inventory decomposition and real browser calculator/chart/export journey |
 | F32 | Version 5.6.0 comes from build source; generated outputs identical; cache includes integrity module | Exact cache hash, parity and release-version tests |
 | F33 | Update handler receives the actual button; local-file Reload reloads after pending saves | Real offline reopening and synthetic waiting-worker activation preserve draft/rest; upgrade from the actual public 5.5.106 installation remains a release gate |
 | F34 | Shared dialog roles, focus return, Tab containment, Escape and background inertness | Real keyboard containment, closed-details exclusion, Escape/inert restoration and native timer focus retention pass; VoiceOver/TalkBack pending |
 | F35 | Slider permits native vertical panning while horizontal adjustments remain explicit | Gesture-source checks; real touch arbitration pending |
 | F36 | Shared interaction tokens and new logging layout; duplicate profile adjustment switches removed | Foundation cascade layer and authoritative component rules replace legacy importance pileup; only five reduced-motion declarations remain important; 27 computed-style comparisons showed no migration differences |
-| F37 | 41 isolated regression scripts, 25 audit scenarios, catalogue-wide protocols/boundaries and real-browser journeys; Chromium/WebKit CI configured | Full suite documented below; no false claim that mocked DOM tests are browser tests |
+| F37 | 43 isolated regression scripts, 25 audit scenarios, catalogue-wide protocols/boundaries and real-browser journeys; Chromium/WebKit CI configured | Full suite documented below; no false claim that mocked DOM tests are browser tests |
 | F38 | Rest deadline, note, RPE, band and numeric draft persist per active exercise | Restart fixture and real offline/reload journey; timer controls retain keyboard focus |
 | F40 | Empty/repeated finish guarded; edit replaces by ID; failed save restores draft | Empty, concurrent duplicate, edit and quota fixtures |
-| F39 | Versioned methodology now matches tier averaging, contribution weights, factors and data-source policy | README, notices and methodology consistency checks |
+| F39 | Versioned methodology matches tier averaging, contribution weights, factors and data-source policy; Profile and notices link the existing repository support tracker | README, notices and methodology consistency checks |
 
 ## Exercise data review
 
@@ -55,11 +55,11 @@ Protocols describe the implementation convention rather than asserting scientifi
 
 ## Test evidence and release gate
 
-Verification on 11 October 2026: **40 of 41 regression scripts passed**, including 25 audit behavior scenarios. All 447 canonical protocols log and round-trip through the actual application handlers; all 400 ranked movements are checked against both references and 46 tier boundaries. The generator check passes for all 472 retained ladders. Generated HTML parity, exact service-worker cache hashing and release-version checks pass.
+Verification on 11 October 2026: **43/43 local regression scripts passed**. All 447 canonical protocols log and round-trip through actual application handlers; all 400 ranked movements are checked against both references and 46 tier boundaries. The generator checks all 472 retained ladders. The release workflow runs the final pushed source, deterministic build and all 35 configured Chromium/WebKit journeys before merge.
 
-**12 real-browser journeys passed in Chromium 131.0.6778.0** on this host. They include all 447 rendered exercise forms, editing/reload, rank isolation, import preview/cancel/replace, recovery download, two tabs, offline/update activation, durable undo/custom identity, muscle contributors, responsive layouts and 100/1,000/10,000 retained sessions. History renders batches of 50. The 10,000-session startup plus History navigation took about 3.0 seconds on this host; this is not a phone performance claim. The service-worker update journey uses a synthetic old/waiting worker, not a previously installed public build.
+New browser acceptance covers custom duration and per-implement settings, plate calculations and below-bar messaging, accessible chart rows, complete export/import round-trips, IndexedDB-only writes and real two-tab conflict detection, enlarged root font with keyboard logging, exact 5.5.106 source/data migration and local-file reload/logging. Old-source migration blocks service workers to isolate data compatibility; installed-phone upgrade validation remains separate. Existing catalogue-wide forms, offline/waiting-worker activation and 100/1,000/10,000 retained sessions remain covered. Browser screenshots and reports are CI artifacts, not physical-device certification.
 
-`node tools/check-release.mjs` runs the complete local release gate after Playwright and browser binaries are installed. It fails if generated outputs are stale or a browser is unavailable. `tools/test-release.mjs` provides the isolated source/runtime suite; its DOM stubs are not browser evidence. `tools/test-browser.mjs` writes versioned browser evidence, screenshots and timings to `test-results/browser/`. GitHub Actions is configured to run regression/build checks plus Chromium and WebKit journeys and retain the report. A configured workflow is not a completed CI run.
+`node tools/check-release.mjs` runs the complete local release gate after Playwright and browser binaries are installed. It fails if generated outputs are stale or a browser is unavailable. `tools/test-release.mjs` provides the isolated source/runtime suite; its DOM stubs are not browser evidence. `tools/test-browser.mjs` writes versioned browser evidence, screenshots and timings to `test-results/browser/`. GitHub Actions is configured to run regression/build checks plus Chromium and WebKit journeys and retain the report. The successful final-head workflow is the release evidence; an earlier run does not approve a later source revision.
 
 See [the 21-section completion record](plan-completion.md) for feature acceptance and the remaining public-release gates. These remain open:
 
@@ -67,7 +67,7 @@ See [the 21-section completion record](plan-completion.md) for feature acceptanc
 2. Large text/text zoom, VoiceOver and TalkBack; keyboard checks on desktop do not certify screen-reader usability.
 3. Representative copies of real 5.5.106 user data and a real installed upgrade; fixtures and synthetic service workers cannot replace a migration cohort.
 4. Midrange-phone performance, storage quota/interruption and browser-specific persistence behavior.
-5. Owner/content review of exercise instructions, empirical ranking standards, branded support contact and anatomy legibility. The added anatomy regions are schematic.
+5. Owner/content review of exercise instructions, empirical ranking standards, support triage and anatomy legibility. The added anatomy regions are schematic.
 
 ## Product inspiration
 
@@ -88,3 +88,11 @@ Real WebKit evidence exposed an update action banner covering the last history c
 ### Import contract validation
 
 Measurements must be numeric scalars; booleans, arrays, objects and whitespace-only values no longer coerce into valid loads/repetitions. Known unit/reference enums, backup version bounds, protocol version integers and the RPE ceiling are validated. Cycles, non-JSON values and excessive nesting fail before replacement. Legacy numeric strings, zero/unknown legacy RPE and signed assistance values remain unchanged. `tests/backup-contract.mjs` records these acceptance cases.
+
+### Data contracts and durability completion
+
+Catalogue v3 adds per-row evidence notes and explicit benchmark, split and muscle IDs. All standard anchors are stored on their records; generator parity confirms no numerical change in this follow-up. New sets retain exercise/benchmark/catalogue/standard IDs, units, load convention and performance context. Legacy measurements keep a raw migration snapshot and are never silently reinterpreted as duration or distance.
+
+Persistence now compares and writes in one IndexedDB transaction before the localStorage copy, increments revisions and broadcasts saved/reset events. New fixtures prove quota-only fallback and rejection of a newer database revision. Save status and retry are visible. Pure catalogue, performance and workout modules plus persistence/dialog source modules are embedded into the self-contained distributions and included in cache hashing.
+
+The owner requested publishing on 11 October 2026. External acceptance tasks remain recorded in the completion document; they are not represented as automated passes.

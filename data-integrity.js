@@ -31,6 +31,12 @@ globalThis.SlatData = (() => {
           for (const field of ['seconds','meters','bw','height','rpe']) if (s[field]!=null && (!finite(s[field]) || Number(s[field])<0)) fail(p+'.'+field);
           if(s.rpe!=null&&Number(s.rpe)>10)fail(p+'.rpe');
           if(s.protocolVersion!=null&&(!finite(s.protocolVersion)||!Number.isInteger(Number(s.protocolVersion))||Number(s.protocolVersion)<1))fail(p+'.protocolVersion');
+          if(s.exerciseId!=null&&(typeof s.exerciseId!=='string'||!s.exerciseId||s.exerciseId.length>160))fail(p+'.exerciseId');
+          if(s.trackingMode!=null&&!['load_reps','reps','duration','load_distance','band_reps','legacy_reps'].includes(s.trackingMode))fail(p+'.trackingMode');
+          if(s.sourceUnit!=null&&!['kg','lb'].includes(s.sourceUnit))fail(p+'.sourceUnit');
+          if(s.measurementUnits!=null&&(!object(s.measurementUnits)||Object.entries(s.measurementUnits).some(([k,v])=>({load:'kg',repetitions:'reps',duration:'s',distance:'m'})[k]!==v)))fail(p+'.measurementUnits');
+          if(s.loadProtocol!=null&&(!object(s.loadProtocol)||!['normal','bodyweight','assisted'].includes(s.loadProtocol.mode)||!finite(s.loadProtocol.multiplier)||Number(s.loadProtocol.multiplier)<=0))fail(p+'.loadProtocol');
+          if(s.performanceContext!=null&&(!object(s.performanceContext)||!['M','F'].includes(s.performanceContext.reference)||!date(s.performanceContext.workoutDate)))fail(p+'.performanceContext');
         }
       }
     };
@@ -48,7 +54,7 @@ globalThis.SlatData = (() => {
     }
     data.bw.forEach((b,i)=>{if(!object(b)||!date(b.d)||!finite(b.kg)||Number(b.kg)<=0||Number(b.kg)>500)fail('bw['+i+']');});
     const customIds=new Set();
-    (data.custom||[]).forEach((c,i)=>{if(!object(c)||!name(c.n)||(c.t!=null&&!['B','D','M','W','U'].includes(c.t)))fail('custom['+i+']');if(c.id!=null){if(typeof c.id!=='string'||!c.id.startsWith('custom:')||customIds.has(c.id))fail('custom identity');customIds.add(c.id);}});
+    (data.custom||[]).forEach((c,i)=>{if(!object(c)||!name(c.n)||(c.t!=null&&!['B','D','M','W','U'].includes(c.t)))fail('custom['+i+']');if(c.protocol!=null&&(!object(c.protocol)||!['load_reps','reps','duration','load_distance','band_reps'].includes(c.protocol.tracking)||![1,2].includes(c.protocol.implementCount)||!['normal','bodyweight','assisted'].includes(c.protocol.loadMode)||typeof c.protocol.hasLoad!=='boolean'||!finite(c.protocol.bodyweightFactor)||Number(c.protocol.bodyweightFactor)<0||Number(c.protocol.bodyweightFactor)>1))fail('custom protocol');if(c.id!=null){if(typeof c.id!=='string'||!c.id.startsWith('custom:')||customIds.has(c.id))fail('custom identity');customIds.add(c.id);}});
     return JSON.parse(JSON.stringify(data));
   }
   const canonicalName = (name,catalogue) => catalogue?.[name]?.canonicalName || name;
