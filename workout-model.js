@@ -23,7 +23,7 @@ globalThis.SlatWorkout=(()=>{
  }
  function correct(current,date,name,now=Date.now()){
   if(!validDate(date)||date>new Date(now).toLocaleDateString('en-CA'))throw new Error('Choose a real date that is not in the future');
-  if(typeof name!=='string'||name.length>80||/[\u0000-\u001f]/.test(name))throw new Error('Use a name of up to 80 characters');
+  if(typeof name!=='string'||name.length>80||/[\u0000-\u001f]/.test(name)||['__proto__','constructor','prototype'].includes(name.trim()))throw new Error('Use a name of up to 80 characters');
   const next=JSON.parse(JSON.stringify(current));
   if(next.d!==date||String(next.name||'')!==name)next.corrections=[...(next.corrections||[]),{date:next.d,name:next.name||'',correctedAt:now}];
   next.d=date;next.name=name;
@@ -32,7 +32,7 @@ globalThis.SlatWorkout=(()=>{
  }
  function summary(workouts,start,end,catalogue){
   const selected=(workouts||[]).filter(w=>w.d>=start&&w.d<=end&&w.ex?.some(x=>x.sets?.length)),muscles={};let sets=0;
-  for(const w of selected)for(const x of w.ex)for(const set of x.sets||[])if(set.t!=='w'){sets++;const c=catalogue?.[x.n],zone=c?.primaryMuscleId;if(zone)muscles[zone]=(muscles[zone]||0)+1;}
+  for(const w of selected)for(const x of w.ex)for(const set of x.sets||[])if(set.t!=='w'){sets++;const c=typeof catalogue==='function'?catalogue(x.n):catalogue?.[x.n],zone=c?.primaryMuscleId;if(zone)muscles[zone]=(muscles[zone]||0)+1;}
   return {sessions:selected.length,activeDays:new Set(selected.map(w=>w.d)).size,sets,muscles};
  }
  return {phase,complete,replace,activity,correct,summary};

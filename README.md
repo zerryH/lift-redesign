@@ -4,7 +4,7 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.0**
+**Build: 5.7.1**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
