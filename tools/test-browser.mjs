@@ -38,8 +38,9 @@ async function clickControl(locator){
 }
 async function stableScreenshot(filename){
  for(const b of await page.locator('.toast-action [aria-label="Dismiss notification"]').all())await clickControl(b);
- await page.waitForFunction(()=>!document.querySelector('.toast:not(.toast-action):not(#qol-rest)'));
- await page.screenshot({path:path.join(out,filename)});
+ // Let the app's 2.7s transient notifications fade before visual capture.
+ await page.waitForTimeout(3000);
+ if(filename.includes('-history-summary'))await page.locator('.training-summary').screenshot({path:path.join(out,filename)});else await page.screenshot({path:path.join(out,filename)});
 }
 const clickTab=name=>clickControl(page.locator('[data-a=tab][data-v="'+name+'"]'));
 const saved=()=>page.evaluate(async()=>{await saveTail;return JSON.parse(localStorage.getItem('liftlog-state'));});
