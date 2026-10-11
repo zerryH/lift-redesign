@@ -15,3 +15,7 @@ assert.equal(h.X.catalogue['Goblet Squat'].equipment,'Dumbbell');assert.equal(h.
 assert.deepEqual(z.errors,[]);console.log('Strict measurements, import bounds, corrected-date provenance, routine copying, equipment-filtered trends and exact summaries passed');
 
 const timer=await boot();await timer.h.importBackup({version:4,workouts:[],bw:[],cur:{...workout(),restEndAt:Date.now()+90000},settings:{restEnabled:false},routines:[],exercisePreferences:{}});assert.equal(timer.h.qolState.endAt,0);assert.equal(timer.h.S.cur.restEndAt,undefined);assert.equal(JSON.parse(timer.store.get('liftlog-state')).cur.restEndAt,undefined);
+
+const assisted=await boot({...base(),workouts:[{...workout('Assisted Dip',-20,8),ex:[{n:'Assisted Dip',sets:[{kg:-20,reps:8,t:'',trackingMode:'load_reps'},{kg:0,reps:8,t:'',trackingMode:'load_reps'}]}]}]});assert.equal(assisted.h.progressSeries('Assisted Dip','load','__all','')[0].v,0);assert(assisted.h.progressMetrics('Assisted Dip').some(m=>m[1]==='Lowest assistance'));
+
+const anomaly=await boot({...base(),workouts:[{...workout('Bench Press',60,8),ex:[{n:'Bench Press',sets:[{kg:60,reps:999999,t:'',protocolVersion:2,trackingMode:'load_reps'},{kg:60,reps:8.5,t:'',protocolVersion:2,trackingMode:'load_reps'}]}]}]});assert.equal(anomaly.h.S.workouts[0].ex[0].sets[0].reps,999999);assert.equal(anomaly.h.S.workouts[0].ex[0].sets[1].reps,8.5);assert.equal(anomaly.h.rankSetEst('Bench Press',anomaly.h.S.workouts[0].ex[0].sets[1],80),0);assert(anomaly.store.has('liftlog-startup-recovery'));
