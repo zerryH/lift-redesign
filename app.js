@@ -790,7 +790,7 @@ const qolToggleRestNotifications=async()=>{
   if(S.set.restNotifications){S.set.restNotifications=false;await qolClearRestNotification();await save();render();return;}
   if(!qolNotificationAvailable()){toast(qolNotificationStatus());return;}
   // Ask only from this explicit button gesture; never from logging, reload or import.
-  const permission=await Notification.requestPermission();
+  const permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();
   if(permission!=='granted'){toast(permission==='denied'?'Notifications blocked — allow Slat in your browser settings.':'Notifications left off.');render();return;}
   S.set.restNotifications=true;qolState.notificationError=false;await save();
   if(qolState.endAt>Date.now())await qolNotifyRest(qolState.endAt);render();
@@ -802,7 +802,7 @@ const qolRestoreRest=()=>{if(qolState.timer){clearInterval(qolState.timer);qolSt
 const qolRestStart=(seconds=S.set.rest||90)=>{qolState.startedAt=Date.now();qolState.endAt=qolState.startedAt+seconds*1000;if(S.cur){S.cur.restEndAt=qolState.endAt;S.cur.restStartedAt=qolState.startedAt;save();}qolAcquireWake();qolRenderRest();if(qolState.timer)clearInterval(qolState.timer);qolState.timer=setInterval(qolRenderRest,250);qolNotifyRest(qolState.endAt)};
 const qolRenderRest=()=>{
  if(S.set.restEnabled===false){qolStopRest();return;}
- if(!S.cur||qolState.endAt<=Date.now()){const endAt=qolState.endAt,complete=!!(endAt&&S.cur);qolStopRest({keepNotification:complete});if(complete){toast('Rest complete');if(S.set.restFeedback&&document.visibilityState==='visible')navigator.vibrate?.([150,80,150]);qolNotifyRest(endAt,true);}return;}
+ if(!S.cur||qolState.endAt<=Date.now()){const endAt=qolState.endAt,complete=!!(endAt&&S.cur);qolStopRest({keepNotification:complete});if(complete){toast('Rest complete');if(S.set.restFeedback&&document.visibilityState==='visible'&&Date.now()-endAt<=15000)navigator.vibrate?.([150,80,150]);qolNotifyRest(endAt,true);}return;}
  document.body.classList.add('has-rest');let el=$('#qol-rest');if(!el){el=document.createElement('section');el.id='qol-rest';el.className='rest-dock';el.setAttribute('aria-label','Rest timer');el.innerHTML='<div class=rest-dock-inner><div class=rest-readout><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3"/></svg><span>Rest</span><b data-rest-clock role=timer aria-live=off></b></div><div class=rest-actions><button data-qol=restPlus aria-label="Add 30 seconds">+30s</button><button data-qol=restStop aria-label="Stop rest timer">Stop</button></div></div><div class=rest-track aria-hidden="true"><i data-rest-progress></i></div>';document.body.append(el);}
  const sec=Math.max(0,Math.ceil((qolState.endAt-Date.now())/1000)),clock=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'),display=el.querySelector('[data-rest-clock]');if(display&&display.textContent!==clock)display.textContent=clock;
  const progress=el.querySelector('[data-rest-progress]');if(progress)progress.style.setProperty('--rest-left',String(Math.max(0,Math.min(1,(qolState.endAt-Date.now())/Math.max(1,qolState.endAt-qolState.startedAt)))));
