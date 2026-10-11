@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {boot,base,workout} from './support/runtime.mjs';
+const context=vm.createContext({});vm.runInContext(fs.readFileSync('workout-model.js','utf8'),context);
+const activity=context.SlatWorkout.activity;
+const w=(id,date)=>({...workout(),id,d:date});
+const records=[w(1,'2024-07-01'),w(2,'2024-07-01'),w(3,'2024-07-03'),w(4,'2024-02-29'),{id:5,d:'2024-07-04',ex:[]},w(6,'2024-02-30'),w(7,'2023-07-01')];
+const year=activity(records,2024);
+assert.equal(year.days.length,366);assert.equal(year.offset,0);assert.equal(year.total,4);assert.equal(year.activeDays,3);assert.equal(year.cells.length,year.weeks*7);
+const monday=year.days.find(d=>d.date==='2024-07-01');assert.equal(monday.weekday,0);assert.equal(monday.count,2);assert.equal(year.days.find(d=>d.date==='2024-07-02').count,0);
+for(let y=2020;y<=2040;y++){
+ const m=activity([],y);assert.equal(m.days.length,new Date(Date.UTC(y,2,0)).getUTCDate()===29?366:365);
+ for(const [i,d] of m.cells.entries())if(d)assert.equal(i%7,d.weekday,'Monday-first '+d.date);
+ for(let month=0;month<12;month++)assert.equal(m.days.filter(d=>d.month===month).length,new Date(Date.UTC(y,month+1,0)).getUTCDate());
+}
+assert.throws(()=>activity([],NaN));assert.throws(()=>activity([],2024.5));
+const run=await boot({...base(),workouts:records.filter(w=>w.d!=='2024-02-30')});
+run.h.A.activityYear({v:'2024'});let html=run.h.V.history();
+assert.match(html,/data-v="2024-07-01" data-count="2"[^>]*>\s*<span class=activity-count aria-hidden=true>2<\/span>/);
+assert.match(html,/data-v="2024-07-03" data-count="1"[^>]*><\/button>/,'single workout has no count');
+assert.match(html,/data-v="2024-07-02" data-count="0"[^>]*><\/button>/,'rest day has no count');
+run.h.A.activityDay({v:'2024-07-01'});assert.match(run.get('#activity-detail').innerHTML,/2 workouts · 2 logged sets/);
+run.h.A.activityHistory();html=run.h.V.history();assert.match(html,/Showing 2 of 2 workouts/);
+run.h.A.activityClear();assert.match(run.h.V.history(),/Showing 6 of 6 workouts/);
+run.h.S.workouts=run.h.S.workouts.filter(w=>w.id!==2);assert.match(run.h.V.history(),/data-v="2024-07-01" data-count="1"[^>]*><\/button>/);
+run.h.A.activityMode({v:'month'});for(const fn of run.listeners.change)fn({target:{id:'activity-month',value:'6'}});
+html=run.h.V.history();assert.match(html,/Jul 2024 workout activity/);assert.equal((html.match(/class="activity-day /g)||[]).length,31);
+const before=JSON.stringify(run.h.S);run.h.A.activityDay({v:'2024-07-03'});assert.equal(JSON.stringify(run.h.S),before,'calendar browsing does not mutate workouts');
+assert.deepEqual(run.errors,[]);
+console.log('Daily counts, no single-workout badge, 21 years of weekdays/leap days, month view, empty history, filtering and deletion verified');

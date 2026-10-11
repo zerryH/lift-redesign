@@ -855,3 +855,52 @@ button.muscle-pill:hover{border-color:var(--mc)}
 #qol-profile-card .row>div:first-child{flex:1 1 180px;min-width:0;}
 .qol-modal .backup-summary{table-layout:fixed;font-size:12px;}
 }
+
+/* Daily training activity: one neutral grey and one theme accent. */
+.activity-card{--activity-grey:#3c3946;background:var(--cd);border:1px solid var(--ln);border-radius:24px;padding:20px;margin:20px 0 24px;}
+[data-d="0"] .activity-card{--activity-grey:#d8d5df;}
+.activity-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.activity-heading small{font-size:10px;letter-spacing:.12em;font-weight:700;}
+.activity-heading h2{font-size:21px;line-height:1.2;margin:4px 0 0;}
+.activity-year-controls{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+#v .activity-year-controls .pill{min-width:36px;min-height:40px;padding:0 10px;font-size:22px;box-shadow:none;}
+.activity-year-controls b{font-size:14px;font-variant-numeric:tabular-nums;}
+.activity-year-controls button:disabled{opacity:.3;cursor:default;}
+.activity-stats{display:flex;gap:32px;margin:24px 0 20px;}
+.activity-stats>div{display:flex;flex-direction:column;gap:2px;}
+.activity-stats b{font-size:28px;line-height:1;font-variant-numeric:tabular-nums;}
+.activity-stats span{font-size:12px;color:var(--mu);}
+.activity-view-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;}
+.activity-toggle{display:flex;gap:6px;}
+#v .activity-toggle .pill{min-height:36px;padding:0 15px;font-size:12px;box-shadow:none;}
+.activity-view-controls>small{font-size:11px;}
+.activity-calendar.year{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;}
+.activity-weekdays{padding-top:23px;display:grid;grid-template-rows:repeat(7,16px);gap:4px;font-size:9px;line-height:16px;color:var(--mu);}
+.activity-scroll{overflow-x:auto;overflow-y:hidden;padding:2px 3px 7px;overscroll-behavior-x:contain;touch-action:pan-x pan-y;scrollbar-width:thin;scrollbar-color:var(--ln) transparent;}
+.activity-year-grid{width:max-content;}
+.activity-months{height:21px;display:grid;grid-template-columns:repeat(var(--activity-weeks),16px);gap:4px;font-size:10px;color:var(--mu);}
+.activity-cells{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,16px);grid-template-columns:repeat(var(--activity-weeks),16px);gap:4px;}
+#v .activity-day{display:block;position:relative;width:16px;height:16px;min-width:0;min-height:0;padding:0;border:0;border-radius:3px;background:var(--activity-grey);box-shadow:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:9px;line-height:1;color:#fff;overflow:visible;}
+#v .activity-day.trained,.activity-legend i.trained{background:var(--ac);}
+#v .activity-day.today{outline:1px solid var(--mu);outline-offset:1px;}
+#v .activity-day[aria-pressed="true"],#v .activity-day:focus-visible{outline:2px solid var(--fg);outline-offset:2px;z-index:1;}
+.activity-count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-variant-numeric:tabular-nums;pointer-events:none;}
+.activity-legend{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin:16px 0 12px;font-size:11px;color:var(--mu);}
+.activity-legend>span{display:flex;align-items:center;gap:6px;}
+.activity-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--activity-grey);}
+.activity-legend>small{font-size:10px;margin-left:auto;}
+.activity-detail{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid var(--ln);font-size:12px;color:var(--mu);}
+.activity-detail b{font-size:12px;color:var(--fg);display:block;}
+.activity-detail small{display:block;margin-top:3px;font-size:11px;}
+#v .activity-detail .pill{min-height:36px;padding:0 12px;font-size:11px;flex-shrink:0;box-shadow:none;}
+.activity-caption{display:block;font-size:10px;}
+.activity-month-select{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--mu);}
+.activity-month-select select{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1px solid var(--ln);border-radius:10px;min-height:38px;padding:0 8px;}
+.activity-month-weekdays,.activity-month-cells{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;}
+.activity-month-weekdays{text-align:center;font-size:10px;color:var(--mu);margin-bottom:8px;}
+#v .activity-month-cells .activity-day{width:100%;height:auto;aspect-ratio:1;min-height:30px;border-radius:8px;font-size:12px;}
+.activity-date-number{color:var(--fg);position:absolute;top:7px;left:7px;font-size:11px;}
+.trained .activity-date-number{color:#fff;}
+.activity-month-cells .activity-count{inset:auto 6px 5px auto;font-size:10px;}
+.activity-filter{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;margin:12px 0;}
+@media(max-width:380px){.activity-card{padding:16px;}.activity-heading{flex-wrap:wrap;}.activity-view-controls>small{max-width:100px;text-align:right;}.activity-legend>small{margin-left:0;}.activity-month-cells .activity-date-number{top:5px;left:5px;}}
