@@ -14,7 +14,7 @@ const report={browser:[],checks:[],errors:[]},out=path.resolve(process.env.SLAT_
 const options=process.env.SLAT_CHROMIUM_PATH?{executablePath:process.env.SLAT_CHROMIUM_PATH,args:['--disable-gpu']}:{},names=(process.env.SLAT_BROWSERS||'chromium').split(',');
 let browser,context,page,engineName;
 async function open(state=base(),viewport={width:390,height:844},ready='[data-a=start]'){
- if(context)await context.close();context=await browser.newContext({viewport});page=await context.newPage();page.setDefaultTimeout(12000);
+ if(context){if(page)await page.evaluate(async()=>{for(const reg of await navigator.serviceWorker.getRegistrations())await reg.unregister();}).catch(()=>{});await context.close();}context=await browser.newContext({viewport});page=await context.newPage();page.setDefaultTimeout(12000);
  page.on('pageerror',e=>report.errors.push(e.message));
  await page.addInitScript(s=>{if(!sessionStorage.getItem('slat-seeded')){localStorage.setItem('liftlog-state',typeof s==='string'?s:JSON.stringify(s));sessionStorage.setItem('slat-seeded','1');}},state);
  await page.goto(url);await page.bringToFront();await page.locator(ready).first().waitFor();
@@ -25,7 +25,7 @@ async function clickControl(locator){
  // The WebKit runner stalled before pointer dispatch despite visible, enabled, inert-free controls.
  // Native pointer input keeps browser hit testing; it does not dispatch a synthetic DOM click.
  assert(await locator.isVisible());assert(await locator.isEnabled());
- const point=await locator.evaluate(el=>{el.scrollIntoView({block:"center",inline:"nearest",behavior:"instant"});const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {x,y,hit:hit===el||el.contains(hit),inert:!!el.closest('[inert]')};});
+ await locator.evaluate(el=>el.scrollIntoView({block:"center",inline:"nearest",behavior:"instant"}));await page.waitForFunction(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return (hit===el||el.contains(hit))&&!el.closest('[inert]');},await locator.elementHandle(),{polling:100,timeout:5000});const point=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {x,y,hit:hit===el||el.contains(hit),inert:!!el.closest('[inert]')};});
  assert(point.hit&&!point.inert,'control must receive native pointer input');
  await page.mouse.click(point.x,point.y);
 }
@@ -92,7 +92,7 @@ try{
    await open({...base(),cur:draft},undefined,'[data-a=log]');await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
    assert(!(await page.locator('.toast').allTextContents()).some(t=>t.includes('Update available')),'first installation must not offer a spurious update');
    await context.setOffline(true);await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-note').inputValue(),'Unsaved set draft');await context.setOffline(false);
-   await page.evaluate(()=>caches.open('unrelated-cache'));workerTag='upgrade-test';await page.evaluate(async()=>{const reg=await navigator.serviceWorker.getRegistration();await reg.update();});await page.waitForFunction(async()=>!!(await navigator.serviceWorker.getRegistration())?.waiting);
+   await page.evaluate(()=>caches.open('unrelated-cache'));workerTag='upgrade-test';await page.evaluate(async()=>{const reg=await navigator.serviceWorker.getRegistration();await reg.update();});await page.waitForFunction(async()=>!!(await navigator.serviceWorker.getRegistration())?.waiting);await page.waitForFunction(()=>!!document.querySelector('.toast-action'));await clickControl(page.locator('.toast-action').getByRole('button',{name:'Dismiss notification'}));assert.equal(await page.locator('.toast-action').count(),0,'update notification dismisses without activating the worker');assert.equal((await saved()).cur.id,77);
    await clickTab('settings');await clickControl(page.locator('[data-a=update]'));await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-note').inputValue(),'Unsaved set draft');assert.equal((await saved()).cur.id,77);assert((await page.evaluate(()=>caches.keys())).includes('unrelated-cache'));workerTag='';
   });
   if(name==='chromium')await check(name+': every canonical exercise logs through its real rendered form',async()=>{

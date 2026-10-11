@@ -797,3 +797,8 @@ button.muscle-pill:hover{border-color:var(--mc)}
 .action-modal .pill{backdrop-filter:none;-webkit-backdrop-filter:none;}
 .action-modal .modal-close{flex:none;width:44px;min-width:44px;height:44px;padding:0;display:grid;place-items:center;}
 .modal-close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;pointer-events:none;}
+
+/* Notifications leave ordinary content reachable; persistent actions can be dismissed. */
+.toast{pointer-events:none}
+.toast button{pointer-events:auto}
+[data-motion="1"] .toast-action{animation:toastIn .36s cubic-bezier(.2,.9,.2,1)}

@@ -797,6 +797,11 @@ button.muscle-pill:hover{border-color:var(--mc)}
 .action-modal .pill{backdrop-filter:none;-webkit-backdrop-filter:none;}
 .action-modal .modal-close{flex:none;width:44px;min-width:44px;height:44px;padding:0;display:grid;place-items:center;}
 .modal-close svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;pointer-events:none;}
+
+/* Notifications leave ordinary content reachable; persistent actions can be dismissed. */
+.toast{pointer-events:none}
+.toast button{pointer-events:auto}
+[data-motion="1"] .toast-action{animation:toastIn .36s cubic-bezier(.2,.9,.2,1)}
 </style><link rel="icon" type="image/png" sizes="180x180" href="./lift-icon-photo-fit.png"><link rel="apple-touch-icon" sizes="180x180" href="./lift-icon-photo-fit.png"><link rel="manifest" href="./manifest.webmanifest"><style id="lift-anatomy-map-style">/* Slat 5.6 style contract: foundation defaults in one named layer;
    authoritative component rules follow without importance escalation.
    Only reduced-motion overrides use !important to suppress inline animation. */
@@ -975,7 +980,7 @@ const save=()=>{
 };
 const clearStoredState=async()=>{saveEpoch++;await saveTail.catch(()=>false);const localBefore=localStorage.getItem('liftlog-state');if(location.protocol!=='file:'){try{await dbRead()}catch{return false}}try{localStorage.removeItem('liftlog-state');if(localStorage.getItem('liftlog-state')!==null)throw new Error('localStorage reset verification failed')}catch{if(localBefore!==null){try{localStorage.setItem('liftlog-state',localBefore)}catch{}}return false}if(location.protocol==='file:'){try{sessionStorage?.removeItem?.('liftlog-state')}catch{}return true}try{if(!await dbClear())throw new Error('IndexedDB reset verification failed')}catch{if(localBefore!==null){try{localStorage.setItem('liftlog-state',localBefore)}catch{}}return false}try{sessionStorage?.removeItem?.('liftlog-state')}catch{}return true};
 const go=()=>{try{refreshRanks()}catch(e){console.warn('Slat rank refresh skipped',e)}save();render()};
-const toast=(m,f,label='Open')=>{const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');const text=document.createElement('span');text.textContent=m;t.append(text);if(f){const button=document.createElement('button');button.type='button';button.className='pill';button.textContent=label;button.addEventListener('click',async()=>{if(button.disabled)return;button.disabled=true;try{await f();t.remove()}catch(err){console.error('Slat notification action failed',err);toast('That action failed. Try again from Profile.');}finally{button.disabled=false;}});t.append(button);}else setTimeout(()=>t.remove(),2700);document.body.append(t)}
+const toast=(m,f,label='Open')=>{const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');const text=document.createElement('span');text.textContent=m;t.append(text);if(f){const button=document.createElement('button');button.type='button';button.className='pill';button.textContent=label;button.addEventListener('click',async()=>{if(button.disabled)return;button.disabled=true;try{await f();t.remove()}catch(err){console.error('Slat notification action failed',err);toast('That action failed. Try again from Profile.');}finally{button.disabled=false;}});t.append(button);t.classList.add('toast-action');const dismiss=document.createElement('button');dismiss.type='button';dismiss.className='pill';dismiss.textContent='Dismiss';dismiss.setAttribute('aria-label','Dismiss notification');dismiss.addEventListener('click',()=>t.remove());t.append(dismiss);}else setTimeout(()=>t.remove(),2700);document.body.append(t)}
 
 /* maths + ranking engine */
 const num=v=>parseFloat(String(v).replace(',','.'))||0;
