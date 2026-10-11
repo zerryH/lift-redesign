@@ -11,7 +11,8 @@ const server=http.createServer(async(req,res)=>{try{const url=new URL(req.url,'h
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const url='http://127.0.0.1:'+server.address().port;
 const report={browser:[],checks:[],errors:[]},out=path.resolve(process.env.SLAT_BROWSER_OUTPUT||'test-results/browser');await fs.mkdir(out,{recursive:true});
-const options=process.env.SLAT_CHROMIUM_PATH?{executablePath:process.env.SLAT_CHROMIUM_PATH,args:['--disable-gpu']}:{},names=(process.env.SLAT_BROWSERS||'chromium').split(',');
+// Full Chromium's new headless mode implements notification permissions; the default shell denies them.
+const options=process.env.SLAT_CHROMIUM_PATH?{executablePath:process.env.SLAT_CHROMIUM_PATH,args:['--disable-gpu']}:{channel:'chromium'},names=(process.env.SLAT_BROWSERS||'chromium').split(',');
 let browser,context,page,engineName;
 async function open(state=base(),viewport={width:390,height:844},ready='[data-a=start]',target=url,blockWorkers=false){
  if(context){if(page)await page.evaluate(async()=>{for(const reg of await navigator.serviceWorker.getRegistrations())await reg.unregister();}).catch(()=>{});await context.close();}context=await browser.newContext({viewport,...(blockWorkers?{serviceWorkers:'block'}:{})});page=await context.newPage();page.setDefaultTimeout(12000);
@@ -84,6 +85,38 @@ try{
    await clickControl(page.locator('[data-a=log]'));await page.getByRole('button',{name:'Add 30 seconds',exact:true}).focus();const clock=await page.locator('[data-rest-clock]').textContent();await page.waitForFunction(c=>document.querySelector('[data-rest-clock]')?.textContent!==c,clock);assert.equal(await page.evaluate(()=>document.activeElement.dataset.qol),'restPlus');await clickControl(page.getByRole('button',{name:'Stop rest timer',exact:true}));await clickControl(page.getByRole('button',{name:'Edit set 1',exact:true}));await page.locator('#edit-weight').fill('27.5');await clickControl(page.locator('#save-set-edit'));
    await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).workouts[0].ex[0].sets[0].kg,27.5);
    await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).workouts[0].ex[0].sets[0].note,'Controlled tempo');await clickTab('history');assert.equal(await page.locator('[data-a=he]').count(),1);
+  });
+  await check(name+': compact rest dock reserves space and preserves its clock across reload',async()=>{
+   await open({...base(),cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]}},undefined,'[data-a=log]');
+   await page.locator('#qol-weight').fill('60');await page.locator('#qol-reps').fill('8');await clickControl(page.locator('[data-a=log]'));
+   await page.locator('#qol-rest').waitFor();assert.equal(await page.locator('#qol-rest.toast').count(),0);
+   assert.equal(await page.locator('[data-rest-clock]').getAttribute('role'),'timer');assert.equal(await page.locator('[data-rest-clock]').getAttribute('aria-live'),'off');
+   const start=(await saved()).cur.restStartedAt,deadline=(await saved()).cur.restEndAt;
+   await clickControl(page.getByRole('button',{name:'Add 30 seconds',exact:true}));assert.equal((await saved()).cur.restEndAt,deadline+30000);
+   for(const viewport of [{width:320,height:720},{width:390,height:844},{width:767,height:390},{width:1024,height:900}]){
+    await page.setViewportSize(viewport);await page.waitForTimeout(100);
+    const layout=await page.evaluate(()=>{const dock=document.querySelector('#qol-rest'),v=document.querySelector('#v'),nav=document.querySelector('nav'),r=dock.getBoundingClientRect(),c=v.getBoundingClientRect(),n=nav.getBoundingClientRect();return {position:getComputedStyle(dock).position,vBottom:c.bottom,vTop:c.top,dockTop:r.top,dockBottom:r.bottom,navTop:n.top,navBottom:n.bottom,width:r.width,overflow:document.body.scrollWidth>innerWidth+1,controls:[...dock.querySelectorAll('button')].map(b=>{const x=b.getBoundingClientRect(),hit=document.elementFromPoint(x.x+x.width/2,x.y+x.height/2);return {height:x.height,hit:hit===b||b.contains(hit)};})};});
+    assert.equal(layout.position,'relative');assert(!layout.overflow);assert(layout.vBottom<=layout.dockTop+1,'timer has its own row below the scroller');
+    if(viewport.width<800)assert(layout.dockBottom<=layout.navTop+1,'timer cannot overlap bottom navigation');else assert(layout.navBottom<=layout.vTop+1);
+    assert(layout.controls.every(b=>b.height>=44&&b.hit),'timer controls have touch targets and receive pointer input');
+   }
+   await page.setViewportSize({width:390,height:844});await page.locator('[data-a=log]').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));await stableScreenshot(name+'-rest-dock-dark.png');
+   await clickTab('settings');assert((await page.locator('#rest-notification-status').textContent()).length>0);await clickControl(page.locator('[data-a=theme][data-v=light]'));await clickTab('today');await page.locator('[data-a=log]').evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));await stableScreenshot(name+'-rest-dock-light.png');
+   await page.reload();await page.locator('[data-a=log]').waitFor();await page.locator('#qol-rest').waitFor();assert.equal((await saved()).cur.restStartedAt,start);assert.equal((await saved()).cur.restEndAt,deadline+30000);
+   const before=await page.locator('#v').evaluate(el=>el.clientHeight);await clickControl(page.getByRole('button',{name:'Stop rest timer',exact:true}));assert.equal(await page.locator('#qol-rest').count(),0);assert((await page.locator('#v').evaluate(el=>el.clientHeight))>before+40);
+   assert.equal((await saved()).cur.restEndAt,undefined);assert.equal((await saved()).cur.restStartedAt,undefined);
+  });
+  if(name==='chromium')await check(name+': real service-worker rest notification replaces, restores and clears one card',async()=>{
+   await open({...base(),cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]}},undefined,'[data-a=log]');
+   await context.grantPermissions(['notifications'],{origin:url});await page.waitForFunction(()=>Notification.permission==='granted'&&!!navigator.serviceWorker.controller);
+   await clickTab('settings');await clickControl(page.locator('[data-a=restNotifyToggle]'));await page.waitForFunction(()=>S.set.restNotifications===true);assert.equal((await saved()).set.restNotifications,true);
+   await clickTab('today');await page.locator('#qol-weight').fill('60');await page.locator('#qol-reps').fill('8');await clickControl(page.locator('[data-a=log]'));
+   const notifications=()=>page.evaluate(async()=>{await qolState.notifications?.flush();const reg=await navigator.serviceWorker.getRegistration();return (await reg.getNotifications({tag:'slat-rest-timer'})).map(n=>({title:n.title,body:n.body,data:n.data}));});
+   let cards=await notifications();assert.equal(cards.length,1);assert.equal(cards[0].data.endAt,(await saved()).cur.restEndAt);assert.match(cards[0].body,/Next set at/);
+   await clickControl(page.getByRole('button',{name:'Add 30 seconds',exact:true}));cards=await notifications();assert.equal(cards.length,1);assert.equal(cards[0].data.endAt,(await saved()).cur.restEndAt);
+   await page.reload();await page.locator('[data-a=log]').waitFor();cards=await notifications();assert.equal(cards.length,1);assert.equal(cards[0].data.endAt,(await saved()).cur.restEndAt);
+   await clickControl(page.getByRole('button',{name:'Stop rest timer',exact:true}));assert.equal((await notifications()).length,0);
+   await clickControl(page.locator('[data-a=log]'));assert.equal((await notifications()).length,1);await clickTab('settings');await clickControl(page.locator('[data-a=restNotifyToggle]'));await page.waitForFunction(()=>S.set.restNotifications===false);assert.equal((await notifications()).length,0);assert.equal((await saved()).set.restNotifications,false);
   });
   await check(name+': all filters and hidden-details focus containment',async()=>{
    await open();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await clickControl(page.locator('[data-a=openx]'));assert.equal(await page.locator('.exercise-option').count(),450);
