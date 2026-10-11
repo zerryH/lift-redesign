@@ -919,6 +919,13 @@ button.muscle-pill:hover{border-color:var(--mc)}
 .routine-progress>small{display:block;margin-bottom:10px;}
 .routine-progress .enhanced-heading{flex-wrap:wrap;}
 .routine-progress .enhanced-heading span{color:var(--mu);font-size:13px;}
+
+/* Keep the previous-set label, measurement and context readable. */
+#v .logging-card .qol-last{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.qol-last>div{min-width:0;}
+.qol-last>div>small,.qol-last>div>b{display:block;overflow-wrap:anywhere;}
+.qol-last>div>b{margin:4px 0;line-height:1.35;}
+.qol-last>button{flex-shrink:0;}
 </style><link rel="icon" type="image/png" sizes="180x180" href="./lift-icon-photo-fit.png"><link rel="apple-touch-icon" sizes="180x180" href="./lift-icon-photo-fit.png"><link rel="manifest" href="./manifest.webmanifest"><style id="lift-anatomy-map-style">/* Authoritative 2D anatomy color layer: complete front/back anatomy surfaces; rank colors remain the source of truth. */
 #v .body-stage.anatomy-map-stage{height:auto;min-height:0;display:block;overflow:visible;border-radius:20px;background:radial-gradient(ellipse at 50% 35%,color-mix(in srgb,var(--ac) 9%,transparent),transparent 70%);padding:8px 0;}
 #v .anatomy-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;height:auto;gap:10px;padding:0;align-items:start;}
