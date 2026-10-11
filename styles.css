@@ -802,3 +802,7 @@ button.muscle-pill:hover{border-color:var(--mc)}
 .toast{pointer-events:none}
 .toast button{pointer-events:auto}
 [data-motion="1"] .toast-action{animation:toastIn .36s cubic-bezier(.2,.9,.2,1)}
+
+.save-status{color:var(--mu);font-size:12px;padding:8px 0;text-align:center;min-height:24px}.save-status .pill{margin-left:6px}
+
+.plate-inventory{display:grid;grid-template-columns:repeat(auto-fit,minmax(115px,1fr));gap:10px;padding:12px 0}.plate-inventory label{display:flex;align-items:center;gap:8px}.plate-inventory input{width:60px;min-width:48px}
