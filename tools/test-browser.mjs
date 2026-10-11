@@ -17,7 +17,7 @@ async function open(state=base(),viewport={width:390,height:844},ready='[data-a=
  if(context)await context.close();context=await browser.newContext({viewport});page=await context.newPage();page.setDefaultTimeout(12000);
  page.on('pageerror',e=>report.errors.push(e.message));
  await page.addInitScript(s=>{if(!sessionStorage.getItem('slat-seeded')){localStorage.setItem('liftlog-state',typeof s==='string'?s:JSON.stringify(s));sessionStorage.setItem('slat-seeded','1');}},state);
- await page.goto(url);await page.locator(ready).first().waitFor();
+ await page.goto(url);await page.bringToFront();await page.locator(ready).first().waitFor();
 }
 async function check(name,fn){await fn();report.checks.push(name);console.log('PASS '+name);}
 const clickTab=name=>page.locator('[data-a=tab][data-v="'+name+'"]').click();
@@ -49,7 +49,7 @@ try{
    await open({...base(),workouts:[workout()]});await clickTab('settings');const raw=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
    await page.locator('#imp').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({workouts:[{d:'2026-10-10',ex:{}}],bw:[]}))});assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
    const backup={version:4,workouts:[{...workout('Cable Curl',30),id:9}],bw:base().bw,settings:base().set};const file={name:'valid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))};
-   await page.locator('#imp').setInputFiles(file);await page.locator('#confirm-import').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);await page.getByRole('button',{name:'Cancel',exact:true}).click();assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
+   await page.locator('#imp').setInputFiles(file);await page.bringToFront();await page.locator('#confirm-import').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);await page.getByRole('button',{name:'Cancel',exact:true}).click();assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
    await page.locator('#imp').setInputFiles(file);await page.locator('#confirm-import').click();await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal((await saved()).workouts[0].ex[0].n,'Cable Curl');assert(await page.evaluate(()=>localStorage.getItem('liftlog-import-recovery')));
   });
   await check(name+': two real tabs block the stale writer',async()=>{
@@ -109,5 +109,5 @@ try{
   await context.close();context=null;await browser.close();browser=null;
  }
  assert.deepEqual(report.errors,[],'uncaught browser errors');
-}catch(error){report.failure=error.stack;console.error(error);if(page)await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});process.exitCode=1;}
+}catch(error){report.failure=error.stack;console.error(error);if(page){report.diagnostics=await page.evaluate(()=>({hidden:document.hidden,focused:document.hasFocus(),active:document.activeElement?.outerHTML,dialogs:[...document.querySelectorAll('[role=dialog]')].map(el=>({label:el.getAttribute('aria-label'),rect:el.getBoundingClientRect().toJSON(),inert:el.inert,buttons:[...el.querySelectorAll('button')].map(b=>({text:b.textContent,disabled:b.disabled,rect:b.getBoundingClientRect().toJSON(),visible:b.checkVisibility?.(),inertAncestor:!!b.closest('[inert]'),animation:getComputedStyle(b).animation,transform:getComputedStyle(b).transform}))}))})).catch(e=>({error:e.message}));console.error('Browser diagnostics:',JSON.stringify(report.diagnostics));}if(page)await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});process.exitCode=1;}
 finally{await fs.writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));if(context)await context.close();if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}
