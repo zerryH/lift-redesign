@@ -16,7 +16,8 @@ let browser,context,page,engineName;
 async function open(state=base(),viewport={width:390,height:844},ready='[data-a=start]',target=url,blockWorkers=false){
  if(context){if(page)await page.evaluate(async()=>{for(const reg of await navigator.serviceWorker.getRegistrations())await reg.unregister();}).catch(()=>{});await context.close();}context=await browser.newContext({viewport,...(blockWorkers?{serviceWorkers:'block'}:{})});page=await context.newPage();page.setDefaultTimeout(12000);
  page.on('pageerror',e=>(legacyHtml?legacyErrors:report.errors).push(e.message));
- await page.addInitScript(s=>{if(!sessionStorage.getItem('slat-seeded')){localStorage.setItem('liftlog-state',typeof s==='string'?s:JSON.stringify(s));sessionStorage.setItem('slat-seeded','1');}},state);
+ // File URL reloads can recreate sessionStorage; seed once in the same durable store as the fixture.
+ await page.addInitScript(s=>{if(!localStorage.getItem('slat-test-seeded')){localStorage.setItem('liftlog-state',typeof s==='string'?s:JSON.stringify(s));localStorage.setItem('slat-test-seeded','1');}},state);
  await page.goto(target);await page.bringToFront();await page.locator(ready).first().waitFor();
 }
 async function check(name,fn){await fn();report.checks.push(name);console.log('PASS '+name);}
