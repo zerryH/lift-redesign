@@ -21,7 +21,7 @@ async function open(state=base(),viewport={width:390,height:844},ready='[data-a=
 }
 async function check(name,fn){await fn();report.checks.push(name);console.log('PASS '+name);}
 const clickTab=name=>page.locator('[data-a=tab][data-v="'+name+'"]').click();
-const saved=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('liftlog-state')));
+const saved=()=>page.evaluate(async()=>{await saveTail;return JSON.parse(localStorage.getItem('liftlog-state'));});
 try{
  for(const name of names){
   browser=await playwright[name].launch(name==='chromium'?options:{});report.browser.push({name,version:browser.version()});
