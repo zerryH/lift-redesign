@@ -24,12 +24,12 @@ async function clickControl(locator){
  if(engineName!=='webkit')return locator.click();
  // The WebKit runner stalled before pointer dispatch despite visible, enabled, inert-free controls.
  // Native pointer input keeps browser hit testing; it does not dispatch a synthetic DOM click.
- await locator.waitFor({state:'visible'});assert(await locator.isEnabled());
+ await page.bringToFront();await locator.waitFor({state:'visible'});assert(await locator.isEnabled());
  const deadline=Date.now()+12000;let point;
  while(Date.now()<deadline){
   await locator.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
   // Startup and tab changes reset scroll over two frames. Reacquire the locator after that work.
-  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  await page.evaluate(()=>Promise.race([new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),new Promise(resolve=>setTimeout(resolve,100))]));
   point=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {x,y,hit:el.isConnected&&(hit===el||el.contains(hit)),inert:!!el.closest('[inert]'),disabled:!!el.disabled};});
   if(point.hit&&!point.inert&&!point.disabled){await page.mouse.click(point.x,point.y);return;}
   await page.waitForTimeout(100);
