@@ -1522,7 +1522,19 @@ const qolRenderRest=()=>{
  document.body.classList.add('has-rest');let el=$('#qol-rest');if(!el){el=document.createElement('div');el.id='qol-rest';el.className='toast';el.setAttribute('role','group');el.setAttribute('aria-label','Rest timer');el.innerHTML='<div><small>REST</small><b data-rest-clock></b></div><button data-qol=restPlus aria-label="Add 30 seconds">+30</button><button data-qol=restStop aria-label="Stop rest timer">Stop</button>';document.body.append(el);}
  const sec=Math.max(0,Math.ceil((qolState.endAt-Date.now())/1000)),clock=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'),display=el.querySelector('[data-rest-clock]');if(display&&display.textContent!==clock)display.textContent=clock;
 };
-const qolPlatePlan=(total,bar=20,plates=[25,20,15,10,5,2.5,1.25,0.5])=>{const side=(num(total)-num(bar))/2;if(side<0)return{exact:false,side:0,plates:[],remainder:Math.abs(side)};let rem=side,out=[];for(const item of plates){const p=typeof item==='number'?item:item.plate,limit=typeof item==='number'?Infinity:item.limit,c=Math.min(limit,Math.floor((rem+1e-9)/p));if(c){out.push({plate:p,count:c});rem=Math.max(0,rem-c*p)}}return{exact:rem<0.01,side,plates:out,remainder:rem}};
+const qolPlatePlan=(total,bar=20,plates=[25,20,15,10,5,2.5,1.25,0.5])=>{
+ const side=(num(total)-num(bar))/2;if(side<0)return{exact:false,side:0,plates:[],remainder:Math.abs(side)};
+ const items=plates.map(item=>typeof item==='number'?{plate:item,limit:Infinity}:item).filter(item=>Number.isFinite(item.plate)&&item.plate>0&&item.limit>0);
+ if(!items.length)return{exact:side<0.01,side,plates:[],remainder:side};
+ const denominations=plates.map(item=>typeof item==='number'?item:item.plate).filter(p=>Number.isFinite(p)&&p>0),smallest=Math.min(...denominations),gcd=(a,b)=>b?gcd(b,a%b):a,divisor=denominations.map(p=>Math.round(p/smallest*1000)).reduce(gcd),quantum=smallest*divisor/1000,target=Math.floor(side/quantum+1e-7);
+ let reachable=Array(target+1).fill(null);reachable[0]=[];
+ for(const item of items){const coin=Math.round(item.plate/quantum),limit=Math.min(item.limit,Math.floor(target/coin)),next=reachable.slice();
+  for(let sum=0;sum<=target;sum++)if(reachable[sum])for(let count=1;count<=limit&&sum+coin*count<=target;count++){const value=sum+coin*count;if(!next[value])next[value]=[...reachable[sum],{plate:item.plate,count}];}
+  reachable=next;
+ }
+ let best=target;while(best>0&&!reachable[best])best--;const out=reachable[best],remainder=Math.max(0,side-out.reduce((sum,item)=>sum+item.plate*item.count,0));
+ return{exact:remainder<0.01,side,plates:out,remainder};
+};
 const qolRankedNames=()=>Object.keys(EX).filter(n=>rankThresholds(n)&&!catalogueRecord(n)?.archived&&!X.catalogue?.[n]?.canonicalName);
 const qolSetupStaples=()=>ensureExerciseCatalogue();
 const qolApplyCustomAliases=()=>{for(const c of S.custom||[])if(customStandardCompatible(c,c.rank))R.alias[c.n]=c.rank;};

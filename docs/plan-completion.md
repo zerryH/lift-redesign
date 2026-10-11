@@ -25,7 +25,7 @@ Updated 11 October 2026 for the 5.6.0 release. The original audit inspected `241
 | 15 Premium interface | Foundation/component CSS layers, shared tokens, accessible dialogs, stable timer focus and reduced motion | Real touch, text zoom, VoiceOver/TalkBack and final visual sign-off |
 | 16 Every muscle/catalogue record | All canonical records exercise actual handlers and rendered forms; 400 ranked movements have boundary fixtures | Automated agreement is not independent scientific/content approval |
 | 17 Shared data contracts | Stable IDs, catalogue v3, benchmark/version/protocol/context snapshots, legacy raw measurements, per-row provisional evidence and five additional source modules | Catalogue, performance, persistence, workout and dialog modules extracted; external content approval remains |
-| 18 Complete user journeys | 43 isolated scripts, 25 audit scenarios and 35 configured Chromium/WebKit journeys; 100/1,000/10,000 records retained | Physical Safari/installed iOS, Android, screen readers and a midrange-phone budget |
+| 18 Complete user journeys | 44 isolated scripts, 25 audit scenarios and 35 configured Chromium/WebKit journeys; 100/1,000/10,000 records retained | Physical Safari/installed iOS, Android, screen readers and a midrange-phone budget |
 | 19 Dependency sequence and rollout | Engineering waves 1–5 advanced; recovery copies and rank-change notice implemented | Wave 6: isolated test cohort, migration comparison, recovery drill and staged rollout |
 | 20 Release readiness | Local numerical/data/rendering gates pass; limitations recorded | Owner authorized publication; independent device/content/migration validation remains open |
 | 21 Sources and reproductions | Original finding IDs linked to implementation/test evidence; methodology updated | Keep future evidence tied to commit and immutable exercise IDs |
@@ -75,7 +75,7 @@ The implemented contracts now retain immutable exercise IDs, benchmark IDs, cata
 
 Saving uses an atomic IndexedDB comparison before writing, monotonically increasing revisions, localStorage fallback and cross-tab notifications. The UI reports saving, saved or failed acknowledgement and offers retry. Quota fallback and stale IndexedDB-only writers have executable and browser checks.
 
-The source suite has 43 isolated regression scripts. The browser harness has 18 Chromium and 17 WebKit journeys, covering full backup round-trips, custom protocol creation, both hosted and local-file logging, exact old-source migration, keyboard logging, chart data, plate tools and all previously checked workflows. CI must pass the final pushed head before merging. Evidence is retained by the Release checks workflow.
+The source suite has 44 isolated regression scripts. The browser harness has 18 Chromium and 17 WebKit journeys, covering full backup round-trips, custom protocol creation, both hosted and local-file logging, exact old-source migration, keyboard logging, chart data, plate tools and all previously checked workflows. CI must pass the final pushed head before merging. Evidence is retained by the Release checks workflow.
 
 Still external: physical iOS/Android and installed-PWA interruption drills, VoiceOver/TalkBack, virtual keyboards and real gestures, representative real-user migrations, midrange-phone timings, native wake-lock behavior, independent exercise-content review and empirical validation of provisional ranking standards. These are verification tasks, not claimed completed engineering. The owner requested publication with these limitations recorded.
 

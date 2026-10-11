@@ -42,7 +42,7 @@ This change implements the behavior fixes from the 10 October 2026 audit against
 | F34 | Shared dialog roles, focus return, Tab containment, Escape and background inertness | Real keyboard containment, closed-details exclusion, Escape/inert restoration and native timer focus retention pass; VoiceOver/TalkBack pending |
 | F35 | Slider permits native vertical panning while horizontal adjustments remain explicit | Gesture-source checks; real touch arbitration pending |
 | F36 | Shared interaction tokens and new logging layout; duplicate profile adjustment switches removed | Foundation cascade layer and authoritative component rules replace legacy importance pileup; only five reduced-motion declarations remain important; 27 computed-style comparisons showed no migration differences |
-| F37 | 43 isolated regression scripts, 25 audit scenarios, catalogue-wide protocols/boundaries and real-browser journeys; Chromium/WebKit CI configured | Full suite documented below; no false claim that mocked DOM tests are browser tests |
+| F37 | 44 isolated regression scripts, 25 audit scenarios, catalogue-wide protocols/boundaries and real-browser journeys; Chromium/WebKit CI configured | Full suite documented below; no false claim that mocked DOM tests are browser tests |
 | F38 | Rest deadline, note, RPE, band and numeric draft persist per active exercise | Restart fixture and real offline/reload journey; timer controls retain keyboard focus |
 | F40 | Empty/repeated finish guarded; edit replaces by ID; failed save restores draft | Empty, concurrent duplicate, edit and quota fixtures |
 | F39 | Versioned methodology matches tier averaging, contribution weights, factors and data-source policy; Profile and notices link the existing repository support tracker | README, notices and methodology consistency checks |
@@ -55,7 +55,7 @@ Protocols describe the implementation convention rather than asserting scientifi
 
 ## Test evidence and release gate
 
-Verification on 11 October 2026: **43/43 local regression scripts passed**. All 447 canonical protocols log and round-trip through actual application handlers; all 400 ranked movements are checked against both references and 46 tier boundaries. The generator checks all 472 retained ladders. The release workflow runs the final pushed source, deterministic build and all 35 configured Chromium/WebKit journeys before merge.
+Verification on 11 October 2026: **44/44 local regression scripts passed**. All 447 canonical protocols log and round-trip through actual application handlers; all 400 ranked movements are checked against both references and 46 tier boundaries. The generator checks all 472 retained ladders. The release workflow runs the final pushed source, deterministic build and all 35 configured Chromium/WebKit journeys before merge.
 
 New browser acceptance covers custom duration and per-implement settings, plate calculations and below-bar messaging, accessible chart rows, complete export/import round-trips, IndexedDB-only writes and real two-tab conflict detection, enlarged root font with keyboard logging, exact 5.5.106 source/data migration and local-file reload/logging. Old-source migration blocks service workers to isolate data compatibility; installed-phone upgrade validation remains separate. Existing catalogue-wide forms, offline/waiting-worker activation and 100/1,000/10,000 retained sessions remain covered. Browser screenshots and reports are CI artifacts, not physical-device certification.
 
