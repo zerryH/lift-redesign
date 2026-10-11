@@ -7,7 +7,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: release-checks-${{ github.ref }}
+  group: release-checks-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 jobs:
   regression:
@@ -29,7 +29,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --no-save --ignore-scripts --no-audit --no-fund playwright@1.62.1
+      - run: npm install --no-save --ignore-scripts --no-audit --no-fund playwright@1.64.0
       - run: npx playwright install --with-deps chromium webkit
       - run: node tools/test-browser.mjs
         env:
