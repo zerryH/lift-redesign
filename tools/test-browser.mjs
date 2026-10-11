@@ -123,7 +123,8 @@ try{
    await clickControl(page.locator('[data-a=log]'));assert.equal((await notifications()).length,1);await clickTab('settings');await clickControl(page.locator('[data-a=restNotifyToggle]'));await page.waitForFunction(()=>S.set.restNotifications===false);assert.equal((await notifications()).length,0);assert.equal((await saved()).set.restNotifications,false);
   });
   if(name==='chromium')await check(name+': native host bridge syncs real logging, extension, reload, disable and finish',async()=>{
-   await open({...base(),cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]}},undefined,'[data-a=log]',url,false,true);
+   await open({...base(),set:{...base().set,installGuideSeen:false},cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]}},undefined,'[data-a=log]',url,false,true);
+   await page.waitForTimeout(500);assert.equal(await page.locator('.install-guide-layer').count(),0,'native host must not display a Safari installation guide');
    const messages=()=>page.evaluate(()=>window.slatNativeMessages),syncs=async()=>((await messages()).filter(m=>m.action==='sync'));
    await page.locator('#qol-weight').fill('60');await page.locator('#qol-reps').fill('8');await clickControl(page.locator('[data-a=log]'));
    assert.equal((await syncs()).at(-1).endAt,(await saved()).cur.restEndAt);const count=(await syncs()).length;

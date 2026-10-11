@@ -375,6 +375,7 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('tutorial-layer'))tutorialClose(true)});
 const installGuideDevice=()=>{
+ if(globalThis.SlatNativeRest?.available())return 'installed';
  const ua=navigator.userAgent||'',standalone=window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true;
  if(standalone)return 'installed';
  if(/iPad|iPhone|iPod/.test(ua)&&!window.MSStream)return 'ios';

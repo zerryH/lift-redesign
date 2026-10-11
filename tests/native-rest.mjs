@@ -20,6 +20,7 @@ assert.throws(()=>retry.sync(rest));assert.equal(retry.sync(rest),true,'a failed
 
 const app=await boot({...base(),cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]} });
 const messages=[];app.ctx.window.webkit={messageHandlers:{slatRestTimer:{postMessage(message){messages.push(message);}}}};
+assert.equal(app.h.installGuideDevice(),'installed','the native app must not suggest adding itself to Safari Home Screen');
 app.h.qolRestStart(90);assert.equal(messages.at(-1).action,'sync');assert.equal(messages.at(-1).endAt,app.h.S.cur.restEndAt);
 const deadline=app.h.S.cur.restEndAt;
 for(const fn of app.listeners.click||[])fn({target:{classList:{contains:()=>false},closest:s=>s==='[data-qol]'?{dataset:{qol:'restPlus'}}:null}});
