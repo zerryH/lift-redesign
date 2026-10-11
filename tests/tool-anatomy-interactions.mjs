@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {boot,base,workout} from './support/runtime.mjs';
+const z=await boot({...base(),workouts:[workout()]});
+const html=z.h.V.ranks();
+for(const id of ['chest','frontDelts','sideDelts','rearDelts','biceps','triceps','forearms','abs','lats','upperBack','glutes','quads','hamstrings','calves','adductors','tibialis'])assert(html.includes(`data-v="${id}" role=button tabindex=0`),id+' must be an interactive muscle');
+const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length,'all front/back IDs are unique');
+for(const [,id] of html.matchAll(/url\(#([^)]*)\)/g))assert(ids.includes(id),'gradient/clip target '+id);
+for(const side of ['front','back'])assert(html.includes(`id="${side}-leg-contour-l"`));
+for(const id of ['back-erector_spinae_l','back-achilles_l','back-heel_l','front-patella-l'])assert(html.includes(`id="${id}"`),id);
+z.h.A.anatomyView({v:'back'});assert(z.h.V.ranks().includes('data-anatomy-view="back"'));
+z.h.A.anatomyInfo();assert(z.h.qolState.modal.innerHTML.includes('does not currently calculate a separate lower-back rank'));
+z.h.A.muscleInfo({v:'chest'});assert(z.h.qolState.modal.innerHTML.includes('Bench Press'));
+// Canvas coordinates follow the visible width, rather than a fixed 640px bitmap.
+const canvas=z.get('#qol-chart'),draws=[];canvas.clientWidth=320;z.ctx.window.devicePixelRatio=2;
+canvas.getContext=()=>({clearRect(){},setTransform(){},fillText(t,x,y){draws.push({t,x,y})},beginPath(){},moveTo(){},lineTo(){},stroke(){},arc(){},fill(){}});
+z.get('#qol-progress-lift').value='Bench Press';z.get('#qol-progress-window').value='all';
+vm.runInContext('qolDrawProgress()',z.ctx);assert.equal(canvas.width,640);assert.equal(canvas.height,440);assert(draws.every(p=>p.x>=0&&p.x<=320));
+assert(z.get('#qol-progress-data').innerHTML.includes('Estimated 1RM'));
+z.h.S.workouts=[];z.h.S.bw=[];vm.runInContext('qolDrawProgress()',z.ctx);assert.equal(z.get('#qol-progress-data').innerHTML,'','empty window removes stale chart rows');
+assert.deepEqual(z.errors,[]);console.log('interactive complete anatomy, namespaced surfaces and responsive chart passed');

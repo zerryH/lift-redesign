@@ -1,53 +1,31 @@
-/* Slat 5.6 style contract: foundation defaults in one named layer;
-   authoritative component rules follow without importance escalation.
-   Only reduced-motion overrides use !important to suppress inline animation. */
-@layer slat-foundation {
-.body-stage{height:455px;display:grid;place-items:center;overflow:hidden;position:relative;background:radial-gradient(ellipse at 50% 42%,rgba(105,112,180,.11),transparent 68%);border-radius:24px;}
-.anatomy-pair{width:min(610px,100%);height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;align-items:center;justify-items:center;padding:4px 12px 2px;}
-.anatomy-figure{margin:0;display:grid;justify-items:center;align-content:center;min-width:0;width:100%;height:100%;}
-.anatomy-figure .anatomy-svg{width:min(250px,100%);height:424px;display:block;overflow:visible;filter:drop-shadow(0 12px 18px rgba(0,0,0,.24));}
-.anatomy-figure figcaption{margin-top:0;font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:900;color:var(--mu);opacity:.72;}
-.anatomy-svg{shape-rendering:geometricPrecision;overflow:visible;}
-.anatomy-svg .real-body-base path{stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke;}
-.muscle-zone-group{opacity:var(--ma,.98);transition:opacity .18s ease,filter .18s ease;}
-.muscle-zone-group path{stroke-linejoin:round;stroke-linecap:round;paint-order:stroke fill;vector-effect:non-scaling-stroke;}
-.muscle-zone-group.locked path{filter:drop-shadow(0 1px 1px rgba(0,0,0,.20));}
-.muscle-zone-group.unlocked path{filter:drop-shadow(0 0 5px color-mix(in srgb,var(--mc) 38%,transparent));}
-@media(max-width:480px){
-.body-stage{height:450px;}
-.anatomy-pair{gap:0;padding:2px 4px 0;}
-.anatomy-figure .anatomy-svg{height:416px;width:min(225px,100%);}
-}
-@media(min-width:640px){
-.body-stage{height:475px;}
-.anatomy-figure .anatomy-svg{height:442px;}
-.anatomy-pair{width:610px;}
-}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group path{vector-effect:non-scaling-stroke;}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--mc) 42%,transparent));}
-.rank-icon{--rank-icon-size:28px;}
-.overall-rank-title .rank-icon{--rank-icon-size:34px;}
-.rank-result-title .rank-icon{--rank-icon-size:30px;}
-.rank-badge .rank-icon{--rank-icon-size:26px;}
-}
-
-/* Authoritative 2D anatomy color layer */
-.anatomy-svg .real-body-base path{fill:#34384b;fill-opacity:1;stroke:#70778b;stroke-width:1.15;}
-.muscle-zone-group path{fill:var(--mc);fill-opacity:1;stroke:var(--ms);stroke-width:1.35;}
-.muscle-zone-group.locked path{fill:#35394c;stroke:#6d7488;}
-.anatomy-map-stage .anatomy-svg{display:block;visibility:visible;opacity:1;overflow:visible;flex:none;}
-.anatomy-map-stage .anatomy-svg .real-body-base{display:block;visibility:visible;opacity:1;}
-.anatomy-map-stage .anatomy-svg .real-body-base path{display:inline;visibility:visible;fill:#4b5263;fill-opacity:1;stroke:#858c9d;stroke-opacity:.9;stroke-width:1.2;}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group{display:block;visibility:visible;opacity:1;}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group path{display:inline;visibility:visible;fill:var(--mc,#687083);fill-opacity:1;stroke:var(--ms,#9299a8);stroke-opacity:.95;stroke-width:1.25;}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{stroke:#858c9d;stroke-opacity:.82;}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path{fill:var(--mc);fill-opacity:1;}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{fill:#596072;fill-opacity:1;filter:none;}
+/* Authoritative 2D anatomy color layer: complete front/back anatomy surfaces; rank colors remain the source of truth. */
+#v .body-stage.anatomy-map-stage{height:auto;min-height:0;display:block;overflow:visible;border-radius:20px;background:radial-gradient(ellipse at 50% 35%,color-mix(in srgb,var(--ac) 9%,transparent),transparent 70%);padding:8px 0;}
+#v .anatomy-pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;height:auto;gap:10px;padding:0;align-items:start;}
+#v .anatomy-figure{display:grid;justify-items:center;align-content:start;min-width:0;margin:0;height:auto;}
+#v .anatomy-figure .anatomy-svg{display:block;width:100%;max-width:270px;height:auto;overflow:visible;filter:drop-shadow(0 8px 12px rgba(0,0,0,.15));shape-rendering:geometricPrecision;}
+#v .anatomy-figure figcaption{font-family:inherit;font-size:11px;font-weight:700;letter-spacing:1.5px;margin-top:10px;color:var(--mu);opacity:1;}
+#v [data-anatomy-view="front"] .anatomy-pair,#v [data-anatomy-view="back"] .anatomy-pair{grid-template-columns:minmax(0,1fr);}
+#v [data-anatomy-view="front"] .anatomy-figure:last-child,#v [data-anatomy-view="back"] .anatomy-figure:first-child{display:none;}
+#v [data-anatomy-view="front"] .anatomy-svg,#v [data-anatomy-view="back"] .anatomy-svg{max-width:330px;}
+.anatomy-map-stage .anatomy-svg{visibility:visible;opacity:1;}
+.anatomy-map-stage .anatomy-svg :is(.real-body-base,.muscle-zone-group){display:block;visibility:visible;opacity:1;}
+.anatomy-map-stage .anatomy-svg path{stroke-linejoin:round;stroke-linecap:round;}
+.anatomy-map-stage .anatomy-svg .anatomy-contours path{fill:#383849;stroke:#777285;stroke-width:1.2;}
+.anatomy-map-stage .anatomy-svg .real-body-base path{fill:#484858;fill-opacity:1;stroke:#777587;stroke-width:1;stroke-opacity:.75;}
+.anatomy-map-stage .anatomy-svg .real-body-base .anatomy-face path{fill:#444454;stroke:#606072;stroke-width:.65;stroke-opacity:.55;}
+.anatomy-map-stage .anatomy-svg .real-body-base .anatomy-joints path{fill:#505061;stroke:#878294;stroke-width:1.25;}
+.anatomy-map-stage .anatomy-svg .real-body-base .anatomy-lumbar path{fill:#686675;stroke:#aaa4b5;stroke-width:1.4;}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group path{display:inline;visibility:visible;vector-effect:non-scaling-stroke;fill:var(--mc,#909aaa);fill-opacity:1;stroke:var(--ms,#bac3cf);stroke-width:.65;stroke-opacity:.7;filter:none;}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path{fill:var(--mc,#909aaa);fill-opacity:1;stroke:var(--ms,#bac3cf);stroke-opacity:.65;filter:none;}
+.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path{fill:var(--mc);fill-opacity:1;stroke:var(--ms);stroke-opacity:.9;filter:none;}
+.anatomy-map-stage .anatomy-svg .anatomy-surface .anatomy-light{stroke:none;opacity:.85;}
+.anatomy-map-stage .anatomy-svg .anatomy-fibers path{fill:none;stroke:#fff;stroke-opacity:.13;stroke-width:.85;}
+.anatomy-map-stage .anatomy-svg [role="button"]{cursor:pointer;}
+.anatomy-map-stage .anatomy-svg [role="button"]:is(:hover,:focus-visible){outline:none;}
+.anatomy-map-stage .anatomy-svg [role="button"]:is(:hover,:focus-visible)>path{stroke:var(--fg);stroke-width:1.7;stroke-opacity:1;}
+[data-d="0"] .anatomy-map-stage .anatomy-svg .anatomy-contours path{fill:#d5d2df;stroke:#8b8498;}
+[data-d="0"] .anatomy-map-stage .anatomy-svg .real-body-base path{fill:#b6b1c2;stroke:#8b8498;}
 .rank-icon{display:inline-flex;width:var(--rank-icon-size);height:var(--rank-icon-size);min-width:var(--rank-icon-size);max-width:var(--rank-icon-size);flex:0 0 var(--rank-icon-size);align-items:center;justify-content:center;position:relative;vertical-align:middle;color:var(--c);line-height:1;}
 .rank-icon svg{display:block;width:100%;height:100%;max-width:100%;max-height:100%;overflow:visible;}
 .rank-icon svg path{fill:color-mix(in srgb,var(--c) 20%,transparent);stroke:var(--c);stroke-width:1.7;stroke-linejoin:round;}
 .rank-icon b{position:absolute;inset:0;display:grid;place-items:center;font-size:9px;line-height:1;font-weight:900;color:var(--c);pointer-events:none;}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path,
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.unlocked path[fill]{fill:var(--mc,#687083);fill-opacity:1;stroke:var(--ms,var(--mc,#9299a8));stroke-opacity:1;filter:drop-shadow(0 0 5px var(--mc,#687083));}
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path,
-.anatomy-map-stage .anatomy-svg .muscle-zone-group.locked path[fill]{fill:#596072;fill-opacity:1;stroke:#858c9d;stroke-opacity:.82;filter:none;}
