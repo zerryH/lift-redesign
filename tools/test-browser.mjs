@@ -14,11 +14,15 @@ const report={browser:[],checks:[],errors:[]},out=path.resolve(process.env.SLAT_
 // Full Chromium's new headless mode implements notification permissions; the default shell denies them.
 const options=process.env.SLAT_CHROMIUM_PATH?{executablePath:process.env.SLAT_CHROMIUM_PATH,args:['--disable-gpu']}:{channel:'chromium'},names=(process.env.SLAT_BROWSERS||'chromium').split(',');
 let browser,context,page,engineName;
-async function open(state=base(),viewport={width:390,height:844},ready='[data-a=start]',target=url,blockWorkers=false){
+async function open(state=base(),viewport={width:390,height:844},ready='[data-a=start]',target=url,blockWorkers=false,nativeBridge=false){
  if(context){if(page)await page.evaluate(async()=>{for(const reg of await navigator.serviceWorker.getRegistrations())await reg.unregister();}).catch(()=>{});await context.close();}context=await browser.newContext({viewport,...(blockWorkers?{serviceWorkers:'block'}:{})});page=await context.newPage();page.setDefaultTimeout(12000);
  page.on('pageerror',e=>(legacyHtml?legacyErrors:report.errors).push(e.message));
  // File URL reloads can recreate sessionStorage; seed once in the same durable store as the fixture.
  await page.addInitScript(s=>{if(!localStorage.getItem('slat-test-seeded')){localStorage.setItem('liftlog-state',typeof s==='string'?s:JSON.stringify(s));localStorage.setItem('slat-test-seeded','1');}},state);
+ if(nativeBridge)await page.addInitScript(()=>{
+  window.slatNativeMessages=[];
+  window.webkit={messageHandlers:{slatRestTimer:{postMessage(message){window.slatNativeMessages.push(JSON.parse(JSON.stringify(message)));if(message.action==='status')setTimeout(()=>window.dispatchEvent(new CustomEvent('slat-native-rest-status',{detail:{allowed:true,error:''}})),0);}}}};
+ });
  await page.goto(target);await page.bringToFront();await page.locator(ready).first().waitFor();
 }
 async function check(name,fn){await fn();report.checks.push(name);console.log('PASS '+name);}
@@ -117,6 +121,20 @@ try{
    await page.reload();await page.locator('[data-a=log]').waitFor();cards=await notifications();assert.equal(cards.length,1);assert.equal(cards[0].data.endAt,(await saved()).cur.restEndAt);
    await clickControl(page.getByRole('button',{name:'Stop rest timer',exact:true}));assert.equal((await notifications()).length,0);
    await clickControl(page.locator('[data-a=log]'));assert.equal((await notifications()).length,1);await clickTab('settings');await clickControl(page.locator('[data-a=restNotifyToggle]'));await page.waitForFunction(()=>S.set.restNotifications===false);assert.equal((await notifications()).length,0);assert.equal((await saved()).set.restNotifications,false);
+  });
+  if(name==='chromium')await check(name+': native host bridge syncs real logging, extension, reload, disable and finish',async()=>{
+   await open({...base(),set:{...base().set,installGuideSeen:false},cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]}},undefined,'[data-a=log]',url,false,true);
+   await page.waitForTimeout(500);assert.equal(await page.locator('.install-guide-layer').count(),0,'native host must not display a Safari installation guide');
+   const messages=()=>page.evaluate(()=>window.slatNativeMessages),syncs=async()=>((await messages()).filter(m=>m.action==='sync'));
+   await page.locator('#qol-weight').fill('60');await page.locator('#qol-reps').fill('8');await clickControl(page.locator('[data-a=log]'));
+   assert.equal((await syncs()).at(-1).endAt,(await saved()).cur.restEndAt);const count=(await syncs()).length;
+   await page.waitForTimeout(1200);assert.equal((await syncs()).length,count,'display ticks do not post native heartbeats');
+   await clickControl(page.getByRole('button',{name:'Add 30 seconds',exact:true}));const deadline=(await saved()).cur.restEndAt;assert.equal((await syncs()).at(-1).endAt,deadline);
+   await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal((await syncs()).at(-1).endAt,deadline);
+   await clickTab('settings');assert.equal(await page.locator('#native-rest-status').count(),1);assert.equal(await page.locator('#rest-notification-status').count(),0);
+   await clickControl(page.locator('[data-a=nativeRestToggle]'));assert.equal((await saved()).set.nativeRestLiveActivity,false);assert.equal((await messages()).at(-1).action,'stop');
+   await clickControl(page.locator('[data-a=nativeRestToggle]'));assert.equal((await saved()).set.nativeRestLiveActivity,true);assert.equal((await syncs()).at(-1).endAt,deadline);
+   await clickTab('today');await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();assert.equal((await messages()).at(-1).action,'stop');assert.equal((await saved()).cur,null);
   });
   await check(name+': all filters and hidden-details focus containment',async()=>{
    await open();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await clickControl(page.locator('[data-a=openx]'));assert.equal(await page.locator('.exercise-option').count(),450);

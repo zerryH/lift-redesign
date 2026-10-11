@@ -1,0 +1,38 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {boot,base,workout} from './support/runtime.mjs';
+
+const sandbox=vm.createContext({Date,JSON,Number,String,RegExp,Error});
+vm.runInContext(fs.readFileSync('native-rest.js','utf8'),sandbox);
+const sent=[],now=Date.now(),bridge=sandbox.SlatNativeRest.create(message=>sent.push(message),()=>now);
+const rest={enabled:true,workoutID:7,startedAt:now-30000,endAt:now+90000,accent:'#6758f5'};
+bridge.sync(rest);bridge.sync(rest);assert.equal(sent.length,1,'native updates are sent for deadline changes, not for every tick');
+assert.equal(sent[0].startedAt,rest.startedAt);assert.equal(sent[0].endAt,rest.endAt);assert.equal(sent[0].accent,rest.accent);
+bridge.sync({...rest,endAt:rest.endAt+30000});assert.equal(sent.length,2);assert.equal(sent[1].endAt,rest.endAt+30000);
+bridge.sync({...rest,enabled:false});assert.equal(sent.at(-1).action,'stop');bridge.stop();assert.equal(sent.length,3);
+bridge.sync({...rest,endAt:now-1});assert.equal(sent.length,3);
+assert.throws(()=>bridge.sync({...rest,endAt:now+86400001}));
+bridge.sync({...rest,startedAt:NaN,accent:'bad'});assert.equal(sent.at(-1).startedAt,now);assert.equal(sent.at(-1).accent,'#756bff');
+bridge.reset();bridge.sync(rest);assert.equal(sent.at(-1).action,'sync');
+let failures=0;const retry=sandbox.SlatNativeRest.create(()=>{if(++failures===1)throw new Error('not ready');},()=>now);
+assert.throws(()=>retry.sync(rest));assert.equal(retry.sync(rest),true,'a failed bridge post can be retried');
+
+const app=await boot({...base(),cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]} });
+const messages=[];app.ctx.window.webkit={messageHandlers:{slatRestTimer:{postMessage(message){messages.push(message);}}}};
+assert.equal(app.h.installGuideDevice(),'installed','the native app must not suggest adding itself to Safari Home Screen');
+app.h.qolRestStart(90);assert.equal(messages.at(-1).action,'sync');assert.equal(messages.at(-1).endAt,app.h.S.cur.restEndAt);
+const deadline=app.h.S.cur.restEndAt;
+for(const fn of app.listeners.click||[])fn({target:{classList:{contains:()=>false},closest:s=>s==='[data-qol]'?{dataset:{qol:'restPlus'}}:null}});
+assert.equal(messages.at(-1).endAt,deadline+30000);
+const beforeResume=messages.length;
+for(const fn of app.listeners['slat-native-rest-resume']||[])fn({});
+assert(messages.length>beforeResume);assert.equal(messages.at(-1).endAt,deadline+30000);
+assert.equal(app.intervals.size,1,'resuming replaces the clock rather than starting duplicate intervals');
+app.h.A.nativeRestToggle();assert.equal(app.h.S.set.nativeRestLiveActivity,false);assert.equal(messages.at(-1).action,'stop');
+app.h.A.nativeRestToggle();assert.equal(app.h.S.set.nativeRestLiveActivity,true);assert.equal(messages.at(-1).action,'sync');
+for(const fn of app.listeners['slat-native-rest-status']||[])fn({detail:{allowed:false,error:'Allow Live Activities for Slat in iPhone Settings.'}});
+assert.equal(app.h.qolNativeRestState.allowed,false);assert.match(app.get('#native-rest-status').textContent,/iPhone Settings/);
+app.h.qolStopRest();assert.equal(messages.at(-1).action,'stop');assert.equal(app.h.S.cur.restEndAt,undefined);
+assert.deepEqual(app.errors,[]);
+console.log('Native rest bridge deduplication, bounds, retries, +30, disable, stop and permission status passed');

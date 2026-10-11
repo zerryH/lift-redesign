@@ -1,0 +1,59 @@
+name: iPhone live rest timer
+on:
+  pull_request:
+  push:
+    branches: [main, 'fix/audit-reliability-native-rest-*']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ios-rest-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+jobs:
+  native-build:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select installed Xcode with the Liquid Glass SDK
+        run: |
+          SLAT_XCODE_PATH=$(python3 - <<'PY'
+          import pathlib,re
+          apps=[]
+          for p in pathlib.Path('/Applications').glob('Xcode_*.app'):
+              v=tuple(map(int,re.findall(r'\d+',p.name)))
+              if v and v[0]>=26: apps.append((v,str(p)))
+          if not apps: raise SystemExit('Xcode 26 or newer is required')
+          print(max(apps)[1])
+          PY
+          )
+          sudo xcode-select -s "$SLAT_XCODE_PATH/Contents/Developer"
+          xcodebuild -version
+      - run: python3 ios/generate-project.py --check
+      - name: Compile iPhone and widget for Simulator
+        run: |
+          mkdir -p build
+          set -o pipefail
+          xcodebuild -project ios/Slat.xcodeproj -scheme Slat -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build/ios-simulator CODE_SIGNING_ALLOWED=NO build | tee build/ios-simulator.log
+      - name: Compile unsigned iPhone device build
+        run: |
+          set -o pipefail
+          xcodebuild -project ios/Slat.xcodeproj -scheme Slat -configuration Debug -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build/ios-device CODE_SIGNING_ALLOWED=NO build | tee build/ios-device.log
+      - name: Package unsigned app for signing
+        run: |
+          python3 - <<'PY'
+          import pathlib,zipfile
+          app=pathlib.Path('build/ios-device/Build/Products/Debug-iphoneos/Slat.app')
+          with zipfile.ZipFile('build/Slat-unsigned.ipa','w',zipfile.ZIP_DEFLATED) as archive:
+              for path in app.rglob('*'):
+                  if path.is_file(): archive.write(path,'Payload/Slat.app/'+str(path.relative_to(app)))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Slat-iPhone-build
+          path: |
+            build/*.log
+            build/Slat-unsigned.ipa
+            build/ios-device/Build/Products/Debug-iphoneos/Slat.app
+          retention-days: 14
