@@ -24,6 +24,7 @@ run.h.A.activityDay({v:'2024-07-01'});assert.match(run.get('#activity-detail').i
 run.h.A.activityHistory();html=run.h.V.history();assert.match(html,/Showing 2 of 2 workouts/);
 run.h.A.activityClear();assert.match(run.h.V.history(),/Showing 6 of 6 workouts/);
 run.h.S.workouts=run.h.S.workouts.filter(w=>w.id!==2);assert.match(run.h.V.history(),/data-v="2024-07-01" data-count="1"[^>]*><\/button>/);
+run.h.S.workouts=run.h.S.workouts.filter(w=>w.id!==1);run.h.A.activityHistory();assert.match(run.h.V.history(),/No completed workouts on this date/);run.h.A.activityClear();
 run.h.A.activityMode({v:'month'});for(const fn of run.listeners.change)fn({target:{id:'activity-month',value:'6'}});
 html=run.h.V.history();assert.match(html,/Jul 2024 workout activity/);assert.equal((html.match(/class="activity-day /g)||[]).length,31);
 const before=JSON.stringify(run.h.S);run.h.A.activityDay({v:'2024-07-03'});assert.equal(JSON.stringify(run.h.S),before,'calendar browsing does not mutate workouts');
