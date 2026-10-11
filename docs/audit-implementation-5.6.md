@@ -42,7 +42,7 @@ This change implements the behavior fixes from the 10 October 2026 audit against
 | F34 | Shared dialog roles, focus return, Tab containment, Escape and background inertness | Real keyboard containment, closed-details exclusion, Escape/inert restoration and native timer focus retention pass; VoiceOver/TalkBack pending |
 | F35 | Slider permits native vertical panning while horizontal adjustments remain explicit | Gesture-source checks; real touch arbitration pending |
 | F36 | Shared interaction tokens and new logging layout; duplicate profile adjustment switches removed | Foundation cascade layer and authoritative component rules replace legacy importance pileup; only five reduced-motion declarations remain important; 27 computed-style comparisons showed no migration differences |
-| F37 | 40 isolated regression scripts, 25 audit scenarios, catalogue-wide protocols/boundaries and real-browser journeys; Chromium/WebKit CI configured | Full suite documented below; no false claim that mocked DOM tests are browser tests |
+| F37 | 41 isolated regression scripts, 25 audit scenarios, catalogue-wide protocols/boundaries and real-browser journeys; Chromium/WebKit CI configured | Full suite documented below; no false claim that mocked DOM tests are browser tests |
 | F38 | Rest deadline, note, RPE, band and numeric draft persist per active exercise | Restart fixture and real offline/reload journey; timer controls retain keyboard focus |
 | F40 | Empty/repeated finish guarded; edit replaces by ID; failed save restores draft | Empty, concurrent duplicate, edit and quota fixtures |
 | F39 | Versioned methodology now matches tier averaging, contribution weights, factors and data-source policy | README, notices and methodology consistency checks |
@@ -55,7 +55,7 @@ Protocols describe the implementation convention rather than asserting scientifi
 
 ## Test evidence and release gate
 
-Verification on 11 October 2026: **40 of 40 regression scripts passed**, including 25 audit behavior scenarios. All 447 canonical protocols log and round-trip through the actual application handlers; all 400 ranked movements are checked against both references and 46 tier boundaries. The generator check passes for all 472 retained ladders. Generated HTML parity, exact service-worker cache hashing and release-version checks pass.
+Verification on 11 October 2026: **40 of 41 regression scripts passed**, including 25 audit behavior scenarios. All 447 canonical protocols log and round-trip through the actual application handlers; all 400 ranked movements are checked against both references and 46 tier boundaries. The generator check passes for all 472 retained ladders. Generated HTML parity, exact service-worker cache hashing and release-version checks pass.
 
 **12 real-browser journeys passed in Chromium 131.0.6778.0** on this host. They include all 447 rendered exercise forms, editing/reload, rank isolation, import preview/cancel/replace, recovery download, two tabs, offline/update activation, durable undo/custom identity, muscle contributors, responsive layouts and 100/1,000/10,000 retained sessions. History renders batches of 50. The 10,000-session startup plus History navigation took about 3.0 seconds on this host; this is not a phone performance claim. The service-worker update journey uses a synthetic old/waiting worker, not a previously installed public build.
 
@@ -84,3 +84,7 @@ Playwright is pinned to 1.64.0 to include the upstream WebKit offline-emulation 
 ### Persistent notification obstruction
 
 Real WebKit evidence exposed an update action banner covering the last history control. Action notifications now include an accessible dismiss button, remain visible while actionable, and allow pointer input through their noninteractive text area. The offline/upgrade journey verifies dismissing the prompt retains the draft and pending worker, then activates the update from Profile. Browser fixtures unregister their service workers between journeys, and WebKit pointer input waits for an actual hittable target after scrolling.
+
+### Import contract validation
+
+Measurements must be numeric scalars; booleans, arrays, objects and whitespace-only values no longer coerce into valid loads/repetitions. Known unit/reference enums, backup version bounds, protocol version integers and the RPE ceiling are validated. Cycles, non-JSON values and excessive nesting fail before replacement. Legacy numeric strings, zero/unknown legacy RPE and signed assistance values remain unchanged. `tests/backup-contract.mjs` records these acceptance cases.

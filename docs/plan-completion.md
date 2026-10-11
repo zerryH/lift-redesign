@@ -25,7 +25,7 @@ Updated 11 October 2026 for the 5.6.0 review candidate. The original audit inspe
 | 15 Premium interface | Foundation/component CSS layers, shared tokens, accessible dialogs, stable timer focus and reduced motion | Real touch, text zoom, VoiceOver/TalkBack and final visual sign-off |
 | 16 Every muscle/catalogue record | All canonical records exercise actual handlers and rendered forms; 400 ranked movements have boundary fixtures | Automated agreement is not independent scientific/content approval |
 | 17 Shared data contracts | Stable catalogue/custom/entry/set IDs; typed measurements; pure rank engine; separate integrity/build/SVG sources | Full module extraction, explicit per-set exercise/benchmark/version provenance and per-row standard evidence notes remain incremental engineering work |
-| 18 Complete user journeys | 40 isolated scripts, 25 audit scenarios and 12 real Chromium journeys; 100/1,000/10,000 records retained | Current Safari/installed iOS, Android, local-file browser coverage, screen readers and a midrange-phone budget |
+| 18 Complete user journeys | 41 isolated scripts, 25 audit scenarios and 23 Chromium/WebKit journeys; 100/1,000/10,000 records retained | Current Safari/installed iOS, Android, local-file browser coverage, screen readers and a midrange-phone budget |
 | 19 Dependency sequence and rollout | Engineering waves 1–5 advanced; recovery copies and rank-change notice implemented | Wave 6: isolated test cohort, migration comparison, recovery drill and staged rollout |
 | 20 Release readiness | Local numerical/data/rendering gates pass; limitations recorded | Owner must close device/content/migration gates before public release |
 | 21 Sources and reproductions | Original finding IDs linked to implementation/test evidence; methodology updated | Keep future evidence tied to commit and immutable exercise IDs |
@@ -71,10 +71,14 @@ Updated 11 October 2026 for the 5.6.0 review candidate. The original audit inspe
 
 ## Next work and ownership
 
-Engineering: finish explicit per-set protocol/catalogue/standard provenance, stronger schema enums/cycle validation, incremental catalogue/workout/view module boundaries and local-file/current-browser acceptance. Preserve raw values and legacy compatibility during that work.
+Engineering: finish explicit per-set protocol/catalogue/standard provenance, incremental catalogue/workout/view module boundaries and local-file/current-browser acceptance. Preserve raw values and legacy compatibility during that work.
 
 Content/product owner: approve every exercise protocol and provisional/inherited standard, rank labels, support destination and anatomy readability. Current thresholds are disclosed Slat heuristics, not population percentiles.
 
 QA/release owner: run the physical-device/accessibility matrix, a representative 5.5.106 migration cohort, native backup restoration/interruption drills and midrange-phone timings. Use isolated records; do not introduce personal workout telemetry. Record before/after set counts and exact versions, then approve a small staged release.
 
 The candidate should remain unmerged until these public-release gates are explicitly accepted. See [finding coverage](audit-implementation-5.6.md) and [ranking methodology](rank-methodology-v10.md).
+
+## Hosted browser verification
+
+CI at `f17f2d2a3898b41a70ea723be421a05fd7c7ecaf` passed all 40 then-current regression scripts, generated-data/build parity, and all 23 browser journeys in Chromium and WebKit. That run also verified update-prompt dismissal preserves the pending update and workout draft. The following import-contract change adds the 41st regression and requires a fresh head check. WebKit uses checked native mouse input with real hit testing; Chromium retains standard locator actions. This is automated browser evidence, not physical Safari or phone certification.
