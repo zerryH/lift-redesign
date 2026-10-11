@@ -24,7 +24,7 @@ async function clickControl(locator){
  if(engineName!=='webkit')return locator.click();
  // The WebKit runner stalled before pointer dispatch despite visible, enabled, inert-free controls.
  // Native pointer input keeps browser hit testing; it does not dispatch a synthetic DOM click.
- assert(await locator.isVisible());assert(await locator.isEnabled());
+ await locator.waitFor({state:'visible'});assert(await locator.isVisible());assert(await locator.isEnabled());
  await locator.evaluate(el=>el.scrollIntoView({block:"center",inline:"nearest",behavior:"instant"}));await page.waitForFunction(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return (hit===el||el.contains(hit))&&!el.closest('[inert]');},await locator.elementHandle(),{polling:100,timeout:5000});const point=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {x,y,hit:hit===el||el.contains(hit),inert:!!el.closest('[inert]')};});
  assert(point.hit&&!point.inert,'control must receive native pointer input');
  await page.mouse.click(point.x,point.y);
