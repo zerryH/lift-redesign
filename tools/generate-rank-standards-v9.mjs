@@ -27,6 +27,7 @@ const family=(name,m)=>{
    if(/dumbbell curl/.test(n))return [.10,1.5];
    if(/crunch/.test(n))return [.08,1.2];
  }
+ if(k==='hipIsolation')return [.10,1.5]; if(k==='shrug')return [.22,3.0]; if(k==='wrist')return [.04,.70];
  if(k==='deadlift')return [.35,3.8]; if(k==='squat')return [.30,3.5]; if(k==='hackSquat')return [.32,3.5]; if(k==='legPress')return [.65,5.0]; if(k==='rdl')return [.30,3.2]; if(k==='hipThrust')return [.45,4.5]; if(k==='legExt')return [.15,2.0]; if(k==='legCurl')return [.12,1.8]; if(k==='calf')return [.18,2.5]; if(k==='olympic')return [.25,3.2]; if(k==='bench')return [.20,3.0]; if(k==='ohp')return [.15,2.2]; if(k==='row')return [.18,2.8]; if(k==='pulldown')return [.16,2.5]; if(k==='chestMachine')return [.22,3.0]; if(k==='chestFly')return [.10,1.5]; if(k==='triceps')return [.10,1.5]; if(k==='curl'||k==='dbCurl')return [.10,1.5]; if(k==='lateral')return [.05,.75]; if(k==='rearDelt')return [.06,.90]; if(k==='carry')return [.25,3.0]; if(k==='assisted'){
    if(/chest dip/.test(n))return [.20,1.60];
    if(/dip/.test(n))return [.22,1.80];
@@ -65,5 +66,5 @@ const generate=(name,m)=>{
  return out;
 };
 const expected=Object.fromEntries(Object.entries(R.exerciseMeta).map(([n,m])=>[n,generate(n,m)]));
-if(process.argv.includes('--check')){assert.deepEqual(expected,R.t,'rank v9 thresholds do not match the documented generator');console.log(`rank v9 generator check passed · ${Object.keys(expected).length} exercises`);}
-else{R.t=expected;R.rankingVersion=9;R.ranking={...R.ranking,ageCurve:[[13,1.08],[15,1.06],[18,1.03],[20,1],[40,1],[45,1.03],[50,1.06],[60,1.10],[70,1.12],[100,1.12]],ageCap:1.12,height:{...(R.ranking.height||{}),kByRom:{high:.08,medium:.06,low:.04},capMin:.94,capMax:1.06}};fs.writeFileSync('ranks-config.json',JSON.stringify(R,null,2)+'\n');console.log(`wrote ${Object.keys(expected).length} rank v9 ladders`);}
+if(process.argv.includes('--check')){assert.deepEqual(expected,R.t,'rank v10 thresholds do not match the documented generator');console.log(`rank v10 generator check passed · ${Object.keys(expected).length} exercises`);}
+else{R.t=expected;R.rankingVersion=10;R.ranking={...R.ranking,ageCurve:[[13,1.08],[15,1.06],[18,1.03],[20,1],[40,1],[45,1.03],[50,1.06],[60,1.10],[70,1.12],[100,1.12]],ageCap:1.12,height:{...(R.ranking.height||{}),kByRom:{high:.08,medium:.06,low:.04},capMin:.94,capMax:1.06}};fs.writeFileSync('ranks-config.json',JSON.stringify(R,null,2)+'\n');console.log(`wrote ${Object.keys(expected).length} rank v10 ladders`);}

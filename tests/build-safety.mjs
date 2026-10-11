@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process';
 
 const freshHash=()=>crypto.createHash('sha256').update([
   fs.readFileSync('app.js','utf8'),fs.readFileSync('styles.css','utf8'),fs.readFileSync('index.html','utf8'),fs.readFileSync('exercises.json','utf8'),
-  fs.readFileSync('ranks-config.json','utf8'),fs.readFileSync('ranking-engine.js','utf8'),fs.readFileSync('anatomy-map.css','utf8'),fs.readFileSync('manifest.webmanifest','utf8'),fs.readFileSync('lift-icon-photo-fit.png').toString('base64'),fs.readFileSync('apple-touch-icon-photo-fit.png').toString('base64')
+  fs.readFileSync('ranks-config.json','utf8'),fs.readFileSync('ranking-engine.js','utf8'),fs.readFileSync('data-integrity.js','utf8'),fs.readFileSync('anatomy-map.css','utf8'),fs.readFileSync('manifest.webmanifest','utf8'),fs.readFileSync('lift-icon-photo-fit.png').toString('base64'),fs.readFileSync('apple-touch-icon-photo-fit.png').toString('base64')
 ].join('\n')).digest('hex').slice(0,12);
 
 const ex=JSON.parse(fs.readFileSync('exercises.json','utf8'));

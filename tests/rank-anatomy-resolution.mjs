@@ -1,24 +1,6 @@
-import fs from 'node:fs';
 import assert from 'node:assert/strict';
-const app=fs.readFileSync('app.js','utf8');
-assert.ok(app.includes('const normalizeExerciseName='));
-assert.ok(app.includes('const exerciseNameMatches='));
-assert.ok(app.includes('Object.keys(S.rk||{})'));
-assert.ok(app.includes("Machine Shoulder Press"));
-assert.ok(app.includes("Dumbbell Bicep Curl"));
-assert.ok(app.includes('const muscleStateNames=id=>'));
-assert.ok(app.includes('R.alias?.[n]||n'));
-console.log('rank anatomy resolution regression tests passed');
-
-import vm from 'node:vm';
-const source=fs.readFileSync('app.js','utf8');
-const start=source.indexOf('const MUSCLE_LIFTS=');
-const end=source.indexOf('const TUTORIAL_VERSION=',start);
-const block=source.slice(start,end)+"\nglobalThis.__test={MUSCLE_ORDER,muscleStates};\n";
-const ctx={MAX_RANK:45,R:{alias:{'Rope Hammer Cable Curl':'Rope Hammer Curl'}},S:{rk:{},set:{heightCm:175}},bestBW:{},bestHeight:{},num:v=>parseFloat(String(v))||0,rankThresholds:()=>[1,2],rankScore:()=>1,LiftRankingEngine:{percentileScore:()=>50,percentileToRankIndex:()=>-1,rankIndex:()=>1}};
-vm.createContext(ctx); vm.runInContext(block,ctx);
-const b={'Cable Lateral Raise':10,'Machine Shoulder Press':20,'Lat Pulldown':30,'Barbell Row':40,'Seated Cable Row':25,'Dumbbell Bicep Curl':12,'Rope Hammer Cable Curl':11};
-for(const n of Object.keys(b)) ctx.S.rk[n]={i:30,pc:20,e:b[n],b:70,h:175,auto:1};
-const states=ctx.__test.muscleStates(b,70); const unlocked=new Set(states.filter(x=>x.i>=0).map(x=>x.id));
-for(const id of ['sideDelts','frontDelts','lats','upperBack','biceps']) assert.ok(unlocked.has(id),`expected ${id} to unlock from ranked lifts`);
-console.log('synthetic ranked-lift anatomy mapping passed');
+import {boot,base,workout} from './support/runtime.mjs';
+for(const [name,zone,forbidden] of [['Cable Calf Raise','calves','quads'],['Cable Crunch','abs','lats'],['Cable Shoulder Press','frontDelts','rearDelts'],['Dumbbell Bicep Curl','biceps','calves']]){
+ const z=await boot({...base(),workouts:[workout(name,60)]});const states=z.h.muscleStates(z.h.bests(),80);assert(states.find(x=>x.id===zone).i>=0,name);assert.equal(states.find(x=>x.id===forbidden).i,-1,name);assert.deepEqual(z.errors,[]);
+}
+console.log('anatomy uses explicit muscle contributions, not benchmark alias equality');
