@@ -6,7 +6,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.5';
+const BUILD_VERSION='5.7.6';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -550,7 +550,7 @@ const repairState=()=>{
  const used=new Set(),base=Date.now();
  S.workouts=(Array.isArray(S.workouts)?S.workouts:[]).filter(w=>w&&typeof w==='object').map((w,i)=>{const q={...w};let id=Number(q.id);if(!Number.isSafeInteger(id)||id<=0||used.has(id)){id=base+i;while(used.has(id))id++}used.add(id);q.id=id;q.d=safeDate(q.d);q.split=safeName(q.split)||'Workout';q.ex=Array.isArray(q.ex)?q.ex.map(normEx).filter(x=>x.n):[];return q});
  S.custom=S.custom.filter(c=>c&&typeof c==='object').map(c=>({...c,n:safeName(c.n)})).filter(c=>c.n);
- if(S.cur&&typeof S.cur==='object'){if(Number(S.editingId)===Number(S.cur.id)){setIds.clear();entryIds.clear();}const q={...S.cur};let id=Number(q.id);if(!Number.isSafeInteger(id)||id<=0)id=base+S.workouts.length;q.id=id;q.d=safeDate(q.d);q.split=safeName(q.split)||'Workout';q.ex=Array.isArray(q.ex)?q.ex.map(normEx).filter(x=>x.n):[];S.cur=q;const eid=Number(S.editingId);S.editingId=Number.isSafeInteger(eid)&&eid>0?eid:null}else{S.cur=null;S.editingId=null}
+ if(S.cur&&typeof S.cur==='object'){const eid=Number(S.editingId),editing=Number.isSafeInteger(eid)&&eid>0&&eid===Number(S.cur.id);if(editing){setIds.clear();entryIds.clear();}const q={...S.cur};let id=Number(q.id);if(!Number.isSafeInteger(id)||id<=0||(!editing&&used.has(id))){id=base+S.workouts.length;while(used.has(id)&&id<Number.MAX_SAFE_INTEGER)id++;if(used.has(id)){id=1;while(used.has(id))id++;}}q.id=id;q.d=safeDate(q.d);q.split=safeName(q.split)||'Workout';q.ex=Array.isArray(q.ex)?q.ex.map(normEx).filter(x=>x.n):[];S.cur=q;S.editingId=editing?eid:null}else{S.cur=null;S.editingId=null}
  if(S.undo)try{SlatData.validateBackup({workouts:[],bw:[],undo:S.undo});}catch{S.undo=null;}
  if(!Number.isFinite(Number(S.lastBackup)))S.lastBackup=0;
  return S;
@@ -580,7 +580,7 @@ calc:async()=>{if(!gr)return;const raw=String(gr.n||'').trim(),n=canonicalExerci
  saveCheck:async()=>{if(!gr?.res)return;const n=gr.res.n,previous=S.checks[n];S.checks[n]={...gr.res};if(!await save()){if(previous)S.checks[n]=previous;else delete S.checks[n];return toast('Check was not saved. Keep this tab open and export a backup.');}render();sheet();toast('Check saved · workout ranks unchanged')},
 tab:d=>{view=d.v;if(view==='history'){historyVisible=50;historyDateFilter='';}nav();render();queueViewTop()},
 moreHistory:()=>{historyVisible+=50;render()},
-start:d=>{if(S.cur)return toast('Finish or discard the current workout first');ci=0;dr={};S.editingId=null;S.cur={id:Date.now(),d:iso(),split:d.v,ex:[]};go()},
+start:d=>{if(S.cur)return toast('Finish or discard the current workout first');ci=0;dr={};S.editingId=null;S.cur={id:newWorkoutId(),d:iso(),split:d.v,ex:[]};go()},
 ds:d=>{const i=+d.i,j=+d.j;confirmAction('Delete set?','This will remove Set '+(j+1)+' from '+S.cur.ex[i].n+'.','Delete',()=>{const x=S.cur.ex[i];retainRemoval('set',x.sets[j],{workoutId:S.cur.id,entryId:x.entryId,index:j});x.sets.splice(j,1);go()})},
 wu:d=>{const s=S.cur.ex[d.i].sets[d.j];s.t=s.t=='w'?'':'w';go()},
 rx:d=>{const i=+d.i;confirmAction('Remove exercise?',S.cur.ex[i].n+' and all of its sets will be removed from this workout.','Remove',()=>{retainRemoval('exercise',S.cur.ex[i],{workoutId:S.cur.id,index:i});S.cur.ex.splice(i,1);ci=Math.max(0,Math.min(ci,S.cur.ex.length-1));go()})},
@@ -890,6 +890,7 @@ let qolStarted=false;const qolStart=()=>{if(qolStarted)return;qolStarted=true;qo
 /* Shared application contracts: catalogue identity, drafts, recovery and dialogs. */
 function bootFingerprint(state){return JSON.stringify({...state,rk:{},savedAt:0,set:{...state.set,age:undefined}});}
 function newRecordId(prefix){return prefix+':'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));}
+function newWorkoutId(){const used=new Set((S.workouts||[]).map(w=>Number(w?.id)).filter(id=>Number.isSafeInteger(id)&&id>0));let id=Math.max(1,Math.floor(Date.now()));while(used.has(id)&&id<Number.MAX_SAFE_INTEGER)id++;if(used.has(id)){id=1;while(used.has(id))id++;}return id;}
 const canonicalExercise=n=>SlatCatalogue.resolve(n,X?.catalogue);
 const catalogueRecord=n=>{
  const entry=X?.catalogue?.[canonicalExercise(n)];if(entry)return entry;
@@ -1075,7 +1076,7 @@ let historyQuery='',historySplit='',historyExercise='',summaryMode='month',summa
 const exercisePreference=n=>S.exercisePreferences?.[catalogueRecord(n)?.id]||{};
 const enhancedButton=(action,label,extra='')=>`<button class=pill data-a=${action} ${extra}>${label}</button>`;
 function routineFromWorkout(w){return {id:newRecordId('routine'),name:w.name||w.split||'My routine',split:w.split,ex:w.ex.map(x=>{const z=x.sets.find(s=>s.t!=='w')||x.sets[0]||{},t=x.target;return {n:x.n,exerciseId:x.exerciseId||catalogueRecord(x.n)?.id||'custom:'+x.n,sets:t?.sets??Math.max(1,x.sets.filter(s=>s.t!=='w').length),reps:t?.reps??(num(z.reps)||8),seconds:t?.seconds??(num(z.seconds)||30),meters:t?.meters??(num(z.meters)||20),rest:t?.rest??exercisePreference(x.n).rest??S.set.rest??90};})};}
-function routineSession(r){return {id:Date.now(),d:iso(),name:r.name,split:r.split||'Workout',routineId:r.id,ex:r.ex.map(x=>({n:S.custom.find(c=>c.id===x.exerciseId)?.n||canonicalExercise(x.n),exerciseId:x.exerciseId,entryId:newRecordId('exercise'),sets:[],target:{sets:x.sets,reps:x.reps,seconds:x.seconds,meters:x.meters,rest:x.rest}}))};}
+function routineSession(r){return {id:newWorkoutId(),d:iso(),name:r.name,split:r.split||'Workout',routineId:r.id,ex:r.ex.map(x=>({n:S.custom.find(c=>c.id===x.exerciseId)?.n||canonicalExercise(x.n),exerciseId:x.exerciseId,entryId:newRecordId('exercise'),sets:[],target:{sets:x.sets,reps:x.reps,seconds:x.seconds,meters:x.meters,rest:x.rest}}))};}
 function launchRoutine(r){if(S.cur)return toast('Finish or discard your current workout first');S.cur=routineSession(r);S.editingId=null;ci=0;dr={};view='today';qolCloseModal();nav();go();}
 function routinesMarkup(){return `<section class="note routine-card"><div class=enhanced-heading><div><b>Saved routines</b><small>Ordered exercises, targets and rest presets</small></div>${enhancedButton('routineEdit','New routine')}</div>${(S.routines||[]).map(r=>`<div class=row><div><b>${esc(r.name)}</b><small>${r.ex.length} exercises</small></div><div class=chips>${enhancedButton('routineStart','Start',`data-v="${esc(r.id)}"`)}${enhancedButton('routineEdit','Edit',`data-v="${esc(r.id)}"`)}${enhancedButton('routineDuplicate','Duplicate',`data-v="${esc(r.id)}"`)}</div></div>`).join('')||'<small>Save a finished workout as a routine, or build one here.</small>'}</section>`;}
 function routineProgress(w){const planned=(w?.ex||[]).filter(x=>Number.isInteger(x.target?.sets)&&x.target.sets>0);return planned.reduce((s,x)=>{const logged=x.sets.filter(z=>z.t!=='w').length;s.total+=x.target.sets;s.done+=Math.min(logged,x.target.sets);s.completed+=Number(logged>=x.target.sets);return s;},{done:0,total:0,completed:0,exercises:planned.length});}
