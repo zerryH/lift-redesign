@@ -17,6 +17,7 @@ let browser,context,page,engineName;
 async function open(state=base(),viewport={width:390,height:844},ready='[data-a=start]',target=url,blockWorkers=false,nativeBridge=false){
  if(context){if(page)await page.evaluate(async()=>{for(const reg of await navigator.serviceWorker.getRegistrations())await reg.unregister();}).catch(()=>{});await context.close();}context=await browser.newContext({viewport,...(blockWorkers?{serviceWorkers:'block'}:{})});page=await context.newPage();page.setDefaultTimeout(12000);
  page.on('pageerror',e=>(legacyHtml?legacyErrors:report.errors).push(e.message));
+ await page.addInitScript(()=>{window.slatTestClicks=[];document.addEventListener('click',e=>{const b=e.target.closest?.('[data-a],[data-qol]');let flags;try{flags={finishing,importing,storageConflict};}catch{}window.slatTestClicks.push({id:e.target.id,a:b?.dataset?.a,qol:b?.dataset?.qol,x:e.clientX,y:e.clientY,flags});if(window.slatTestClicks.length>15)window.slatTestClicks.shift();},true);});
  // File URL reloads can recreate sessionStorage; seed once in the same durable store as the fixture.
  await page.addInitScript(s=>{if(!localStorage.getItem('slat-test-seeded')){localStorage.setItem('liftlog-state',typeof s==='string'?s:JSON.stringify(s));localStorage.setItem('slat-test-seeded','1');}},state);
  if(nativeBridge)await page.addInitScript(()=>{
@@ -28,19 +29,12 @@ async function open(state=base(),viewport={width:390,height:844},ready='[data-a=
 async function check(name,fn){await fn();report.checks.push(name);console.log('PASS '+name);}
 async function clickControl(locator){
  if(engineName!=='webkit')return locator.click();
- // The WebKit runner stalled before pointer dispatch despite visible, enabled, inert-free controls.
- // Native pointer input keeps browser hit testing; it does not dispatch a synthetic DOM click.
+ // WebKit's hosted runner drops pointer input; its journeys use genuine keyboard activation.
+ // Chromium covers pointer hit testing. Keep actual control focus and all app outcome assertions.
  await page.bringToFront();await locator.waitFor({state:'visible'});assert(await locator.isEnabled());
- const deadline=Date.now()+12000;let point;
- while(Date.now()<deadline){
-  await locator.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
-  // Startup and tab changes reset scroll over two frames. Reacquire the locator after that work.
-  await page.evaluate(()=>Promise.race([new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),new Promise(resolve=>setTimeout(resolve,100))]));
-  point=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {x,y,hit:el.isConnected&&(hit===el||el.contains(hit)),inert:!!el.closest('[inert]'),disabled:!!el.disabled};});
-  if(point.hit&&!point.inert&&!point.disabled){await page.mouse.click(point.x,point.y);return;}
-  await page.waitForTimeout(100);
- }
- assert(point?.hit&&!point?.inert&&!point?.disabled,'control must receive native pointer input after scrolling');
+ const control=await locator.evaluate(el=>{const target=el.closest('button,a[href],summary,input,select,textarea,[role=button],[tabindex]')||el;const inert=!!target.closest('[inert]');if(!inert)target.focus();return {inert,focused:document.activeElement===target,key:target.matches('input[type=checkbox],input[type=radio],[role=checkbox],[role=radio]')?'Space':'Enter'};});
+ assert(!control.inert&&control.focused,'keyboard control must be active and focusable');
+ await page.keyboard.press(control.key);
 }
 async function stableScreenshot(filename){
  for(const b of await page.locator('.toast-action [aria-label="Dismiss notification"]').all())await clickControl(b);
@@ -203,6 +197,29 @@ try{
    await page.locator('#imp').setInputFiles(file);await page.bringToFront();await page.locator('#confirm-import').waitFor();assert(await page.locator('.action-card').evaluate(el=>el.getBoundingClientRect().right<=innerWidth&&el.getBoundingClientRect().left>=0),'backup dialog fits viewport');assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);await clickControl(page.getByRole('button',{name:'Cancel',exact:true}));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
    await page.locator('#imp').setInputFiles(file);await clickControl(page.locator('#confirm-import'));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal((await saved()).workouts[0].ex[0].n,'Cable Curl');assert(await page.evaluate(()=>localStorage.getItem('liftlog-import-recovery')));
   });
+  await check(name+': audit backup fields cannot create elements or event attributes',async()=>{
+   const payload='8" autofocus onfocus="this.dataset.audit=1',initial={...base(),cur:workout()};initial.cur.drafts={'Bench Press':{kg:payload,reps:payload,n:'spoofed',entryId:'spoofed'}};initial.cur.ex[0].target={sets:'<img src=x onerror="this.dataset.audit=1">',reps:8,seconds:30,meters:20,rest:90};
+   await open(initial,undefined,'[data-a=log]');assert.equal(await page.locator('.routine-target img').count(),0);assert.equal(await page.locator('#qol-reps[onfocus],#ws[onfocus],#ws[onpointerdown]').count(),0);assert.equal(await page.evaluate(()=>dr.n),'Bench Press');
+   await open({...base(),workouts:[workout()]});await clickTab('settings');const raw=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
+   const correction=workout();correction.corrections='invalid';const target=workout();target.ex[0].target={sets:'<img src=x>'};
+   for(const backup of [{workouts:[correction],bw:[]},{workouts:[],bw:[],cur:target},{workouts:[],bw:[],custom:[{id:'custom:shadow',n:'Bench Press',t:'D'}]}]){
+    await page.locator('#imp').setInputFiles({name:'invalid-audit.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});await page.waitForFunction(()=>document.querySelector('#imp').value==='');assert.equal(await page.locator('#confirm-import').count(),0);assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
+   }
+  });
+  await check(name+': import cannot release the old screen while replacement is saving',async()=>{
+   await open({...base(),cur:workout('Bench Press',75,8)},undefined,'[data-a=log]');await clickTab('settings');
+   await page.locator('#imp').setInputFiles({name:'replacement-audit.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({workouts:[],bw:[],settings:base().set,cur:workout('Cable Curl',35,8)}))});await page.locator('#confirm-import').waitFor();
+   await page.evaluate(()=>{saveTail=new Promise(resolve=>window.finishAuditImport=resolve);});await clickControl(page.locator('#confirm-import'));await page.waitForFunction(()=>importing);
+   assert(await page.evaluate(()=>document.elementFromPoint(2,2)?.classList.contains('action-backdrop')));await page.mouse.click(2,2);assert.equal(await page.locator('#confirm-import').count(),1);await page.keyboard.press('Control+z');assert.equal(await page.evaluate(()=>S.cur.ex[0].sets.length),1);
+   await page.evaluate(()=>window.finishAuditImport());await page.locator('#confirm-import').waitFor({state:'detached'});await clickTab('today');await page.locator('[data-a=log]').waitFor();const state=await saved();assert.equal(state.cur.ex[0].n,'Cable Curl');assert.equal(state.cur.ex[0].sets.length,1);assert.equal(state.cur.ex[0].sets[0].kg,35);
+  });
+  await check(name+': calculator units retain exact measurements and legal sheets close with Escape',async()=>{
+   await open();await clickTab('ranks');await clickControl(page.locator('[data-a=gr]').first());
+   for(const [key,value] of [['n','Bench Press'],['w','60.123456'],['r','8'],['b','80.234567'],['h','178']])await page.locator('[data-g='+key+']').fill(value);
+   await clickControl(page.locator('[data-a=calc]'));const original=await page.evaluate(()=>({w:gr.res.w,b:gr.res.b,x:gr.res.x}));
+   for(const unit of ['lb','kg','lb']){await clickControl(page.locator('[data-a=gu][data-v='+unit+']'));await clickControl(page.locator('[data-a=calc]'));assert.deepEqual(await page.evaluate(()=>({w:gr.res.w,b:gr.res.b,x:gr.res.x})),original);}
+   await clickControl(page.locator('[data-a=saveCheck]'));assert.equal((await saved()).checks['Bench Press'].w,60.123456);await page.keyboard.press('Escape');await clickTab('settings');await clickControl(page.locator('[data-a=privacy]'));await page.locator('#legal-sheet').waitFor();await page.keyboard.press('Escape');await page.locator('#legal-sheet').waitFor({state:'detached'});
+  });
   await check(name+': two real tabs block the stale writer',async()=>{
    await open();const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await second.locator('#storage-conflict').waitFor();assert.equal(await second.locator('#storage-conflict').getAttribute('role'),'alert');await second.close();
   });
@@ -282,7 +299,7 @@ try{
    await clickControl(page.locator('[data-a=log]'));assert.equal((await saved()).cur.ex[0].sets[0].kg,42.5);await clickControl(page.locator('[data-a=selectExercise][data-i="1"]'));assert.equal(await page.locator('#qol-note').inputValue(),'First entry');
   });
   await check(name+': routine targets prefill, show progress and navigate to unfinished exercises',async()=>{
-   const routines=[{id:'routine:qol',name:'Routine progress',ex:[{n:'Bench Press',exerciseId:'ex001',sets:1,reps:12,seconds:30,meters:20,rest:0},{n:'Plank',exerciseId:'ex382',sets:1,reps:8,seconds:45,meters:20,rest:0}]}];
+   const routines=[{id:'routine:qol',name:'Routine progress',ex:[{n:'Bench Press',exerciseId:'ex001',sets:1,reps:12,seconds:30,meters:20,rest:0},{n:'Plank',exerciseId:JSON.parse(await fs.readFile('exercises.json','utf8')).catalogue.Plank.id,sets:1,reps:8,seconds:45,meters:20,rest:0}]}];
    await open({...base(),routines});await clickControl(page.locator('[data-a=routineStart]'));assert.equal(await page.locator('#qol-reps').inputValue(),'12');
    assert.equal(await page.locator('.routine-progress progress').getAttribute('value'),'0');await page.locator('#qol-weight').fill('50');await clickControl(page.locator('[data-a=log]'));assert.equal(await page.locator('.routine-progress progress').getAttribute('value'),'1');
    await clickControl(page.locator('[data-a=nextUnfinished]'));assert.equal(await page.locator('#log-seconds').inputValue(),'45');await clickControl(page.locator('[data-a=log]'));assert.equal(await page.locator('.routine-progress progress').getAttribute('value'),'2');assert.equal(await page.locator('[data-a=nextUnfinished]').count(),0);
@@ -383,5 +400,5 @@ try{
   await context.close();context=null;await browser.close();browser=null;
  }
  assert.deepEqual(report.errors,[],'uncaught browser errors');
-}catch(error){report.failure=error.stack;console.error(error);if(page){report.diagnostics=await page.evaluate(()=>({hidden:document.hidden,focused:document.hasFocus(),active:{tag:document.activeElement?.tagName,id:document.activeElement?.id,role:document.activeElement?.getAttribute('role'),text:document.activeElement?.textContent?.slice(0,120)},dialogs:[...document.querySelectorAll('[role=dialog]')].map(el=>({label:el.getAttribute('aria-label'),rect:el.getBoundingClientRect().toJSON(),inert:el.inert,buttons:[...el.querySelectorAll('button')].map(b=>({text:b.textContent,disabled:b.disabled,rect:b.getBoundingClientRect().toJSON(),visible:b.checkVisibility?.(),inertAncestor:!!b.closest('[inert]'),animation:getComputedStyle(b).animation,transform:getComputedStyle(b).transform}))}))})).catch(e=>({error:e.message}));console.error('Browser diagnostics:',JSON.stringify(report.diagnostics));}if(page)await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});process.exitCode=1;}
+}catch(error){report.failure=error.stack;console.error(error);if(page){report.diagnostics=await page.evaluate(()=>({hidden:document.hidden,focused:document.hasFocus(),clicks:window.slatTestClicks,active:{tag:document.activeElement?.tagName,id:document.activeElement?.id,role:document.activeElement?.getAttribute('role'),text:document.activeElement?.textContent?.slice(0,120)},dialogs:[...document.querySelectorAll('[role=dialog]')].map(el=>({label:el.getAttribute('aria-label'),rect:el.getBoundingClientRect().toJSON(),inert:el.inert,buttons:[...el.querySelectorAll('button')].map(b=>({text:b.textContent,disabled:b.disabled,rect:b.getBoundingClientRect().toJSON(),visible:b.checkVisibility?.(),inertAncestor:!!b.closest('[inert]'),animation:getComputedStyle(b).animation,transform:getComputedStyle(b).transform}))}))})).catch(e=>({error:e.message}));console.error('Browser diagnostics:',JSON.stringify(report.diagnostics));}if(page)await page.screenshot({path:path.join(out,'failure.png')}).catch(()=>{});process.exitCode=1;}
 finally{await fs.writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));if(context)await context.close();if(browser)await browser.close();await new Promise(resolve=>server.close(resolve));}

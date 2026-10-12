@@ -31,7 +31,7 @@ history.h.S.editingId=2;assert.equal(history.h.qolPrevSet('Bench Press'),null);
 // Routine targets guide input, progress ignores warm-ups and extra sets, and reorder keeps selection/drafts.
 const routine=await boot();const r={id:'routine:test',name:'Target session',split:'Push',ex:[
  {n:'Bench Press',exerciseId:'ex001',sets:2,reps:12,seconds:30,meters:20,rest:90},
- {n:'Plank',exerciseId:'ex382',sets:1,reps:8,seconds:45,meters:20,rest:0},
+ {n:'Plank',exerciseId:routine.h.catalogueRecord('Plank').id,sets:1,reps:8,seconds:45,meters:20,rest:0},
 ]};
 routine.h.launchRoutine(r);assert.equal(routine.h.dr.reps,12);
 routine.h.dr.kg=50;routine.h.persistDraft();const active=routine.h.S.cur.ex[0].entryId;

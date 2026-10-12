@@ -16,7 +16,7 @@ globalThis.SlatWorkout=(()=>{
   else if(!next.some(w=>w.id===done.id))next.push(done);
   return next;
  }
- const validDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+'T12:00:00Z'))&&new Date(value+'T12:00:00Z').toISOString().slice(0,10)===value;
+ const validDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number(value.slice(0,4))>=1900&&Number.isFinite(Date.parse(value+'T12:00:00Z'))&&new Date(value+'T12:00:00Z').toISOString().slice(0,10)===value;
  const localDate=now=>{const d=new Date(now),pad=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());};
  function activity(workouts,year){
   if(!Number.isInteger(year)||year<1900||year>9999)throw new Error('Invalid activity year');
@@ -31,7 +31,7 @@ globalThis.SlatWorkout=(()=>{
   if(!validDate(date)||date>localDate(now))throw new Error('Choose a real date that is not in the future');
   if(typeof name!=='string'||name.length>80||/[\u0000-\u001f]/.test(name)||['__proto__','constructor','prototype'].includes(name.trim()))throw new Error('Use a name of up to 80 characters');
   const next=JSON.parse(JSON.stringify(current));
-  if(next.d!==date||String(next.name||'')!==name)next.corrections=[...(next.corrections||[]),{date:next.d,name:next.name||'',correctedAt:now}];
+  if(next.d!==date||String(next.name||'')!==name)next.corrections=[...(Array.isArray(next.corrections)?next.corrections.filter(c=>c&&typeof c==='object'):[]),{date:next.d,name:next.name||'',correctedAt:now}];
   next.d=date;next.name=name;
   for(const x of next.ex)for(const set of x.sets)if(set.performanceContext&&set.performanceContext.workoutDate!==date){set.originalPerformanceContext??=JSON.parse(JSON.stringify(set.performanceContext));set.performanceContext.workoutDate=date;}
   return next;
