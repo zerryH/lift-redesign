@@ -4,12 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.7**
+**Build: 5.7.8**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
+
+New in 5.7.8: web rest notifications are explicitly static next-set reminders. The unreliable web completion-notification update has been removed; in-app and native iPhone countdowns remain available. See `docs/fixes-5.7.8.md`.
 
 New in 5.7.7: workout-date corrections no longer depend on locale formatting, and the rest timer can be adjusted down as well as up. See `docs/fixes-5.7.7.md`.
 
@@ -17,7 +19,7 @@ New in 5.7.5: routine copies retain planned targets and zero-rest presets, switc
 
 New in 5.7.4: an iPhone app project with a real ActivityKit countdown, progress bar and translucent glass surface. A versioned bridge connects logging and timer controls. Native installation and signing are required; a website/PWA update alone cannot display the custom live widget. See `ios/README.md` and `docs/fixes-5.7.4.md`.
 
-New in 5.7.3: a compact rest-timer dock that reserves its own space, with a progress line and optional system rest cards. Phone notifications show a fixed next-set time; completion alerts depend on the page continuing to run. iPhone web notifications require a Home Screen installation, and a native Live Activity countdown is outside the web app. See `docs/fixes-5.7.3.md`.
+New in 5.7.3: a compact rest-timer dock that reserves its own space, with a progress line and optional system rest cards. Phone notifications show a fixed next-set time. As of 5.7.8, they are static reminders with no completion alert. iPhone web notifications require a Home Screen installation, and a native Live Activity countdown is outside the web app. See `docs/fixes-5.7.3.md`.
 
 New in 5.7: editable session dates/names, saved ordered routines, tracking-mode progress charts, equipment setup labels, timer controls, History search/details, and weekly/monthly training summaries. See `docs/audit-5.7.0.md` and `docs/catalogue-review-5.7.0.md`.
 
