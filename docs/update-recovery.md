@@ -1,5 +1,3 @@
-# Update recovery
+# Update installation protections
 
-The update check distinguishes a waiting worker, an installation in progress, and an already-active newer worker. A newer `version.json` alone does not mean files are downloading. If the active worker reports the published build, the app saves pending writes and reloads its staged shell. Failed or timed-out installations keep the current app and offer an honest retry message.
-
-Installations fetch the offline files without the HTTP cache, stop after 25 seconds, and verify the staged HTML build before activation. Failed staging removes only its own cache. Fetches read only the active worker's cache, so an incomplete cache cannot shadow the working release. Reloads wait for pending workout writes; updates never delete IndexedDB or localStorage.
+Extends the 5.7.12 update recovery without replacing its fresh-file validation or save-before-reload checks. Installation requests now abort after 25 seconds, the active worker reads only its own cache, and update registration checks have a timeout. Active workers report their build through a message channel, with the existing served-shell check retained for older workers. All four application entry files remain version-checked before activation. Failed staging preserves any pre-existing cache and all workout records.

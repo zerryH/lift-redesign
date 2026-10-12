@@ -6,7 +6,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.12';
+const BUILD_VERSION='5.7.13';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -583,69 +583,87 @@ const swInstall=async(reconcile=false)=>{
  let reg=await navigator.serviceWorker.getRegistration(SW_SCOPE);
  if(!reg)reg=await navigator.serviceWorker.register(SW_SCRIPT,{scope:SW_SCOPE,updateViaCache:'none'});
  if((reg.active||reg.waiting||reg.installing)?.scriptURL&&(reg.active||reg.waiting||reg.installing).scriptURL!==swWorkerUrl())reg=await navigator.serviceWorker.register(SW_SCRIPT,{scope:SW_SCOPE,updateViaCache:'none'});
- if(reconcile&&navigator.onLine!==false)await withSWTimeout(reg.update());return reg;
+ if(reconcile&&navigator.onLine!==false)await reg.update();return reg;
 };
-const reloadUpdatedApp=async()=>{const saved=await saveTail;if(saved===false||persistenceStatus==='failed'||storageConflict){toast('Update paused: changes could not be saved. Keep this screen open and export a backup.');return false}location.reload();return true};
+const reloadForUpdate=async()=>{
+ if(!await save()){toast('Update is ready, but your changes could not be saved. Retry save before reloading.');return false;}
+ location.reload();return true;
+};
 const activateSW=async w=>{
  if(!w||w.state==='redundant')return false;
- if(w.state==='activated'&&navigator.serviceWorker.controller===w)return reloadUpdatedApp();
- const ok=await new Promise(resolve=>{
-  let done=false,timer;const onController=()=>finish(true);
-  const onState=()=>{if(w.state==='redundant')finish(false);else if(w.state==='activated'&&navigator.serviceWorker.controller===w)finish(true)};
-  const cleanup=()=>{clearTimeout(timer);navigator.serviceWorker.removeEventListener('controllerchange',onController);w.removeEventListener('statechange',onState)};
-  const finish=ok=>{if(done)return;done=true;cleanup();resolve(ok)};
+ if(w.state==='activated')return reloadForUpdate();
+ return await new Promise(resolve=>{
+  let done=false,timer;
+  const onController=()=>finish(true,true),onState=()=>{if(w.state==='redundant')finish(false,false);};
+  const cleanup=()=>{clearTimeout(timer);navigator.serviceWorker.removeEventListener('controllerchange',onController);w.removeEventListener('statechange',onState);};
+  const finish=async(ok,reload)=>{if(done)return;done=true;cleanup();resolve(ok&&reload?await reloadForUpdate():ok);};
   navigator.serviceWorker.addEventListener('controllerchange',onController);w.addEventListener('statechange',onState);
-  timer=setTimeout(()=>finish(false),SW_TIMEOUT);
-  try{w.postMessage({type:'SKIP_WAITING'})}catch{finish(false)}
+  timer=setTimeout(()=>finish(false,false),SW_TIMEOUT);
+  try{w.postMessage({type:'SKIP_WAITING'});}catch{finish(false,false);}
  });
- return ok?reloadUpdatedApp():false;
 };
-const promptSWUpdate=w=>{if(!navigator.serviceWorker?.controller||!w||w.state==='redundant'||swPrompted.has(w))return;swPrompted.add(w);toast('Update available — tap to reload',async()=>{if(swPromptActive.has(w))return;swPromptActive.add(w);const ok=await activateSW(w);if(!ok){swPromptActive.delete(w);toast('Update could not be activated — current version is still running')}},'Reload')};
+const promptSWUpdate=w=>{
+ if(!navigator.serviceWorker?.controller||!w||w.state==='redundant'||swPrompted.has(w))return;
+ swPrompted.add(w);toast('Update available — tap to reload',async()=>{
+  if(swPromptActive.has(w))return;swPromptActive.add(w);const ok=await activateSW(w);
+  if(!ok){swPromptActive.delete(w);toast('Update could not be activated — current version is still running');}
+ },'Reload');
+};
 const watchSW=reg=>{
  if(!reg||swWatched.has(reg))return reg;swWatched.add(reg);
- const watch=w=>{if(!w)return;if(w.state==='installed')promptSWUpdate(w);else{const onState=()=>{if(w.state==='installed')promptSWUpdate(w);if(w.state==='installed'||w.state==='redundant')w.removeEventListener('statechange',onState)};w.addEventListener('statechange',onState)}};
- if(reg.waiting)promptSWUpdate(reg.waiting);watch(reg.installing);
- reg.addEventListener('updatefound',()=>watch(reg.installing));return reg;
+ if(reg.waiting)promptSWUpdate(reg.waiting);
+ if(reg.installing){const w=reg.installing;w.addEventListener('statechange',()=>{if(w.state==='installed')promptSWUpdate(w);});}
+ reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed')promptSWUpdate(w);});},{once:true});return reg;
 };
 const waitForSWInstall=reg=>new Promise(resolve=>{
  if(reg.waiting)return resolve(reg.waiting);const existing=reg.installing;if(!existing)return resolve(null);
- let done=false,timer;const finish=w=>{if(done)return;done=true;clearTimeout(timer);existing.removeEventListener('statechange',onState);resolve(w)};
- const onState=()=>{if(['installed','activating','activated'].includes(existing.state))finish(existing);else if(existing.state==='redundant')finish(null)};
- existing.addEventListener('statechange',onState);timer=setTimeout(()=>finish(null),SW_TIMEOUT);onState();
+ let done=false,timer;const finish=w=>{if(done)return;done=true;clearTimeout(timer);resolve(w?.state==='installed'?w:null);};
+ existing.addEventListener('statechange',()=>{if(existing.state==='installed'||existing.state==='activated')finish(existing);else if(existing.state==='redundant')finish(null);});
+ timer=setTimeout(()=>finish(null),SW_TIMEOUT);
 });
 const semverTuple=v=>String(v||'').split('.').map(x=>Number(x));
-const isNewerBuild=(remote,current)=>{const a=semverTuple(remote),b=semverTuple(current);if(a.length!==3||b.length!==3||a.some(x=>!Number.isFinite(x))||b.some(x=>!Number.isFinite(x)))return false;for(let i=0;i<3;i++){if(a[i]!==b[i])return a[i]>b[i]}return false};
+const isNewerBuild=(remote,current)=>{
+ const a=semverTuple(remote),b=semverTuple(current);
+ if(a.length!==3||b.length!==3||a.some(x=>!Number.isInteger(x)||x<0)||b.some(x=>!Number.isInteger(x)||x<0))return false;
+ for(let i=0;i<3;i++)if(a[i]!==b[i])return a[i]>b[i];return false;
+};
+const updateText=async url=>{
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),SW_TIMEOUT);
+ try{const r=await fetch(url,{cache:'no-store',signal:controller.signal});if(!r.ok)throw new Error('Update check HTTP '+r.status);return await r.text();}finally{clearTimeout(timer);}
+};
 const publishedBuild=async()=>{
  const u=new URL(REMOTE_VERSION_PATH,location.href);u.searchParams.set('cb',String(Date.now()));
- const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),SW_TIMEOUT);
- try{const r=await fetch(u.href,{cache:'no-store',signal:controller.signal});if(!r.ok)throw new Error('Version check HTTP '+r.status);const j=await r.json();const v=String(j?.version||'').trim();if(!/^\d+\.\d+\.\d+$/.test(v))throw new Error('Published version is invalid');return v}finally{clearTimeout(timer)}
+ const j=JSON.parse(await updateText(u.href)),v=String(j?.version||'').trim();
+ if(!/^\d+\.\d+\.\d+$/.test(v))throw new Error('Published version is invalid');return v;
 };
 const activeSWBuild=reg=>new Promise(resolve=>{
  const w=reg?.active;if(!w||typeof MessageChannel==='undefined')return resolve(null);
  const channel=new MessageChannel();let done=false,timer;
  const finish=v=>{if(done)return;done=true;clearTimeout(timer);channel.port1.close();channel.port2.close();resolve(v)};
  channel.port1.onmessage=e=>finish(/^\d+\.\d+\.\d+$/.test(e.data?.version||'')?e.data.version:null);
- timer=setTimeout(()=>finish(null),1500);
- try{w.postMessage({type:'GET_BUILD'},[channel.port2])}catch{finish(null)}
+ timer=setTimeout(()=>finish(null),1500);try{w.postMessage({type:'GET_BUILD'},[channel.port2])}catch{finish(null)}
 });
+const servedBuild=async()=>{
+ const u=new URL('./',location.href);u.searchParams.set('slat-build-check',String(Date.now()));
+ const html=await updateText(u.href);return html.match(/const BUILD_VERSION='(\d+\.\d+\.\d+)';/)?.[1]||'';
+};
 const updateApp=async b=>{
- if(b?.disabled)return;b.disabled=true;b.textContent='Checking for updates…';
+ if(b?.disabled)return;if(b){b.disabled=true;b.textContent='Checking for updates…';}
  try{
-  if(location.protocol==='file:'){await reloadUpdatedApp();return}
-  if(!('serviceWorker' in navigator)){toast('Updates require the installed web app or HTTPS');return}
-  if(navigator.onLine===false){toast('Offline — update check skipped; your current app is still available');return}
-  const published=await publishedBuild();const newer=isNewerBuild(published,BUILD_VERSION);
-  const reg=watchSW(await withSWTimeout(swInstall()));if(!reg)return;
-  if(!reg.waiting)await withSWTimeout(reg.update());
-  const waiting=reg.waiting||await waitForSWInstall(reg);
-  if(waiting){const ok=await activateSW(waiting);if(!ok)toast('Update could not be activated — current version is still running');return}
-  if(newer){
-   const active=await activeSWBuild(reg);
-   if(active&&(active===published||isNewerBuild(active,published))){await reloadUpdatedApp();return}
-   toast('Newer build v'+published+' could not be installed — tap Check for updates to retry');
-  }else{toast('Already up to date · v'+BUILD_VERSION)}
- }catch(e){console.warn('Slat update check unavailable',e);toast(navigator.onLine===false?'Offline — current version is still running':'Update could not be completed — tap Check for updates to retry; your current app is still available')}
- finally{b.disabled=false;b.textContent='Check for updates'}
+  if(location.protocol==='file:'){await reloadForUpdate();return;}
+  if(!('serviceWorker' in navigator)){toast('Updates require the installed web app or HTTPS');return;}
+  if(navigator.onLine===false){toast('Offline — update check skipped; your current app is still available');return;}
+  const published=await publishedBuild(),newer=isNewerBuild(published,BUILD_VERSION),reg=watchSW(await withSWTimeout(swInstall(true)));if(!reg)return;
+  if(reg.waiting){const ok=await activateSW(reg.waiting);if(!ok)toast('Update could not be activated — current version is still running');return;}
+  await withSWTimeout(reg.update());const waiting=reg.waiting||await waitForSWInstall(reg);
+  if(waiting){const ok=await activateSW(waiting);if(!ok)toast('Update could not be activated — current version is still running');}
+  else if(newer){
+   const ready=await activeSWBuild(reg)||await servedBuild();
+   if(ready===published||isNewerBuild(ready,published)){await reloadForUpdate();return;}
+   toast(reg.installing?.state==='installing'?'Newer build v'+published+' is still downloading. Retry when it finishes.':'Newer build v'+published+' could not finish installing. Tap Check for updates to retry; your saved data is safe.');
+  }else toast('Already up to date · v'+BUILD_VERSION);
+ }catch(e){console.warn('Slat update check unavailable',e);toast(navigator.onLine===false?'Offline — current version is still running':'Could not check for an update — current version is still running');}
+ finally{if(b){b.disabled=false;b.textContent='Check for updates';}}
 };
 const A={
 'imp-open':()=>{$('#imp')?.click()},
