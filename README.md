@@ -4,14 +4,16 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.9**
+**Build: 5.7.10**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.9: unchanged custom-exercise names preserve saved rank checks, and routine/progress selectors show canonical movements without duplicate aliases. See `docs/fixes-5.7.9.md`.
+New in 5.7.10: imported routine targets work consistently after reload, late screen-wake requests are released when rest stops, and blank optional RPE input is accepted. See `docs/fixes-5.7.10.md`.
+
+New in 5.7.9: saving an unchanged custom name preserves its saved check, routine and Progress selectors show canonical choices, and the local-file browser journey waits for reload. See `docs/fixes-5.7.9.md`.
 
 New in 5.7.8: web rest notifications are explicitly static next-set reminders. The unreliable web completion-notification update has been removed; in-app and native iPhone countdowns remain available. See `docs/fixes-5.7.8.md`.
 
