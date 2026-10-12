@@ -4,14 +4,16 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.12**
+**Build: 5.7.14**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.12: update checks recover an older open page when a newer app is already ready, protect unsaved drafts before reload, and retry failed installations honestly. Update staging fetches fresh files and verifies their build version. See `docs/fixes-5.7.12.md`.
+New in 5.7.14: strict backup identity/measurement contracts, safe imported targets and drafts, import interaction locking, bounded storage requests, coordinated fallback saves, complete recovery-copy reset, exact calculator conversions, large-history calendar safety, custom-standard guards, and legal-dialog cleanup. See [the current code audit](docs/code-audit-2026-10-12.md).
+
+New in 5.7.12/5.7.13: update checks recover older open pages, protect unsaved drafts, retry failed installations, validate fresh staged files, and isolate the active cache. See `docs/fixes-5.7.12.md` and `docs/update-recovery.md`.
 
 New in 5.7.9: saving an unchanged custom name preserves its saved check, routine and Progress selectors show canonical choices, and the local-file browser journey waits for reload. See `docs/fixes-5.7.9.md`.
 

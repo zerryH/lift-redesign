@@ -20,13 +20,14 @@ const timeout=await update({timeout:true});assert.equal(timeout.reloads,0);asser
 const activated=await update({ready:'5.7.11'});assert.equal(await activated.ctx.activate({state:'activated'}),true,'activation race must reload an already active worker');
 
 const worker=fs.readFileSync('sw.js','utf8');
-async function install(stale){
+async function install(stale,existed=false){
  const handlers={},deleted=[],requests=[];const scope='https://example.com/lift/';let pending;
- const ctx={URL,Error,Request:class{constructor(url,options){this.url=new URL(url,scope).href;this.cache=options.cache;}},self:{location:{origin:'https://example.com'},registration:{scope},addEventListener:(type,fn)=>handlers[type]=fn},caches:{has:async()=>false,open:async()=>({addAll:async r=>requests.push(...r),match:async()=>({text:async()=>"const BUILD_VERSION='"+(stale?'0.0.1':JSON.parse(fs.readFileSync('version.json','utf8')).version)+"';"})}),delete:async name=>deleted.push(name)}};
+ const ctx={URL,Error,Request:class{constructor(url,options){this.url=new URL(url,scope).href;this.cache=options.cache;}},self:{location:{origin:'https://example.com'},registration:{scope},addEventListener:(type,fn)=>handlers[type]=fn},caches:{has:async()=>existed,open:async()=>({addAll:async r=>requests.push(...r),match:async()=>({text:async()=>"const BUILD_VERSION='"+(stale?'0.0.1':JSON.parse(fs.readFileSync('version.json','utf8')).version)+"';"})}),delete:async name=>deleted.push(name)}};
  ctx.AbortController=AbortController;ctx.setTimeout=setTimeout;ctx.clearTimeout=clearTimeout;vm.createContext(ctx);vm.runInContext(worker,ctx);handlers.install({waitUntil:p=>pending=p});
- if(stale){await assert.rejects(pending,/Published app files are not ready/);assert.equal(deleted.length,1);assert(deleted[0].startsWith('liftlog-v'));}
+ if(stale){await assert.rejects(pending,/Published app files are not ready/);assert.equal(deleted.length,existed?0:1);if(!existed)assert(deleted[0].startsWith('liftlog-v'));}
  else{await pending;assert.equal(deleted.length,0);}
- assert(requests.length>10);assert(requests.every(r=>r.cache==='reload'),'all staged assets bypass stale HTTP cache');
+ assert(existed?requests.length===0:requests.length>10,'an existing active cache is never overwritten during reinstall');assert(requests.every(r=>r.cache==='reload'),'all staged assets bypass stale HTTP cache');
 }
 await install(false);await install(true);
+await install(false,true);await install(true,true);
 console.log('Ready-worker reload, absent-installer failure, save protection, bounded requests and fresh version-checked staging passed');

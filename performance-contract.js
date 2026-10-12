@@ -4,7 +4,7 @@ globalThis.SlatPerformance=(()=>{
  function provenance(record,meta,context){
   return {exerciseId:record.id,trackingMode:record.tracking,catalogueVersion:context.catalogueVersion,
    benchmarkId:record.rankable?(record.benchmarkId||meta.benchmarkId||null):null,standardsVersion:record.rankable?(meta.standardsVersion||context.rankingVersion):null,
-   sourceUnit:context.sourceUnit,measurementUnits:{...units},loadProtocol:{mode:meta.loadMode||'normal',multiplier:Number(meta.loadMultiplier)||1,unilateral:!!meta.unilateral,bodyweightFactor:Number(meta.bodyweightFactor)||1},
+   sourceUnit:context.sourceUnit,measurementUnits:{...units},loadProtocol:{mode:meta.loadMode||'normal',multiplier:Number(meta.loadMultiplier)||1,unilateral:!!meta.unilateral,bodyweightFactor:meta.bodyweightFactor!=null&&Number.isFinite(Number(meta.bodyweightFactor))?Number(meta.bodyweightFactor):1},
    performanceContext:{reference:context.reference,age:context.age??null,ageAdjust:context.ageAdjust,heightAdjust:context.heightAdjust,workoutDate:context.date,timeZone:context.timeZone||null}};
  }
  function repair(set,record,catalogueVersion){
