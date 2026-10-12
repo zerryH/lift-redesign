@@ -32,9 +32,14 @@ async function clickControl(locator){
  // WebKit's hosted runner intermittently drops native pointer clicks without dispatching a DOM event.
  // Retain hit-testing and use actual keyboard activation; Chromium covers pointer journeys.
  await page.bringToFront();await locator.waitFor({state:'visible'});assert(await locator.isEnabled());
- await locator.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
- await page.evaluate(()=>Promise.race([new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),new Promise(resolve=>setTimeout(resolve,100))]));
- const control=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {hit:el.isConnected&&(hit===el||el.contains(hit)),inert:!!el.closest('[inert]'),disabled:!!el.disabled,key:el.matches('input[type=checkbox],input[type=radio],[role=checkbox],[role=radio]')?'Space':'Enter'};});
+ const deadline=Date.now()+12000;let control;
+ while(Date.now()<deadline){
+  await locator.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+  await page.evaluate(()=>Promise.race([new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),new Promise(resolve=>setTimeout(resolve,100))]));
+  control=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {hit:el.isConnected&&(hit===el||el.contains(hit)),inert:!!el.closest('[inert]'),disabled:!!el.disabled,key:el.matches('input[type=checkbox],input[type=radio],[role=checkbox],[role=radio]')?'Space':'Enter'};});
+  if(control.hit&&!control.inert&&!control.disabled)break;
+  await page.waitForTimeout(100);
+ }
  assert(control.hit&&!control.inert&&!control.disabled,'control must be visible, enabled and unobstructed');
  await locator.focus();await page.keyboard.press(control.key);
 }

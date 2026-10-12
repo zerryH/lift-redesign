@@ -20,6 +20,8 @@ await rejected({workouts:[],bw:[],routines:[routine]});assert.throws(()=>z.h.rou
 const provenance=vm.createContext({});vm.runInContext(fs.readFileSync('performance-contract.js','utf8'),provenance);
 for(const factor of [0,.5,1])assert.equal(provenance.SlatPerformance.provenance({id:'custom:test',tracking:'load_reps',rankable:false},{loadMode:'bodyweight',bodyweightFactor:factor},{}).loadProtocol.bodyweightFactor,factor);
 const custom=await boot({...base(),custom:[{n:'Cable Curl Test',t:'M',c:'Biceps',equipment:'Cable / rope',rank:'Leg Press'}],workouts:[workout('Cable Curl Test',25,8)]});assert.equal(custom.h.rankThresholds('Cable Curl Test'),null);custom.h.S.custom[0].rank='Cable Curl';custom.h.rebuildRegistry();assert(custom.h.rankThresholds('Cable Curl Test'));
+const check={...z.h.calculateRank('Leg Press',25,8,80,178,'M'),n:'Cable Curl Test'};const retained=await boot({...base(),custom:[{n:'Cable Curl Test',t:'M',c:'Biceps',equipment:'Cable / rope',rank:'Leg Press'}],checks:{'Cable Curl Test':check}});assert.equal(retained.h.S.checks['Cable Curl Test'].w,25);assert.equal(retained.h.S.checks['Cable Curl Test'].unavailable,true);assert(retained.h.V.ranks().includes('Check retained'));await retained.h.save();const again=await boot(JSON.parse(retained.store.get('liftlog-state')));assert.equal(again.h.S.checks['Cable Curl Test'].w,25);again.h.S.custom[0].rank='Cable Curl';again.h.rebuildRegistry();again.h.refreshRanks();assert.equal(again.h.S.checks['Cable Curl Test'].unavailable,undefined);assert.equal(again.h.S.checks['Cable Curl Test'].w,25);assert(again.h.S.checks['Cable Curl Test'].i>=0);
+
 
 // Isolate persistence with genuinely stalled requests and an interleaved fallback writer.
 const source=fs.readFileSync('persistence.js','utf8');

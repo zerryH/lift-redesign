@@ -41,7 +41,7 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 | F04 duplicate editing IDs | Addressed by A11 for import and existing local state. |
 | F05 custom name shadowing | Addressed by A05. |
 | F06 contradictory typed measurements | Addressed by A12. |
-| F07 unrelated custom standards | Partially addressed: explicit muscle routing and recognizable equipment families must be compatible. A complete movement-family compatibility policy and legacy mapping review remain open. |
+| F07 unrelated custom standards | Partially addressed: explicit muscle routing and recognizable equipment families must be compatible. Incompatible saved checks retain their raw inputs with a repair message and recalculate when the mapping is corrected. A complete movement-family compatibility policy and legacy mapping review remain open. |
 | F08 zero provenance factor | Addressed by A13. |
 | F09 fractional saved checks | Addressed by A14. |
 | F10 routine references | Addressed by A15; unresolved sessions do not start. |
