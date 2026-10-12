@@ -57,7 +57,9 @@ try{
    const routine={id:'routine:text-targets',name:'Imported plan',split:'Push',ex:[{n:'Bench Press',exerciseId:'ex001',sets:'3',reps:'12',seconds:'45',meters:'20',rest:'0'}]};
    await open({...base(),routines:[routine]});await clickControl(page.locator('[data-a=routineStart]'));
    assert.equal(await page.locator('#qol-reps').inputValue(),'12');assert((await page.locator('.routine-progress').textContent()).includes('0 / 3'));
-   await page.locator('#qol-rpe').fill('   ');await clickControl(page.locator('[data-a=log]'));
+   // A restored draft may contain spaces although the number input displays them as empty.
+   await page.evaluate(async()=>{dr.rpe='   ';persistDraft();await saveTail;});await page.reload();await page.locator('[data-a=log]').waitFor();
+   assert.equal(await page.locator('#qol-rpe').inputValue(),'');await clickControl(page.locator('[data-a=log]'));
    let state=await saved();assert.equal(state.cur.ex[0].sets.length,1);assert.equal(state.cur.ex[0].sets[0].rpe,undefined);assert.equal(state.cur.ex[0].target.rest,0);
    await page.reload();await page.locator('[data-a=log]').waitFor();assert((await page.locator('.routine-progress').textContent()).includes('1 / 3'));
    await clickControl(page.locator('[data-a=routineSave]'));await page.locator('#routine-name').fill('Numeric copy');await clickControl(page.locator('#routine-save'));await page.locator('.qol-modal').waitFor({state:'hidden'});
