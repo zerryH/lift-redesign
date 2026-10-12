@@ -987,7 +987,7 @@ body.has-rest nav{grid-row:3;}
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.12';
+const BUILD_VERSION='5.7.13';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -1558,6 +1558,7 @@ const addN=n=>{if(!S.cur)return toast('Start a workout first');n=canonicalExerci
 const SW_SCRIPT='sw.js',SW_SCOPE='./',SW_TIMEOUT=30000,REMOTE_VERSION_PATH='version.json';
 const swPrompted=new WeakSet(),swPromptActive=new WeakSet(),swWatched=new WeakSet();
 const swWorkerUrl=()=>new URL(SW_SCRIPT,location.href).href;
+const withSWTimeout=p=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Update timed out')),SW_TIMEOUT);Promise.resolve(p).then(resolve,reject).finally(()=>clearTimeout(timer))});
 const swInstall=async(reconcile=false)=>{
  if(location.protocol==='file:'||!('serviceWorker' in navigator))return null;
  let reg=await navigator.serviceWorker.getRegistration(SW_SCOPE);
@@ -1578,8 +1579,8 @@ const activateSW=async w=>{
   const cleanup=()=>{clearTimeout(timer);navigator.serviceWorker.removeEventListener('controllerchange',onController);w.removeEventListener('statechange',onState);};
   const finish=async(ok,reload)=>{if(done)return;done=true;cleanup();resolve(ok&&reload?await reloadForUpdate():ok);};
   navigator.serviceWorker.addEventListener('controllerchange',onController);w.addEventListener('statechange',onState);
-  try{w.postMessage({type:'SKIP_WAITING'});}catch{finish(false,false);}
   timer=setTimeout(()=>finish(false,false),SW_TIMEOUT);
+  try{w.postMessage({type:'SKIP_WAITING'});}catch{finish(false,false);}
  });
 };
 const promptSWUpdate=w=>{
@@ -1616,6 +1617,13 @@ const publishedBuild=async()=>{
  const j=JSON.parse(await updateText(u.href)),v=String(j?.version||'').trim();
  if(!/^\d+\.\d+\.\d+$/.test(v))throw new Error('Published version is invalid');return v;
 };
+const activeSWBuild=reg=>new Promise(resolve=>{
+ const w=reg?.active;if(!w||typeof MessageChannel==='undefined')return resolve(null);
+ const channel=new MessageChannel();let done=false,timer;
+ const finish=v=>{if(done)return;done=true;clearTimeout(timer);channel.port1.close();channel.port2.close();resolve(v)};
+ channel.port1.onmessage=e=>finish(/^\d+\.\d+\.\d+$/.test(e.data?.version||'')?e.data.version:null);
+ timer=setTimeout(()=>finish(null),1500);try{w.postMessage({type:'GET_BUILD'},[channel.port2])}catch{finish(null)}
+});
 const servedBuild=async()=>{
  const u=new URL('./',location.href);u.searchParams.set('slat-build-check',String(Date.now()));
  const html=await updateText(u.href);return html.match(/const BUILD_VERSION='(\d+\.\d+\.\d+)';/)?.[1]||'';
@@ -1626,12 +1634,12 @@ const updateApp=async b=>{
   if(location.protocol==='file:'){await reloadForUpdate();return;}
   if(!('serviceWorker' in navigator)){toast('Updates require the installed web app or HTTPS');return;}
   if(navigator.onLine===false){toast('Offline — update check skipped; your current app is still available');return;}
-  const published=await publishedBuild(),newer=isNewerBuild(published,BUILD_VERSION),reg=watchSW(await swInstall(true));if(!reg)return;
+  const published=await publishedBuild(),newer=isNewerBuild(published,BUILD_VERSION),reg=watchSW(await withSWTimeout(swInstall(true)));if(!reg)return;
   if(reg.waiting){const ok=await activateSW(reg.waiting);if(!ok)toast('Update could not be activated — current version is still running');return;}
-  await reg.update();const waiting=reg.waiting||await waitForSWInstall(reg);
+  await withSWTimeout(reg.update());const waiting=reg.waiting||await waitForSWInstall(reg);
   if(waiting){const ok=await activateSW(waiting);if(!ok)toast('Update could not be activated — current version is still running');}
   else if(newer){
-   const ready=await servedBuild();
+   const ready=await activeSWBuild(reg)||await servedBuild();
    if(ready===published||isNewerBuild(ready,published)){await reloadForUpdate();return;}
    toast(reg.installing?.state==='installing'?'Newer build v'+published+' is still downloading. Retry when it finishes.':'Newer build v'+published+' could not finish installing. Tap Check for updates to retry; your saved data is safe.');
   }else toast('Already up to date · v'+BUILD_VERSION);

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 const sw=fs.readFileSync('sw.js','utf8');
-const install=sw.match(/self\.addEventListener\(['"]install['"][\s\S]*?self\.addEventListener\(['"]activate['"]/);
+const install=sw.match(/const stageBuild=[\s\S]*?self\.addEventListener\(['"]install['"][\s\S]*?self\.addEventListener\(['"]activate['"]/);
 assert(install,'service-worker install handler is missing');
 assert(!/skipWaiting\(\)/.test(install[0]),'new workers must stay waiting until the user explicitly activates the update');
 assert(/c\.addAll\(F\.map/.test(install[0]),'new worker must fully stage fresh offline files before activation');
