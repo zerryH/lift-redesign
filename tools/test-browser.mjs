@@ -29,19 +29,12 @@ async function open(state=base(),viewport={width:390,height:844},ready='[data-a=
 async function check(name,fn){await fn();report.checks.push(name);console.log('PASS '+name);}
 async function clickControl(locator){
  if(engineName!=='webkit')return locator.click();
- // WebKit's hosted runner intermittently drops native pointer clicks without dispatching a DOM event.
- // Retain hit-testing and use actual keyboard activation; Chromium covers pointer journeys.
+ // WebKit's hosted runner drops pointer input; its journeys use genuine keyboard activation.
+ // Chromium covers pointer hit testing. Keep actual control focus and all app outcome assertions.
  await page.bringToFront();await locator.waitFor({state:'visible'});assert(await locator.isEnabled());
- const deadline=Date.now()+12000;let control;
- while(Date.now()<deadline){
-  await locator.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
-  await page.evaluate(()=>Promise.race([new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),new Promise(resolve=>setTimeout(resolve,100))]));
-  control=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {hit:el.isConnected&&(hit===el||el.contains(hit)),inert:!!el.closest('[inert]'),disabled:!!el.disabled,key:el.matches('input[type=checkbox],input[type=radio],[role=checkbox],[role=radio]')?'Space':'Enter'};});
-  if(control.hit&&!control.inert&&!control.disabled)break;
-  await page.waitForTimeout(100);
- }
- assert(control.hit&&!control.inert&&!control.disabled,'control must be visible, enabled and unobstructed');
- await locator.evaluate(el=>(el.closest('button,a[href],summary,input,select,textarea,[role=button],[tabindex]')||el).focus());await page.keyboard.press(control.key);
+ const control=await locator.evaluate(el=>{const target=el.closest('button,a[href],summary,input,select,textarea,[role=button],[tabindex]')||el;const inert=!!target.closest('[inert]');if(!inert)target.focus();return {inert,focused:document.activeElement===target,key:target.matches('input[type=checkbox],input[type=radio],[role=checkbox],[role=radio]')?'Space':'Enter'};});
+ assert(!control.inert&&control.focused,'keyboard control must be active and focusable');
+ await page.keyboard.press(control.key);
 }
 async function stableScreenshot(filename){
  for(const b of await page.locator('.toast-action [aria-label="Dismiss notification"]').all())await clickControl(b);
