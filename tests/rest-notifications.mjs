@@ -50,6 +50,8 @@ app.h.qolRestStart();assert.equal(requests,0);assert.equal(cards.size,0);
 await app.h.qolToggleRestNotifications();assert.equal(requests,1);assert.equal(app.h.S.set.restNotifications,true);
 assert.equal(cards.get(api.tag).data.endAt,app.h.qolState.endAt);
 const startedAt=app.h.S.cur.restStartedAt,deadline=app.h.qolState.endAt;
+assert.equal(app.h.qolAdjustRest(-30),true);assert.equal(app.h.qolState.endAt,deadline-30000);assert.equal(app.h.S.cur.restEndAt,deadline-30000);
+assert.equal(app.h.qolAdjustRest(30),true);assert.equal(app.h.qolState.endAt,deadline);
 const target={classList:{contains:()=>false},closest:s=>s==='[data-qol]'?{dataset:{qol:'restPlus'}}:null};
 for(const fn of app.listeners.click||[])fn({target});
 await app.h.qolState.notifications.flush();
