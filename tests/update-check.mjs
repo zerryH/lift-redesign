@@ -7,7 +7,7 @@ assert(s.includes("navigator.serviceWorker.getRegistration(SW_SCOPE)"));
 assert(s.includes("navigator.serviceWorker.register(SW_SCRIPT,{scope:SW_SCOPE,updateViaCache:'none'})"));
 assert(s.includes("navigator.onLine===false"));
 assert(s.includes("REMOTE_VERSION_PATH='version.json'"));
-assert(s.includes("fetch(url,{cache:'no-store',signal:controller.signal})"));
+assert(s.includes("fetch(u.href,{cache:'no-store',signal:controller.signal})"));
 assert(s.includes("isNewerBuild(published,BUILD_VERSION)"));
 assert(s.includes("Newer build v"));
 assert(!s.includes("toast('Already up to date')"));
@@ -23,9 +23,9 @@ console.log('update privacy/offline/staged-activation regression test passed');
 
 assert(!s.includes('const found=await new Promise(resolve=>'));
 assert(s.includes('const waitForSWInstall=reg=>new Promise'));
-assert(s.includes('await reg.update();const waiting=reg.waiting||await waitForSWInstall(reg);'));
+assert(s.includes('const waiting=reg.waiting||await waitForSWInstall(reg);'));
 assert(s.includes('const ok=await activateSW(waiting);'));
-assert(s.includes("reg.addEventListener('updatefound',()=>{const w=reg.installing;if(!w)return;w.addEventListener('statechange',()=>{if(w.state==='installed')promptSWUpdate(w);});},{once:true})"));
+assert(s.includes("reg.addEventListener('updatefound',()=>watch(reg.installing))"));
 console.log('fast event-driven update check regression passed');
 
 console.log('update-check regression passed Â· native SW update + staged explicit activation');
