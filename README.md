@@ -4,14 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.6**
+**Build: 5.7.7**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.6: collision-safe workout identities prevent a repeated device clock or imported ID from silently suppressing a newly finished free or routine session. See `docs/fixes-5.7.6.md`.
+New in 5.7.7: workout-date corrections no longer depend on locale formatting, and the rest timer can be adjusted down as well as up. See `docs/fixes-5.7.7.md`.
 
 New in 5.7.5: routine copies retain planned targets and zero-rest presets, switching equipment setups refreshes measurement inputs from matching history, and saved routines have a Duplicate action. See `docs/fixes-5.7.5.md`.
 

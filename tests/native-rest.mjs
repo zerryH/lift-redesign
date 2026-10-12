@@ -25,9 +25,11 @@ app.h.qolRestStart(90);assert.equal(messages.at(-1).action,'sync');assert.equal(
 const deadline=app.h.S.cur.restEndAt;
 for(const fn of app.listeners.click||[])fn({target:{classList:{contains:()=>false},closest:s=>s==='[data-qol]'?{dataset:{qol:'restPlus'}}:null}});
 assert.equal(messages.at(-1).endAt,deadline+30000);
+for(const fn of app.listeners.click||[])fn({target:{classList:{contains:()=>false},closest:s=>s==='[data-qol]'?{dataset:{qol:'restMinus'}}:null}});
+assert.equal(messages.at(-1).endAt,deadline);
 const beforeResume=messages.length;
 for(const fn of app.listeners['slat-native-rest-resume']||[])fn({});
-assert(messages.length>beforeResume);assert.equal(messages.at(-1).endAt,deadline+30000);
+assert(messages.length>beforeResume);assert.equal(messages.at(-1).endAt,deadline);
 assert.equal(app.intervals.size,1,'resuming replaces the clock rather than starting duplicate intervals');
 app.h.A.nativeRestToggle();assert.equal(app.h.S.set.nativeRestLiveActivity,false);assert.equal(messages.at(-1).action,'stop');
 app.h.A.nativeRestToggle();assert.equal(app.h.S.set.nativeRestLiveActivity,true);assert.equal(messages.at(-1).action,'sync');
@@ -35,4 +37,4 @@ for(const fn of app.listeners['slat-native-rest-status']||[])fn({detail:{allowed
 assert.equal(app.h.qolNativeRestState.allowed,false);assert.match(app.get('#native-rest-status').textContent,/iPhone Settings/);
 app.h.qolStopRest();assert.equal(messages.at(-1).action,'stop');assert.equal(app.h.S.cur.restEndAt,undefined);
 assert.deepEqual(app.errors,[]);
-console.log('Native rest bridge deduplication, bounds, retries, +30, disable, stop and permission status passed');
+console.log('Native rest bridge deduplication, bounds, retries, ±30, disable, stop and permission status passed');
