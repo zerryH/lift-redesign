@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
 const catalogueContext=vm.createContext({});vm.runInContext(fs.readFileSync('catalogue-model.js','utf8'),catalogueContext);
-const BUILD_VERSION = '5.7.8';
+const BUILD_VERSION = '5.7.9';
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => fs.writeFileSync(p, s);
 function validateData(ex, ranks) {

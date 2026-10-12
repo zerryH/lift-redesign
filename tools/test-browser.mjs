@@ -53,6 +53,26 @@ const saved=()=>page.evaluate(async()=>{await saveTail;return JSON.parse(localSt
 try{
  for(const name of names){engineName=name;
   browser=await playwright[name].launch(name==='chromium'?options:{});report.browser.push({name,version:browser.version()});
+  await check(name+': imported text targets, blank RPE and late wake locks',async()=>{
+   const routine={id:'routine:text-targets',name:'Imported plan',split:'Push',ex:[{n:'Bench Press',exerciseId:'ex001',sets:'3',reps:'12',seconds:'45',meters:'20',rest:'0'}]};
+   await open({...base(),routines:[routine]});await clickControl(page.locator('[data-a=routineStart]'));
+   assert.equal(await page.locator('#qol-reps').inputValue(),'12');assert((await page.locator('.routine-progress').textContent()).includes('0 / 3'));
+   await page.locator('#qol-rpe').fill('   ');await clickControl(page.locator('[data-a=log]'));
+   let state=await saved();assert.equal(state.cur.ex[0].sets.length,1);assert.equal(state.cur.ex[0].sets[0].rpe,undefined);assert.equal(state.cur.ex[0].target.rest,0);
+   await page.reload();await page.locator('[data-a=log]').waitFor();assert((await page.locator('.routine-progress').textContent()).includes('1 / 3'));
+   await clickControl(page.locator('[data-a=routineSave]'));await page.locator('#routine-name').fill('Numeric copy');await clickControl(page.locator('#routine-save'));await page.locator('.qol-modal').waitFor({state:'hidden'});
+   assert.equal((await saved()).routines[1].ex[0].sets,3);
+   await open({...base(),cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]}},undefined,'[data-a=log]');
+   await page.evaluate(()=>{window.wakeRequests=[];window.wakeSentinels=[];Object.defineProperty(navigator,'wakeLock',{configurable:true,value:{request:()=>new Promise(resolve=>window.wakeRequests.push(resolve))}});});
+   await clickControl(page.locator('[data-a=log]'));await page.waitForFunction(()=>wakeRequests.length===1);
+   await clickControl(page.getByRole('button',{name:'Stop rest timer',exact:true}));
+   await page.evaluate(()=>{const lock={released:false,releases:0,async release(){this.released=true;this.releases++;}};wakeSentinels.push(lock);wakeRequests[0](lock);});
+   await page.waitForFunction(()=>wakeSentinels[0].releases===1);assert(await page.evaluate(()=>qolState.wake===null));
+   await clickControl(page.locator('[data-a=log]'));await page.waitForFunction(()=>wakeRequests.length===2);
+   await page.evaluate(()=>{const lock={released:false,releases:0,async release(){this.released=true;this.releases++;}};wakeSentinels.push(lock);wakeRequests[1](lock);});
+   await page.waitForFunction(()=>qolState.wake===wakeSentinels[1]);await clickControl(page.getByRole('button',{name:'Stop rest timer',exact:true}));
+   await page.waitForFunction(()=>wakeSentinels[1].releases===1);assert(await page.evaluate(()=>wakeSentinels.every(s=>s.releases===1)));
+  });
   await check(name+': activity calendar counts completed sessions, dates, edits, deletion and undo',async()=>{
    const day='2024-07-01',one={...workout(),id:101,d:day},draft={...workout(),id:102,d:day},other={...workout(),id:103,d:'2024-07-03'};
    await open({...base(),workouts:[one,other,{...workout(),id:104,d:'2023-12-31'}],cur:draft},undefined,'[data-a=fin]');

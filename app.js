@@ -6,7 +6,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.8';
+const BUILD_VERSION='5.7.9';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -70,6 +70,11 @@ globalThis.SlatCatalogue=(()=>{
 /*BEGIN:WORKOUT_MODEL*//* Pure session transitions; persistence is acknowledged by the caller. */
 globalThis.SlatWorkout=(()=>{
  const phase=(state,saving=false)=>saving?'saving':!state.cur?'idle':state.editingId!=null?'editing':'active';
+ function targets(value){
+  const out={...value};
+  for(const field of ['sets','reps','seconds','meters','rest'])if(typeof out[field]==='string'&&out[field].trim()&&Number.isFinite(Number(out[field])))out[field]=Number(out[field]);
+  return out;
+ }
  function complete(current){
   if(!current?.ex?.some(x=>x.sets?.length))throw new Error('Log at least one set before finishing');
   const done=JSON.parse(JSON.stringify(current));delete done.drafts;delete done.restEndAt;delete done.restStartedAt;return done;
@@ -105,7 +110,7 @@ globalThis.SlatWorkout=(()=>{
   for(const w of selected)for(const x of w.ex)for(const set of x.sets||[])if(set.t!=='w'){sets++;const c=typeof catalogue==='function'?catalogue(x.n):catalogue?.[x.n],zone=c?.primaryMuscleId;if(zone)muscles[zone]=(muscles[zone]||0)+1;}
   return {sessions:selected.length,activeDays:new Set(selected.map(w=>w.d)).size,sets,muscles};
  }
- return {phase,complete,replace,activity,correct,summary};
+ return {phase,targets,complete,replace,activity,correct,summary};
 })();
 /*END:WORKOUT_MODEL*/
 /*BEGIN:PERFORMANCE_CONTRACT*//* Measurement provenance is retained separately from current ranking comparisons. */
@@ -542,12 +547,13 @@ const repairState=()=>{
  const d={workouts:[],custom:[],bw:[],set:defaultSettings(),rk:{},cur:null,editingId:null,lastBackup:0};
  if(!S||typeof S!=='object')S=d;
  S.routines=Array.isArray(S.routines)?S.routines:[];S.exercisePreferences=S.exercisePreferences&&typeof S.exercisePreferences==='object'&&!Array.isArray(S.exercisePreferences)?S.exercisePreferences:{};S.custom=Array.isArray(S.custom)?S.custom:[];if(!S.checks||typeof S.checks!=='object'||Array.isArray(S.checks))S.checks={};S.rk=S.rk&&typeof S.rk==='object'&&!Array.isArray(S.rk)?S.rk:{};
+ S.routines=S.routines.map(r=>r&&Array.isArray(r.ex)?{...r,ex:r.ex.map(SlatWorkout.targets)}:r);
  S.set=normalizeSettings(S.set,d.set);
  S.bw=Array.isArray(S.bw)?S.bw.filter(b=>b&&typeof b==='object'&&safeDate(b.d)&&num(b.kg)>0&&num(b.kg)<=500).map(b=>({d:safeDate(b.d),kg:num(b.kg)})).sort((a,b)=>a.d.localeCompare(b.d)):[];
  S.custom=S.custom.filter(c=>c&&typeof c==='object').map(c=>({...c,n:safeName(c.n),id:typeof c.id==='string'&&c.id?c.id:'custom:'+safeName(c.n)})).filter(c=>c.n);
  const setIds=new Set(),entryIds=new Set();
  const normSet=(z,record)=>{const raw=z&&typeof z==='object'?{...z}:{};const q=SlatPerformance.repair(raw,record,X.catalogueVersion);if(typeof q.id!=='string'||!q.id||setIds.has(q.id)){q.id=newRecordId('set');q.migrated=true;}setIds.add(q.id);q.kg=num(q.kg);q.reps=num(q.reps);q.t=typeof q.t==='string'?q.t:'';if(q.bw!=null)q.bw=num(q.bw);if(q.height!=null)q.height=num(q.height);return q};
- const normEx=x=>{const q=x&&typeof x==='object'?{...x}:{};q.n=S.custom.find(c=>c.id===q.exerciseId)?.n||canonicalExercise(safeName(q.n));if(typeof q.entryId!=='string'||!q.entryId||entryIds.has(q.entryId))q.entryId=newRecordId('exercise');entryIds.add(q.entryId);q.exerciseId=catalogueRecord(q.n)?.id||q.exerciseId||'custom:'+q.n;q.sets=Array.isArray(q.sets)?q.sets.filter(Boolean).map(z=>normSet(z,catalogueRecord(q.n)||{id:q.exerciseId,tracking:'load_reps'})):[];return q};
+ const normEx=x=>{const q=x&&typeof x==='object'?{...x}:{};q.n=S.custom.find(c=>c.id===q.exerciseId)?.n||canonicalExercise(safeName(q.n));if(typeof q.entryId!=='string'||!q.entryId||entryIds.has(q.entryId))q.entryId=newRecordId('exercise');entryIds.add(q.entryId);q.exerciseId=catalogueRecord(q.n)?.id||q.exerciseId||'custom:'+q.n;if(q.target&&typeof q.target==='object')q.target=SlatWorkout.targets(q.target);q.sets=Array.isArray(q.sets)?q.sets.filter(Boolean).map(z=>normSet(z,catalogueRecord(q.n)||{id:q.exerciseId,tracking:'load_reps'})):[];return q};
  const used=new Set(),base=Date.now();
  S.workouts=(Array.isArray(S.workouts)?S.workouts:[]).filter(w=>w&&typeof w==='object').map((w,i)=>{const q={...w};let id=Number(q.id);if(!Number.isSafeInteger(id)||id<=0||used.has(id)){id=base+i;while(used.has(id))id++}used.add(id);q.id=id;q.d=safeDate(q.d);q.split=safeName(q.split)||'Workout';q.ex=Array.isArray(q.ex)?q.ex.map(normEx).filter(x=>x.n):[];return q});
  S.custom=S.custom.filter(c=>c&&typeof c==='object').map(c=>({...c,n:safeName(c.n)})).filter(c=>c.n);
@@ -778,9 +784,19 @@ const qolKg=v=>(S.set.unit||'kg')==='lb'?strictNumber(v)/2.20462:strictNumber(v)
 const qolTodayIso=iso;
 const qolPrevSet=n=>{const date=S.cur?.d||iso(),label=S.exercisePreferences?.[catalogueRecord(n)?.id]?.equipmentLabel||'',ws=[...S.workouts].filter(w=>w.id!==S.editingId&&w.d<=date).sort((a,b)=>b.d.localeCompare(a.d)||Number(b.id)-Number(a.id));for(const w of ws){const sets=(w.ex||[]).filter(e=>canonicalExercise(e.n)===canonicalExercise(n)).flatMap(x=>x.sets||[]).filter(s=>s.t!=='w'&&(s.equipmentContext?.label||'')===label);if(sets.length)return {...sets.at(-1),date:w.d}}return null};
 const qolWakeStatus=()=>location.protocol==='file:'?'Unavailable in local file mode — the screen may still sleep':!window.isSecureContext?'Unavailable here — screen wake lock requires HTTPS':!('wakeLock' in navigator)?'Unavailable here — browser does not support screen wake lock':qolState.wake&&!qolState.wake.released?'Screen wake lock active':'Screen wake lock supported when permitted';
-const qolAcquireWake=async()=>{if(location.protocol==='file:'||!window.isSecureContext||!('wakeLock' in navigator)){const el=$('#qol-wake-status');if(el)el.textContent=qolWakeStatus();return}try{if(!qolState.wake||qolState.wake.released){qolState.wake=await navigator.wakeLock.request('screen');const el=$('#qol-wake-status');if(el)el.textContent=qolWakeStatus()}}catch{const el=$('#qol-wake-status');if(el)el.textContent='Unavailable right now — the device or browser denied screen wake lock'}};
-const qolReleaseWake=async()=>{try{await qolState.wake?.release()}catch{}qolState.wake=null};
-const qolState={wake:null,endAt:0,startedAt:0,timer:null,modal:null,notifications:null,notificationError:false,notificationBusy:false};
+const qolAcquireWake=()=>{
+ if(location.protocol==='file:'||!window.isSecureContext||!('wakeLock' in navigator)){const el=$('#qol-wake-status');if(el)el.textContent=qolWakeStatus();return;}
+ if(document.visibilityState==='hidden'||qolState.endAt<=Date.now()||(qolState.wake&&!qolState.wake.released))return;
+ if(qolState.wakePending)return qolState.wakePending;
+ const revision=qolState.wakeRevision;
+ const pending=Promise.resolve().then(()=>navigator.wakeLock.request('screen')).then(async lock=>{
+  if(revision!==qolState.wakeRevision||qolState.endAt<=Date.now()||document.visibilityState==='hidden'){await lock.release();return;}
+  qolState.wake=lock;const el=$('#qol-wake-status');if(el)el.textContent=qolWakeStatus();
+ }).catch(()=>{if(revision!==qolState.wakeRevision)return;const el=$('#qol-wake-status');if(el)el.textContent='Unavailable right now — the device or browser denied screen wake lock';}).finally(()=>{if(qolState.wakePending===pending)qolState.wakePending=null;});
+ qolState.wakePending=pending;return pending;
+};
+const qolReleaseWake=async()=>{qolState.wakeRevision++;qolState.wakePending=null;const lock=qolState.wake;qolState.wake=null;try{await lock?.release()}catch{}};
+const qolState={wake:null,wakePending:null,wakeRevision:0,endAt:0,startedAt:0,timer:null,modal:null,notifications:null,notificationError:false,notificationBusy:false};
 const qolNativeRestState={client:null,allowed:null,error:''};
 const qolNativeClient=()=>{if(!SlatNativeRest.available())return null;return qolNativeRestState.client??=SlatNativeRest.create(message=>window.webkit.messageHandlers.slatRestTimer.postMessage(message));};
 const qolSyncNativeRest=()=>{const client=qolNativeClient();if(!client)return;try{const raw=typeof getComputedStyle==='function'?getComputedStyle(document.documentElement).getPropertyValue('--ac').trim():'#756bff';client.sync({enabled:S.set.nativeRestLiveActivity!==false&&S.set.restEnabled!==false,workoutID:S.cur?.id,startedAt:qolState.startedAt,endAt:qolState.endAt,accent:raw});}catch{qolNativeRestState.error='The lock-screen timer could not connect. Reopen the Slat iPhone app.';}};
@@ -926,7 +942,7 @@ const makeDraftSet=()=>{
  if(mode==='band_reps')z.band=String(dr.band||'').slice(0,80);
  Object.assign(z,SlatPerformance.provenance(catalogueRecord(n)||{id:'custom:'+n,tracking:mode,rankable:false},exerciseMeta(n),{catalogueVersion:X.catalogueVersion,rankingVersion:rankingVersion(),sourceUnit:S.set.unit||'kg',reference:rankingSex(),age:athleteAge(),ageAdjust:S.set.ageAdjust!==false,heightAdjust:S.set.heightAdjust!==false,date:S.cur.d,timeZone:typeof Intl==='undefined'?null:Intl.DateTimeFormat().resolvedOptions().timeZone}));
  const body=bwAtDate(S.cur.d),height=num(S.set.heightCm);if(body>0)z.bw=body;if(height>0)z.height=height;
- if(dr.rpe!==''&&dr.rpe!=null&&(!Number.isFinite(strictNumber(dr.rpe))||strictNumber(dr.rpe)<1||strictNumber(dr.rpe)>10)){toast('RPE must be from 1 to 10');return null;}
+ if(String(dr.rpe??'').trim()&&(!Number.isFinite(strictNumber(dr.rpe))||strictNumber(dr.rpe)<1||strictNumber(dr.rpe)>10)){toast('RPE must be from 1 to 10');return null;}
  if(dr.note)z.note=String(dr.note).slice(0,500);if(num(dr.rpe)>=1&&num(dr.rpe)<=10)z.rpe=num(dr.rpe);
  const label=S.exercisePreferences?.[catalogueRecord(n)?.id]?.equipmentLabel;if(label)z.equipmentContext={label,capturedAt:z.loggedAt};
  return z;
