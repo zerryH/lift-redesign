@@ -13,8 +13,14 @@ const manager=api.create({registration:async()=>reg,allowed:()=>allowed,now:()=>
 const end=time+90000;
 await manager.show(end);await manager.show(end);
 assert.equal(calls.length,1,'ticks do not flood the notification tray');
-assert.equal(calls[0].options.timestamp,end);
+assert.equal(calls[0].title,'Rest reminder');
+assert.equal(calls[0].options.renotify,false);
 assert.match(calls[0].options.body,/Next set at/,'a fixed deadline remains meaningful when the page is suspended');
+assert.match(calls[0].options.body,/Static reminder/);
+const snapshot=JSON.stringify(calls[0]);
+for(let seconds=1;seconds<90;seconds++){time=end-90000+seconds*1000;await manager.show(end);}
+assert.equal(calls.length,1,'elapsed seconds do not replace a static notification');
+assert.equal(JSON.stringify(calls[0]),snapshot);
 assert.equal(calls[0].options.silent,true);
 assert.equal(calls[0].options.icon,'https://example.test/lift/apple-touch-icon-photo-fit.png');
 await manager.show(end+30000);assert.equal(cards.size,1);assert.equal(cards.get(api.tag).data.endAt,end+30000);
@@ -31,14 +37,24 @@ assert.equal(cards.size,0);
 const latest=api.create({registration:async()=>reg,allowed:()=>true,now:()=>time});
 latest.show(end);latest.show(end+30000);await latest.flush();
 assert.equal(cards.size,1);assert.equal(cards.get(api.tag).data.endAt,end+30000);
-time=end+31000;await latest.show(end+30000,true);
-assert.equal(cards.get(api.tag).title,'Rest complete');assert.equal(cards.get(api.tag).silent,false);
-await latest.show(end,true);assert.equal(cards.size,0,'no late finish alert after a long suspension');
+const beforeExpiry=calls.length;
+time=end+31000;await latest.show(end+30000);
+assert.equal(cards.size,0,'expired reminders are cleared instead of replaced with completion alerts');
+await latest.show(end);assert.equal(calls.length,beforeExpiry,'late resume creates no completion notification');
 allowed=false;await manager.show(time+90000);assert.equal(cards.size,0);
 const broken=api.create({registration:async()=>reg,allowed:()=>true,now:()=>time,onError:()=>errors++});
 const show=reg.showNotification;reg.showNotification=async()=>{throw new Error('OS unavailable');};
 await broken.show(time+90000);assert.equal(errors,1);reg.showNotification=show;
-await broken.close();await broken.show(time+120000);assert.equal(cards.size,1,'an explicit retry recovers');await broken.close();
+await broken.show(time+90000);assert.equal(cards.size,1,'retrying the same deadline after a failure recovers');await broken.close();
+
+// A reminder can expire while registration is pending; clear the old card without showing a stale one.
+allowed=true;
+await manager.show(time+90000);
+assert.equal(cards.size,1);
+let finishRegistration;
+const waiting=api.create({registration:()=>new Promise(resolve=>{finishRegistration=resolve;}),allowed:()=>true,now:()=>time});
+const pending=waiting.show(time+1000);await Promise.resolve();time+=2000;finishRegistration(reg);await pending;
+assert.equal(cards.size,0);assert(calls.every(c=>c.title==='Rest reminder'));
 
 // App integration: only the explicit preference gesture asks permission.
 let requests=0;
@@ -58,8 +74,14 @@ await app.h.qolState.notifications.flush();
 assert.equal(cards.get(api.tag).data.endAt,deadline+30000);assert.equal(app.h.S.cur.restStartedAt,startedAt);
 await app.h.qolToggleRestNotifications();assert.equal(cards.size,0);assert.equal(requests,1);
 await app.h.qolToggleRestNotifications();assert.equal(requests,1,'already-granted permission needs no new request');
+const beforeCompletion=calls.length;
+app.ctx.Date=class extends Date{static now(){return deadline+30001;}};
+app.h.qolRenderRest();await app.h.qolState.notifications.flush();
+assert.equal(cards.size,0);assert.equal(calls.length,beforeCompletion,'timely expiry does not publish a web finish alert');
+app.ctx.Date=Date;app.h.qolRestStart(90);await app.h.qolState.notifications.flush();
 let vibrations=0;app.h.S.set.restFeedback=true;app.ctx.navigator.vibrate=()=>vibrations++;
-app.ctx.Date=class extends Date{static now(){return deadline+60000;}};
+const lateDeadline=app.h.qolState.endAt;
+app.ctx.Date=class extends Date{static now(){return lateDeadline+60000;}};
 app.h.qolRenderRest();await app.h.qolState.notifications.flush();
 assert.equal(cards.size,0);assert.equal(vibrations,0,'a delayed wake-up must not vibrate for an old rest');
 app.ctx.Date=Date;await app.h.qolToggleRestNotifications();
@@ -81,4 +103,4 @@ listeners.notificationclick({notification,waitUntil(p){handled=p;}});await handl
 assert.equal(focused,1);assert.equal(events[0],'SLAT_REST_OPEN');assert.equal(opened,'');
 self.clients.matchAll=async()=>[];
 listeners.notificationclick({notification,waitUntil(p){handled=p;}});await handled;assert.equal(opened,reg.scope);
-console.log('Rest notification deadlines, replacement, permission, cancellation races, cleanup and worker return paths passed');
+console.log('Static rest snapshots, no web finish alerts, retries, deadline changes, permission, races, cleanup and worker return paths passed');

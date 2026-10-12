@@ -1,14 +1,14 @@
-/* System rest cards use a fixed deadline, never a countdown that can freeze when a phone sleeps. */
+/* Web notifications are static next-set reminders. The live countdown stays in the app. */
 globalThis.SlatRestNotifications = (() => {
   const tag = 'slat-rest-timer';
-  function card(endAt, complete, scope) {
+  function card(endAt, scope) {
     const ready = new Date(endAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
     return {
-      title: complete ? 'Rest complete' : 'Rest timer',
+      title: 'Rest reminder',
       options: {
-        body: complete ? 'Ready for your next set. Tap to return to Slat.' : `Next set at ${ready}. Tap to open your timer in Slat.`,
+        body: `Next set at ${ready}. Static reminder — open Slat for the live countdown.`,
         tag, icon: new URL('apple-touch-icon-photo-fit.png', scope).href,
-        timestamp:endAt, silent:!complete, renotify:complete, requireInteraction:!complete,
+        silent:true, renotify:false, requireInteraction:true,
         data:{type:'SLAT_REST', endAt},
         actions:[{action:'open-rest', title:'Open timer'}]
       }
@@ -23,24 +23,22 @@ globalThis.SlatRestNotifications = (() => {
         const reg=await registration();
         if(!reg||version!==revision)return;
         await job(reg,()=>version===revision);
-      }).catch(()=>onError());
+      }).catch(()=>{if(version===revision)key='';onError();});
       return tail;
     };
     const close=()=>{
       key='';
       return enqueue(async reg=>{for(const n of await reg.getNotifications({tag}))n.close();});
     };
-    const show=(endAt,complete=false)=>{
-      if(!allowed()||!Number.isFinite(endAt)||endAt<=0)return close();
-      // A suspended page must not wake hours later and announce an old rest as just completed.
-      if(complete&&(now()<endAt||now()-endAt>15000))return close();
-      const next=String(endAt)+':'+complete;
+    const show=endAt=>{
+      if(!allowed()||!Number.isFinite(endAt)||endAt<=now())return close();
+      const next=String(endAt);
       if(key===next)return tail;
       key=next;
       return enqueue(async(reg,current)=>{
         if(!current()||!allowed())return;
-        if(!complete&&endAt<=now())return;
-        const {title,options}=card(endAt,complete,reg.scope);
+        if(endAt<=now()){key='';for(const n of await reg.getNotifications({tag}))n.close();return;}
+        const {title,options}=card(endAt,reg.scope);
         await reg.showNotification(title,options);
       });
     };
