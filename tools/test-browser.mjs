@@ -41,7 +41,7 @@ async function clickControl(locator){
   await page.waitForTimeout(100);
  }
  assert(control.hit&&!control.inert&&!control.disabled,'control must be visible, enabled and unobstructed');
- await locator.focus();await page.keyboard.press(control.key);
+ await locator.evaluate(el=>(el.closest('button,a[href],summary,input,select,textarea,[role=button],[tabindex]')||el).focus());await page.keyboard.press(control.key);
 }
 async function stableScreenshot(filename){
  for(const b of await page.locator('.toast-action [aria-label="Dismiss notification"]').all())await clickControl(b);
