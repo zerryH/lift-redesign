@@ -5,9 +5,9 @@ import http from 'node:http';
 import assert from 'node:assert/strict';
 import {base,workout} from '../tests/support/runtime.mjs';
 const playwright=await import(process.env.SLAT_PLAYWRIGHT_PATH||'playwright');
-let workerTag='',legacyHtml=false;const legacyErrors=[];
+let workerTag='',legacyHtml=false,documentVersion='',stagedVersion='';const legacyErrors=[];
 const root=process.cwd(),mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json'};
-const server=http.createServer(async(req,res)=>{try{const url=new URL(req.url,'http://localhost'),name=decodeURIComponent(url.pathname)==='/'?'index.html':decodeURIComponent(url.pathname).slice(1),file=path.resolve(root,name);if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}let body=await fs.readFile(legacyHtml&&name==='index.html'?path.join(root,'tests/fixtures/release-5.5.106/index.html'):file);if(name==='sw.js'&&workerTag)body=Buffer.from(body.toString().replace(/const V='[^']+'/,'const V=\"liftlog-'+workerTag+'\"'));res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});res.end(body);}catch{res.writeHead(404);res.end();}});
+const server=http.createServer(async(req,res)=>{try{const url=new URL(req.url,'http://localhost'),name=decodeURIComponent(url.pathname)==='/'?'index.html':decodeURIComponent(url.pathname).slice(1),file=path.resolve(root,name);if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}let body=await fs.readFile(legacyHtml&&name==='index.html'?path.join(root,'tests/fixtures/release-5.5.106/index.html'):file);if(name==='sw.js'&&workerTag)body=Buffer.from(body.toString().replace(/const V='[^']+'/,'const V=\"liftlog-'+workerTag+'\"'));const version=req.headers['sec-fetch-dest']==='document'?documentVersion:stagedVersion;if(version&&['index.html','lift-local.html','app.js'].includes(name))body=Buffer.from(body.toString().replace(/const BUILD_VERSION='[^']+';/,"const BUILD_VERSION='"+version+"';"));res.writeHead(200,{'Content-Type':mime[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});res.end(body);}catch{res.writeHead(404);res.end();}});
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 const url='http://127.0.0.1:'+server.address().port;
 const report={browser:[],checks:[],errors:[]},out=path.resolve(process.env.SLAT_BROWSER_OUTPUT||'test-results/browser');await fs.mkdir(out,{recursive:true});
@@ -327,6 +327,21 @@ try{
    await context.setOffline(true);await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-note').inputValue(),'Unsaved set draft');await context.setOffline(false);
    await page.evaluate(()=>caches.open('unrelated-cache'));workerTag='upgrade-test';await page.evaluate(async()=>{const reg=await navigator.serviceWorker.getRegistration();await reg.update();});await page.waitForFunction(async()=>!!(await navigator.serviceWorker.getRegistration())?.waiting);await page.waitForFunction(()=>!!document.querySelector('.toast-action'));await clickControl(page.locator('.toast-action').getByRole('button',{name:'Dismiss notification'}));assert.equal(await page.locator('.toast-action').count(),0,'update notification dismisses without activating the worker');assert.equal((await saved()).cur.id,77);
    await clickTab('settings');await clickControl(page.locator('[data-a=update]'));await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-note').inputValue(),'Unsaved set draft');assert.equal((await saved()).cur.id,77);assert((await page.evaluate(()=>caches.keys())).includes('unrelated-cache'));workerTag='';
+  });
+  await check(name+': already-ready update reloads a stale page without losing its draft',async()=>{
+   documentVersion='0.0.1';const initial={...base(),cur:{...workout('Cable Curl',25),id:78,drafts:{'Cable Curl':{kg:30,reps:8,note:'Keep through update'}}}};
+   await open(initial,undefined,'[data-a=log]');documentVersion='';await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
+   assert.equal(await page.evaluate(()=>BUILD_VERSION),'0.0.1');await page.evaluate(()=>caches.open('unrelated-cache'));await clickTab('settings');
+   await Promise.all([page.waitForNavigation({waitUntil:'load'}),clickControl(page.locator('[data-a=update]'))]);await page.locator('[data-a=log]').waitFor();
+   assert.notEqual(await page.evaluate(()=>BUILD_VERSION),'0.0.1');assert.equal(await page.locator('#qol-note').inputValue(),'Keep through update');assert.equal((await saved()).cur.id,78);assert((await page.evaluate(()=>caches.keys())).includes('unrelated-cache'));
+  });
+  await check(name+': inconsistent release files fail staging and can be retried safely',async()=>{
+   await open({...base(),cur:{...workout('Cable Curl',25),id:79}},undefined,'[data-a=log]');await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
+   const version=await page.evaluate(()=>BUILD_VERSION);workerTag='v'+version+'-staging-test';stagedVersion='0.0.1';
+   const failed=await page.evaluate(async()=>{const reg=await navigator.serviceWorker.getRegistration();return new Promise(resolve=>{const timer=setTimeout(()=>resolve(false),12000);reg.addEventListener('updatefound',()=>{const w=reg.installing;w.addEventListener('statechange',()=>{if(w.state==='redundant'){clearTimeout(timer);resolve(true);}});},{once:true});reg.update().catch(()=>{clearTimeout(timer);resolve(false);});});});
+   assert(failed,'stale staged HTML must reject the worker');assert.equal((await saved()).cur.id,79);assert(!(await page.evaluate(()=>caches.keys())).includes('liftlog-'+workerTag));
+   stagedVersion='';await page.evaluate(async()=>{await (await navigator.serviceWorker.getRegistration()).update();});await page.waitForFunction(async()=>!!(await navigator.serviceWorker.getRegistration())?.waiting);
+   await clickTab('settings');await Promise.all([page.waitForNavigation({waitUntil:'load'}),clickControl(page.locator('[data-a=update]'))]);await page.locator('[data-a=log]').waitFor();assert.equal((await saved()).cur.id,79);workerTag='';
   });
   await check(name+': plate calculator, accessible chart and backup export round-trip',async()=>{
    await open({...base(),workouts:[workout()]});await clickTab('settings');await clickControl(page.getByRole('button',{name:'Plate calculator',exact:true}));
