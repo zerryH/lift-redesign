@@ -1,6 +1,11 @@
 /* Pure session transitions; persistence is acknowledged by the caller. */
 globalThis.SlatWorkout=(()=>{
  const phase=(state,saving=false)=>saving?'saving':!state.cur?'idle':state.editingId!=null?'editing':'active';
+ function targets(value){
+  const out={...value};
+  for(const field of ['sets','reps','seconds','meters','rest'])if(typeof out[field]==='string'&&out[field].trim()&&Number.isFinite(Number(out[field])))out[field]=Number(out[field]);
+  return out;
+ }
  function complete(current){
   if(!current?.ex?.some(x=>x.sets?.length))throw new Error('Log at least one set before finishing');
   const done=JSON.parse(JSON.stringify(current));delete done.drafts;delete done.restEndAt;delete done.restStartedAt;return done;
@@ -36,5 +41,5 @@ globalThis.SlatWorkout=(()=>{
   for(const w of selected)for(const x of w.ex)for(const set of x.sets||[])if(set.t!=='w'){sets++;const c=typeof catalogue==='function'?catalogue(x.n):catalogue?.[x.n],zone=c?.primaryMuscleId;if(zone)muscles[zone]=(muscles[zone]||0)+1;}
   return {sessions:selected.length,activeDays:new Set(selected.map(w=>w.d)).size,sets,muscles};
  }
- return {phase,complete,replace,activity,correct,summary};
+ return {phase,targets,complete,replace,activity,correct,summary};
 })();
