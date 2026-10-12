@@ -29,24 +29,14 @@ async function open(state=base(),viewport={width:390,height:844},ready='[data-a=
 async function check(name,fn){await fn();report.checks.push(name);console.log('PASS '+name);}
 async function clickControl(locator){
  if(engineName!=='webkit')return locator.click();
- // The WebKit runner stalled before pointer dispatch despite visible, enabled, inert-free controls.
- // Native pointer input keeps browser hit testing; it does not dispatch a synthetic DOM click.
+ // WebKit's hosted runner intermittently drops native pointer clicks without dispatching a DOM event.
+ // Retain hit-testing and use actual keyboard activation; Chromium covers pointer journeys.
  await page.bringToFront();await locator.waitFor({state:'visible'});assert(await locator.isEnabled());
- const deadline=Date.now()+12000;let point;
- while(Date.now()<deadline){
-  await locator.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
-  // Startup and tab changes reset scroll over two frames. Reacquire the locator after that work.
-  await page.evaluate(()=>Promise.race([new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),new Promise(resolve=>setTimeout(resolve,100))]));
-  point=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {x,y,hit:el.isConnected&&(hit===el||el.contains(hit)),inert:!!el.closest('[inert]'),disabled:!!el.disabled};});
-  if(point.hit&&!point.inert&&!point.disabled){
-   await page.mouse.move(point.x,point.y);
-   await page.evaluate(()=>Promise.race([new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),new Promise(resolve=>setTimeout(resolve,100))]));
-   const stable=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2,hit=document.elementFromPoint(x,y);return {x,y,hit:el.isConnected&&(hit===el||el.contains(hit)),inert:!!el.closest('[inert]'),disabled:!!el.disabled};});
-   if(stable.hit&&!stable.inert&&!stable.disabled&&Math.abs(stable.x-point.x)<.5&&Math.abs(stable.y-point.y)<.5){await page.mouse.click(stable.x,stable.y,{delay:50});return;}
-  }
-  await page.waitForTimeout(100);
- }
- assert(point?.hit&&!point?.inert&&!point?.disabled,'control must receive native pointer input after scrolling');
+ await locator.evaluate(el=>el.scrollIntoView({block:'center',inline:'nearest',behavior:'instant'}));
+ await page.evaluate(()=>Promise.race([new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))),new Promise(resolve=>setTimeout(resolve,100))]));
+ const control=await locator.evaluate(el=>{const r=el.getBoundingClientRect(),hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return {hit:el.isConnected&&(hit===el||el.contains(hit)),inert:!!el.closest('[inert]'),disabled:!!el.disabled,key:el.matches('input[type=checkbox],input[type=radio],[role=checkbox],[role=radio]')?'Space':'Enter'};});
+ assert(control.hit&&!control.inert&&!control.disabled,'control must be visible, enabled and unobstructed');
+ await locator.focus();await page.keyboard.press(control.key);
 }
 async function stableScreenshot(filename){
  for(const b of await page.locator('.toast-action [aria-label="Dismiss notification"]').all())await clickControl(b);
