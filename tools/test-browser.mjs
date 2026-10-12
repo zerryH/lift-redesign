@@ -246,7 +246,7 @@ try{
    assert(await page.locator('.routine-card').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
    await clickControl(page.locator('[data-a=routineStart]').first());await clickControl(page.locator('[data-a=routineSave]'));
    assert.equal(await page.locator('[data-target=sets]').inputValue(),'3');assert.equal(await page.locator('[data-target=reps]').inputValue(),'12');assert.equal(await page.locator('[data-target=rest]').inputValue(),'0');
-   await page.locator('#routine-name').fill('Preserved plan');await clickControl(page.locator('#routine-save'));await page.reload();await page.locator('[data-a=log]').waitFor();
+   await page.locator('#routine-name').fill('Preserved plan');await clickControl(page.locator('#routine-save'));await page.locator('.qol-modal').waitFor({state:'hidden'});assert.equal((await saved()).routines.length,3);await page.reload();await page.locator('[data-a=log]').waitFor();
    assert.equal((await saved()).routines[2].ex[0].sets,3);assert.equal((await saved()).routines[2].ex[0].rest,0);assert.equal((await saved()).cur.ex[0].sets.length,0);
   });
   await check(name+': switching equipment setup refreshes matching measurements and preserves notes',async()=>{
@@ -256,7 +256,7 @@ try{
    await clickControl(page.locator('[data-a=selectExercise][data-i="1"]'));await page.locator('#qol-weight').fill('90');await clickControl(page.locator('[data-a=selectExercise][data-i="0"]'));
    await clickControl(page.locator('[data-a=exerciseOptions]'));await page.locator('#equipment-label').fill('B');await clickControl(page.locator('#exercise-options-save'));
    assert.equal(await page.locator('#qol-weight').inputValue(),'40');assert.equal(await page.locator('#qol-reps').inputValue(),'12');assert.equal(await page.locator('#qol-note').inputValue(),'Keep this note');assert.equal(await page.locator('#qol-rpe').inputValue(),'8');
-   await clickControl(page.locator('[data-a=selectExercise][data-i="1"]'));assert.equal(await page.locator('#qol-weight').inputValue(),'40');
+   await clickControl(page.locator('[data-a=selectExercise][data-i="1"]'));assert.equal(await page.locator('#qol-weight').inputValue(),'40');await saved();
    await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-weight').inputValue(),'40');assert.equal(await page.locator('#qol-note').inputValue(),'Keep this note');
    await clickControl(page.locator('[data-a=log]'));assert.equal((await saved()).cur.ex[0].sets[0].kg,40);assert.equal((await saved()).cur.ex[0].sets[0].equipmentContext.label,'B');
   });
