@@ -6,7 +6,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.10';
+const BUILD_VERSION='5.7.11';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -1040,15 +1040,16 @@ document.addEventListener('input',e=>{
 });
 A.editSet=d=>{
  const workout=S.cur,x=workout?.ex?.[+d.i],z=x?.sets?.[+d.j];if(!z)return;const mode=SlatPerformance.mode(z,catalogueRecord(x.n)),loaded=mode==='legacy_reps'||mode==='load_reps'||mode==='load_distance'||(mode==='duration'&&catalogueRecord(x.n)?.hasLoad);
+ const editUnit=S.set.unit||'kg',originalWeight=loaded?qolFormat(exerciseMeta(x.n).loadMode==='assisted'?Math.abs(num(z.kg)):z.kg):'';
  const modal=qolOpenModal('Edit set '+(+d.j+1),`<div class="qol-form">${mode==='legacy_reps'?'<p class=support-copy>This legacy record keeps its original repetitions. Log a new set to record seconds or distance.</p>':''}${loaded?`<label>${exerciseMeta(x.n).loadMode==='assisted'?'Assistance':'Weight'} (${S.set.unit||'kg'})<input id="edit-weight" inputmode="decimal" value="${qolFormat(exerciseMeta(x.n).loadMode==='assisted'?Math.abs(num(z.kg)):z.kg)}"></label>`:''}<label>${mode==='duration'?'Seconds':mode==='load_distance'?'Metres':'Reps'}<input id="edit-amount" inputmode="decimal" value="${mode==='duration'?num(z.seconds):mode==='load_distance'?num(z.meters):num(z.reps)}"></label>${mode==='band_reps'?`<label>Band / resistance<input id=edit-band maxlength=80 value="${esc(z.band||'')}"></label>`:''}<label>RPE (optional, 1–10)<input id=edit-rpe inputmode=decimal value="${esc(z.rpe??'')}"></label><label>Note<input id="edit-note" maxlength="500" value="${esc(z.note||'')}"></label><button class="cta" id="save-set-edit">Save changes</button></div>`);
  modal.querySelector('#save-set-edit').addEventListener('click',()=>{
   if(S.cur!==workout||!x.sets.includes(z))return qolCloseModal();
-  const parse=strictNumber,weight=modal.querySelector('#edit-weight'),kg=weight?qolKg(weight.value):0,amount=parse(modal.querySelector('#edit-amount').value),rpeValue=modal.querySelector('#edit-rpe').value,rpe=parse(rpeValue);
+  const parse=strictNumber,weight=modal.querySelector('#edit-weight'),weightChanged=!!weight&&weight.value!==originalWeight,kg=weight?(weightChanged?parse(weight.value)/(editUnit==='lb'?2.20462:1):exerciseMeta(x.n).loadMode==='assisted'?Math.abs(num(z.kg)):num(z.kg)):0,amount=parse(modal.querySelector('#edit-amount').value),rpeValue=modal.querySelector('#edit-rpe').value,rpe=parse(rpeValue);
   if(!Number.isFinite(kg)||(weight&&!Number.isFinite(parse(weight.value)))||kg<0||kg>2000||!Number.isFinite(amount)||amount<=0||amount>(mode==='duration'?86400:mode==='load_distance'?100000:10000)||((mode==='load_reps'||mode==='legacy_reps'||mode==='reps'||mode==='band_reps')&&!Number.isInteger(amount)))return toast('Enter valid weight and quantity');
   if(rpeValue.trim()&&(!Number.isFinite(rpe)||rpe<1||rpe>10))return toast('RPE must be from 1 to 10');
-  z.kg=kg;if(mode==='duration')z.seconds=amount;else if(mode==='load_distance')z.meters=amount;else z.reps=amount;
+  if(weightChanged)z.kg=kg;if(mode==='duration')z.seconds=amount;else if(mode==='load_distance')z.meters=amount;else z.reps=amount;
   if(mode==='band_reps')z.band=modal.querySelector('#edit-band').value.slice(0,80);
-  if(rpeValue.trim())z.rpe=rpe;else delete z.rpe;z.note=modal.querySelector('#edit-note').value.slice(0,500);z.editedAt=Date.now();z.editSourceUnit=S.set.unit||'kg';qolCloseModal();go();
+  if(rpeValue.trim())z.rpe=rpe;else delete z.rpe;z.note=modal.querySelector('#edit-note').value.slice(0,500);z.editedAt=Date.now();z.editSourceUnit=editUnit;qolCloseModal();go();
  });
 };
 A.selectExercise=d=>{if(!S.cur?.ex?.[+d.i])return;ci=+d.i;dr={};render();};
