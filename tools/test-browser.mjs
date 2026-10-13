@@ -314,6 +314,14 @@ try{
    await clickControl(page.locator('[data-qol=repeatLast]'));assert.equal(await page.locator('#qol-weight').inputValue(),'60');assert.equal(await page.locator('#qol-reps').inputValue(),'8');
    await clickControl(page.locator('[data-a=log]'));assert.equal((await saved()).cur.ex[0].sets.length,2);assert.equal((await saved()).cur.ex[0].sets[1].kg,60);
   });
+  await check(name+': Last time follows recorded chronology across aliases',async()=>{
+   const set=(kg,loggedAt)=>({kg,reps:8,t:'',loggedAt}),history={...workout('Cable Curl'),id:20,d:'2026-09-19',ex:[{n:'Cable Curl',sets:[set(50,20)]},{n:'Cable Bicep Curl',sets:[set(40,10)]}]},cur={...workout('Cable Curl'),id:21,d:'2026-09-20',ex:[{n:'Cable Curl',sets:[]}]};
+   await open({...base(),workouts:[history],cur},undefined,'[data-a=log]');
+   assert((await page.locator('.qol-last').textContent()).includes('50 kg'));
+   await page.locator('#qol-weight').fill('invalid');await clickControl(page.locator('[data-qol=repeatLast]'));assert.equal(await page.locator('#qol-weight').inputValue(),'50');
+   const before=(await saved()).workouts[0].ex.flatMap(x=>x.sets.map(s=>s.kg));assert.deepEqual(before,[50,40]);
+   await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-weight').inputValue(),'50');
+  });
   await check(name+': imported rest timer ticks and zero-rest override stops it',async()=>{
    await open();await clickTab('settings');
    const backup={version:4,workouts:[],bw:base().bw,settings:base().set,cur:{...workout('Bench Press',60,8),restEndAt:Date.now()+60000}};
