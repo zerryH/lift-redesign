@@ -6,7 +6,9 @@ globalThis.SlatData = (() => {
   const fail = path => { throw new Error('Invalid backup: ' + path); };
   const name = v => typeof v==='string'&&!!v.trim()&&v.length<=80&&!/[\u0000-\u001f]/.test(v)&&!['__proto__','constructor','prototype'].includes(v.trim());
   const date = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && Number(v.slice(0,4))>=1900 && !isNaN(Date.parse(v+'T00:00:00Z')) && new Date(v+'T00:00:00Z').toISOString().slice(0,10) === v;
-  function validateBackup(data,catalogue={}) {
+  const IMPORT_TEXT_BUDGETS={note:16384,band:1024};
+  const importText = (value,field) => typeof value==='string'&&value.length<=IMPORT_TEXT_BUDGETS[field]&&!/[\u0000-\u001f\u007f]/.test(value);
+  function validateBackup(data,catalogue={},options={}) {
     if (!object(data)) fail('expected an object');
     const visiting=new Set();
     const serializable=(value,path,depth=0)=>{
@@ -33,7 +35,7 @@ globalThis.SlatData = (() => {
       if (!object(w) || !Array.isArray(w.ex) || !date(w.d)) fail(path);
       if(w.name!=null&&w.name!==''&&!name(w.name))fail(path+'.name');
       if(w.corrections!=null&&(!Array.isArray(w.corrections)||w.corrections.some(c=>!object(c)||!date(c.date)||(c.name!=null&&c.name!==''&&!name(c.name))||(c.correctedAt!=null&&(!finite(c.correctedAt)||Number(c.correctedAt)<0)))))fail(path+'.corrections');
-      if(w.drafts!=null){if(!object(w.drafts))fail(path+'.drafts');for(const draft of Object.values(w.drafts)){if(!object(draft))fail(path+'.draft');for(const key of ['kg','reps','seconds','meters','note','rpe','band'])if(draft[key]!=null&&!['number','string'].includes(typeof draft[key]))fail(path+'.draft.'+key);}}
+      if(w.drafts!=null){if(!object(w.drafts))fail(path+'.drafts');for(const draft of Object.values(w.drafts)){if(!object(draft))fail(path+'.draft');for(const key of ['kg','reps','seconds','meters','note','rpe','band'])if(draft[key]!=null&&!['number','string'].includes(typeof draft[key]))fail(path+'.draft.'+key);if(options.importText===true)for(const field of ['note','band'])if(draft[field]!=null&&!importText(draft[field],field))fail(path+'.draft.'+field+' exceeds the restore text budget');}}
       for (const [i,x] of w.ex.entries()) {
         if (!object(x) || !name(x.n) || !Array.isArray(x.sets)) fail(path+'.ex['+i+']');
         if(x.exerciseId!=null&&(typeof x.exerciseId!=='string'||!x.exerciseId||x.exerciseId.length>160))fail(path+'.exerciseId');
@@ -45,6 +47,8 @@ globalThis.SlatData = (() => {
           for (const field of ['seconds','meters','bw','height','rpe']) if (s[field]!=null && (!finite(s[field]) || Number(s[field])<0)) fail(p+'.'+field);
           for(const [field,max] of Object.entries({seconds:86400,meters:100000,bw:500,height:230}))if(s[field]!=null&&Number(s[field])>max)fail(p+'.'+field);
           if(s.equipmentContext!=null&&(!object(s.equipmentContext)||typeof s.equipmentContext.label!=='string'||!s.equipmentContext.label.trim()||s.equipmentContext.label.length>80||/[\u0000-\u001f]/.test(s.equipmentContext.label)))fail(p+'.equipmentContext');
+          for(const field of ['note','band'])if(s[field]!=null&&typeof s[field]!=='string')fail(p+'.'+field);
+          if(options.importText===true)for(const field of ['note','band'])if(s[field]!=null&&!importText(s[field],field))fail(p+'.'+field+' exceeds the restore text budget');
           if(s.rpe!=null&&Number(s.rpe)>10)fail(p+'.rpe');
           if(s.protocolVersion!=null&&(!finite(s.protocolVersion)||!Number.isInteger(Number(s.protocolVersion))||Number(s.protocolVersion)<1))fail(p+'.protocolVersion');
           if(s.exerciseId!=null&&(typeof s.exerciseId!=='string'||!s.exerciseId||s.exerciseId.length>160))fail(p+'.exerciseId');
@@ -83,5 +87,5 @@ globalThis.SlatData = (() => {
     const workouts=data.workouts||[],sets=workouts.reduce((n,w)=>n+w.ex.reduce((m,x)=>m+x.sets.length,0),0);
     return {version:data.version||'Legacy',workouts:workouts.length,sets,bodyweights:(data.bw||[]).length,custom:(data.custom||[]).length,checks:Object.keys(data.checks||{}).length,hasDraft:!!data.cur};
   }
-  return {validateBackup,canonicalName,date,backupSummary,number};
+  return {validateBackup,canonicalName,date,backupSummary,number,IMPORT_TEXT_BUDGETS};
 })();
