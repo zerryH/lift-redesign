@@ -4,14 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.17**
+**Build: 5.7.18**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.17: backups with ordinary line breaks and tabs in older notes or band labels restore successfully. Editing weight, repetitions or RPE preserves untouched text exactly, including formatting that a single-line editor cannot display. The bounded restore and creation/edit limits added in 5.7.16 remain in place. See [the current code audit](docs/code-audit-2026-10-12.md).
+New in 5.7.18: personal-record badges compare the recorded equipment setup and workout date. Future sessions no longer suppress records in older workouts, and duplicate exercise entries share one chronological session baseline. Existing workout data and ranking standards are preserved. See [the current code audit](docs/code-audit-2026-10-12.md).
 
 New in 5.7.12/5.7.13: update checks recover older open pages, protect unsaved drafts, retry failed installations, validate fresh staged files, and isolate the active cache. See `docs/fixes-5.7.12.md` and `docs/update-recovery.md`.
 

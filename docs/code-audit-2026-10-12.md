@@ -2,7 +2,7 @@
 
 Maintenance update (5.7.17): F14 restore compatibility now explicitly permits ordinary tabs and line breaks in bounded historical text. Unsupported control characters and non-string values are rejected before replacement. Set editing accounts for browser text-input newline removal, so an unrelated measurement or RPE edit preserves untouched note/band bytes; explicit text edits still use today's limits.
 
-Current maintenance release: **5.7.17**, based on the published 5.7.16 main branch. This audit preserves the recently merged updater, backup-freshness correction and earlier exact set-edit fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.18**, based on main `d32224c2d679fc5555bd827101355a6d4d39d997`. Personal-record badges now compare recorded equipment setups, exclude future-dated history and use logged set order across duplicate/alias entries. Rendering does not rewrite recorded data. This release retains the recent toast and browser-fixture fixes along with earlier backup/update fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
@@ -62,7 +62,7 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 
 `tools/test-release.mjs` runs each regression script in an isolated copy, so build-mutating tests cannot hide stale committed outputs. The suite includes focused import-text-budget coverage plus the broader data-contract, browser and native build checks.
 
-Required checks: all 62 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
+Required checks: all 63 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
 
 No catalogue entries, standard ladders, raw workout loads or user notes are automatically rewritten by this release. Reset cleanup runs only after the user invokes and confirms Reset. Unsafe backups are rejected before replacement, with existing durable state preserved. The in-app glass rest countdown remains live; web notifications remain explicitly static next-set reminders, as requested.
 
