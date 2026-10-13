@@ -6,7 +6,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.16';
+const BUILD_VERSION='5.7.17';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -145,7 +145,8 @@ globalThis.SlatData = (() => {
   const name = v => typeof v==='string'&&!!v.trim()&&v.length<=80&&!/[\u0000-\u001f]/.test(v)&&!['__proto__','constructor','prototype'].includes(v.trim());
   const date = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && Number(v.slice(0,4))>=1900 && !isNaN(Date.parse(v+'T00:00:00Z')) && new Date(v+'T00:00:00Z').toISOString().slice(0,10) === v;
   const IMPORT_TEXT_BUDGETS={note:16384,band:1024};
-  const importText = (value,field) => typeof value==='string'&&value.length<=IMPORT_TEXT_BUDGETS[field]&&!/[\u0000-\u001f\u007f]/.test(value);
+  // Ordinary tab/newline formatting is valid legacy text, not a corrupt record.
+  const importText = (value,field) => typeof value==='string'&&value.length<=IMPORT_TEXT_BUDGETS[field]&&!/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value);
   function validateBackup(data,catalogue={},options={}) {
     if (!object(data)) fail('expected an object');
     const visiting=new Set();
@@ -1169,11 +1170,16 @@ document.addEventListener('input',e=>{
 A.editSet=d=>{
  const workout=S.cur,x=workout?.ex?.[+d.i],z=x?.sets?.[+d.j];if(!z)return;const mode=SlatPerformance.mode(z,catalogueRecord(x.n)),loaded=mode==='legacy_reps'||mode==='load_reps'||mode==='load_distance'||(mode==='duration'&&catalogueRecord(x.n)?.hasLoad);
  const editUnit=S.set.unit||'kg',originalWeight=loaded?qolFormat(exerciseMeta(x.n).loadMode==='assisted'?Math.abs(num(z.kg)):z.kg):'';
+ const originalNote=String(z.note||''),originalBand=String(z.band||''),textTouched={note:false,band:false};
  const legacyText=(String(z.note||'').length>500||String(z.band||'').length>80)?'<p class=support-copy>This older set has text above today’s limit. It will be kept unchanged unless you shorten that field.</p>':'';
  const modal=qolOpenModal('Edit set '+(+d.j+1),`<div class="qol-form">${mode==='legacy_reps'?'<p class=support-copy>This legacy record keeps its original repetitions. Log a new set to record seconds or distance.</p>':''}${legacyText}${loaded?`<label>${exerciseMeta(x.n).loadMode==='assisted'?'Assistance':'Weight'} (${S.set.unit||'kg'})<input id="edit-weight" inputmode="decimal" value="${qolFormat(exerciseMeta(x.n).loadMode==='assisted'?Math.abs(num(z.kg)):z.kg)}"></label>`:''}<label>${mode==='duration'?'Seconds':mode==='load_distance'?'Metres':'Reps'}<input id="edit-amount" inputmode="decimal" value="${mode==='duration'?num(z.seconds):mode==='load_distance'?num(z.meters):num(z.reps)}"></label>${mode==='band_reps'?`<label>Band / resistance<input id=edit-band maxlength=80 value="${esc(z.band||'')}"></label>`:''}<label>RPE (optional, 1–10)<input id=edit-rpe inputmode=decimal value="${esc(z.rpe??'')}"></label><label>Note<input id="edit-note" maxlength="500" value="${esc(z.note||'')}"></label><button class="cta" id="save-set-edit">Save changes</button></div>`);
+ modal.querySelector('#edit-note').addEventListener('input',()=>{textTouched.note=true;});
+ modal.querySelector('#edit-band')?.addEventListener('input',()=>{textTouched.band=true;});
+ // Text inputs strip CR/LF on insertion. Keep the original bytes unless edited.
+ const editedText=(value,original,field)=>!textTouched[field]&&(value===original||value===original.replace(/[\r\n]/g,''))?original:value;
  modal.querySelector('#save-set-edit').addEventListener('click',()=>{
   if(S.cur!==workout||!x.sets.includes(z))return qolCloseModal();
-  const parse=strictNumber,weight=modal.querySelector('#edit-weight'),weightChanged=!!weight&&weight.value!==originalWeight,kg=weight?(weightChanged?parse(weight.value)/(editUnit==='lb'?2.20462:1):exerciseMeta(x.n).loadMode==='assisted'?Math.abs(num(z.kg)):num(z.kg)):0,amount=parse(modal.querySelector('#edit-amount').value),rpeValue=modal.querySelector('#edit-rpe').value,rpe=parse(rpeValue),noteValue=modal.querySelector('#edit-note').value,bandValue=modal.querySelector('#edit-band')?.value;
+  const parse=strictNumber,weight=modal.querySelector('#edit-weight'),weightChanged=!!weight&&weight.value!==originalWeight,kg=weight?(weightChanged?parse(weight.value)/(editUnit==='lb'?2.20462:1):exerciseMeta(x.n).loadMode==='assisted'?Math.abs(num(z.kg)):num(z.kg)):0,amount=parse(modal.querySelector('#edit-amount').value),rpeValue=modal.querySelector('#edit-rpe').value,rpe=parse(rpeValue),noteValue=editedText(modal.querySelector('#edit-note').value,originalNote,'note'),bandInput=modal.querySelector('#edit-band'),bandValue=bandInput?editedText(bandInput.value,originalBand,'band'):undefined;
   if(!Number.isFinite(kg)||(weight&&!Number.isFinite(parse(weight.value)))||kg<0||kg>2000||!Number.isFinite(amount)||amount<=0||amount>(mode==='duration'?86400:mode==='load_distance'?100000:10000)||((mode==='load_reps'||mode==='legacy_reps'||mode==='reps'||mode==='band_reps')&&!Number.isInteger(amount)))return toast('Enter valid weight and quantity');
   if(rpeValue.trim()&&(!Number.isFinite(rpe)||rpe<1||rpe>10))return toast('RPE must be from 1 to 10');
   if(noteValue.length>500&&noteValue!==String(z.note||''))return toast('Shorten the changed note to 500 characters');

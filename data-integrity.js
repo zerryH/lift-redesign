@@ -7,7 +7,8 @@ globalThis.SlatData = (() => {
   const name = v => typeof v==='string'&&!!v.trim()&&v.length<=80&&!/[\u0000-\u001f]/.test(v)&&!['__proto__','constructor','prototype'].includes(v.trim());
   const date = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && Number(v.slice(0,4))>=1900 && !isNaN(Date.parse(v+'T00:00:00Z')) && new Date(v+'T00:00:00Z').toISOString().slice(0,10) === v;
   const IMPORT_TEXT_BUDGETS={note:16384,band:1024};
-  const importText = (value,field) => typeof value==='string'&&value.length<=IMPORT_TEXT_BUDGETS[field]&&!/[\u0000-\u001f\u007f]/.test(value);
+  // Ordinary tab/newline formatting is valid legacy text, not a corrupt record.
+  const importText = (value,field) => typeof value==='string'&&value.length<=IMPORT_TEXT_BUDGETS[field]&&!/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value);
   function validateBackup(data,catalogue={},options={}) {
     if (!object(data)) fail('expected an object');
     const visiting=new Set();

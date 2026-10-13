@@ -10,7 +10,12 @@ z.h.SlatData.validateBackup(withSet('note','n'.repeat(limits.note)),{}, {importT
 z.h.SlatData.validateBackup(withSet('band','b'.repeat(limits.band)),{}, {importText:true});
 assert.throws(()=>z.h.SlatData.validateBackup(withSet('note','n'.repeat(limits.note+1)),{}, {importText:true}),/restore text budget/);
 assert.throws(()=>z.h.SlatData.validateBackup(withSet('band','b'.repeat(limits.band+1)),{}, {importText:true}),/restore text budget/);
-assert.throws(()=>z.h.SlatData.validateBackup(withSet('note','unsafe\ntext'),{}, {importText:true}),/restore text budget/);
+assert.throws(()=>z.h.SlatData.validateBackup(withSet('note','unsafe\u0000text'),{}, {importText:true}),/restore text budget/);
+for(const field of ['note','band'])for(const formatting of ['\n','\r\n','\t']){
+ const text='Older'+formatting+'text',data=withSet(field,text);
+ await z.h.importBackup(data);
+ assert.equal(z.h.S.workouts[0].ex[0].sets[0][field],text,'ordinary whitespace survives restore');
+}
 assert.throws(()=>z.h.SlatData.validateBackup(withSet('note',{})),/sets\[0\]\.note/);
 
 const before=z.store.get('liftlog-state');
@@ -19,7 +24,7 @@ assert.equal(z.store.get('liftlog-state'),before,'an excessive import cannot rep
 const draft=workout();draft.drafts={draft:{note:'n'.repeat(limits.note+1),band:''}};
 await assert.rejects(()=>z.h.importBackup({workouts:[],bw:[],cur:draft}),/draft\.note/);
 
-const legacyNote='L'.repeat(700),legacyBand='B'.repeat(100),legacy=workout('Resistance Band Curl',0,8);
+const legacyNote='L'.repeat(700)+'\r\nKeep this line\ttoo',legacyBand='B'.repeat(100)+'\nOld label',legacy=workout('Resistance Band Curl',0,8);
 Object.assign(legacy.ex[0].sets[0],{trackingMode:'band_reps',note:legacyNote,band:legacyBand});
 const existing=await boot({...base(),cur:legacy});
 assert.equal(existing.h.S.cur.ex[0].sets[0].note,legacyNote,'startup keeps historical note text');
@@ -29,7 +34,7 @@ assert.equal(existing.store.has('liftlog-startup-recovery'),false,'valid legacy 
 const create=existing.ctx.document.createElement;
 existing.ctx.document.createElement=()=>{const el=create();el.querySelector=s=>existing.get(s);return el;};
 existing.h.A.editSet({i:0,j:0});
-for(const [,id,value] of existing.h.qolState.modal.innerHTML.matchAll(/<input id="?([\w-]+)"?[^>]*value="([^"]*)"/g))existing.get('#'+id).value=value;
+for(const [,id,value] of existing.h.qolState.modal.innerHTML.matchAll(/<input id="?([\w-]+)"?[^>]*value="([^"]*)"/g))existing.get('#'+id).value=value.replace(/[\r\n]/g,'');
 assert.match(existing.h.qolState.modal.innerHTML,/kept unchanged unless you shorten/);
 existing.get('#edit-amount').value='9';
 existing.get('#save-set-edit').listeners.click.at(-1)();
@@ -41,5 +46,13 @@ existing.h.dr={n:'Resistance Band Curl',kg:0,reps:8,note:legacyNote,band:'Light'
 assert.equal(existing.h.makeDraftSet(),null,'an over-limit draft must be shortened explicitly before logging');
 assert.equal(existing.h.dr.note,legacyNote,'failed logging keeps the full draft for correction');
 assert.match(existing.h.V.today(),/id="log-band" maxlength="80"/);
+existing.h.A.editSet({i:0,j:0});
+existing.get('#edit-weight').value='0';existing.get('#edit-amount').value='9';existing.get('#edit-rpe').value='';
+existing.get('#edit-note').value='A deliberately changed note';
+existing.get('#edit-note').listeners.input.at(-1)();
+existing.get('#edit-band').value='Light';existing.get('#edit-band').listeners.input.at(-1)();
+existing.get('#save-set-edit').listeners.click.at(-1)();await existing.h.flush();
+assert.equal(existing.h.S.cur.ex[0].sets[0].note,'A deliberately changed note');
+assert.equal(existing.h.S.cur.ex[0].sets[0].band,'Light');
 assert.deepEqual([...z.errors,...existing.errors],[]);
 console.log('Imported text budgets reject abusive values; historical notes and bands remain intact until explicitly shortened');

@@ -1,8 +1,8 @@
 # SLAT code audit - 12 October 2026
 
-Maintenance update (5.7.16): F14 is addressed. Imported notes and band labels now have bounded restore budgets, control characters and non-string values are rejected before replacement, and the existing state remains untouched on failure. Older local text is retained without automatic rewriting; editing another field preserves it, while changed or newly logged text must meet the visible 500-character note and 80-character band-label limits.
+Maintenance update (5.7.17): F14 restore compatibility now explicitly permits ordinary tabs and line breaks in bounded historical text. Unsupported control characters and non-string values are rejected before replacement. Set editing accounts for browser text-input newline removal, so an unrelated measurement or RPE edit preserves untouched note/band bytes; explicit text edits still use today's limits.
 
-Current maintenance release: **5.7.16**, based on the published 5.7.15 main branch. This audit preserves the recently merged updater, backup-freshness correction and earlier exact set-edit fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.17**, based on the published 5.7.16 main branch. This audit preserves the recently merged updater, backup-freshness correction and earlier exact set-edit fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
