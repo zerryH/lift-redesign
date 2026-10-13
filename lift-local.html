@@ -1311,6 +1311,7 @@ const last=n=>{for(let i=S.workouts.length-1;i>=0;i--){const x=S.workouts[i].ex.
 const backupRevision=()=>{const n=Number(S.lastBackupRevision);return Number.isSafeInteger(n)&&n>0?n:0};
 const backupChanged=()=>!!S.lastBackup&&!!backupRevision()&&Number(S.revision||0)>backupRevision();
 const backupStatus=()=>{if(!S.lastBackup)return'never';const age=Math.max(0,Math.floor((Date.now()-S.lastBackup)/864e5))+' days ago';if(!backupRevision())return age+' · freshness unknown';return age+(backupChanged()?' · changes since backup':' · no changes since export')};
+let backupMarkerPending=false;
 const rem=()=>{if(!S.workouts.length)return'';const n=S.workouts.filter(w=>w.id>S.lastBackup).length,changed=backupRevision()?backupChanged():n>0,ref=S.lastBackup||S.workouts[0].id;return n>=10||(changed&&Date.now()-ref>12096e5)?'<div class=note><small>Time for a backup — Profile → Export backup.</small></div>':''};
 const h=(a,b)=>`<h1><b>${a}</b>${b?' <i>'+b+'</i>':''}</h1>`;
 /* ranks + first-run guide */
@@ -1564,7 +1565,7 @@ const repairState=()=>{
  if(S.cur&&typeof S.cur==='object'){const eid=Number(S.editingId),editing=Number.isSafeInteger(eid)&&eid>0&&eid===Number(S.cur.id);if(editing){setIds.clear();entryIds.clear();}const q={...S.cur};let id=Number(q.id);if(!Number.isSafeInteger(id)||id<=0||(!editing&&used.has(id))){id=base+S.workouts.length;while(used.has(id)&&id<Number.MAX_SAFE_INTEGER)id++;if(used.has(id)){id=1;while(used.has(id))id++;}}q.id=id;q.d=safeDate(q.d);q.split=safeName(q.split)||'Workout';q.ex=Array.isArray(q.ex)?q.ex.map(normEx).filter(x=>x.n):[];S.cur=q;S.editingId=editing?eid:null}else{S.cur=null;S.editingId=null}
  if(S.undo)try{SlatData.validateBackup({workouts:[],bw:[],undo:S.undo});}catch{S.undo=null;}
  if(!Number.isFinite(Number(S.lastBackup)))S.lastBackup=0;
- if(!Number.isSafeInteger(Number(S.lastBackupRevision))||Number(S.lastBackupRevision)<0||Number(S.lastBackupRevision)>Number(S.revision||0))S.lastBackupRevision=0;else S.lastBackupRevision=Number(S.lastBackupRevision);
+ const marker=Number(S.lastBackupRevision),revision=Number(S.revision||0);if(!Number.isSafeInteger(marker)||marker<0||(marker>revision&&!(backupMarkerPending&&marker===revision+1)))S.lastBackupRevision=0;else S.lastBackupRevision=marker;
  return S;
 };
 const ensureRuntimeExercises=()=>{
@@ -1722,7 +1723,7 @@ anim:()=>{S.set.motion=+!S.set.motion;document.documentElement.dataset.motion=S.
 reset:()=>confirmReset(),
 exp:async()=>{await saveTail;const backupWeight=Array.isArray(S.bw)&&S.bw.length?S.bw[S.bw.length-1].kg:null;const backupProfile={age:athleteAge(),weight:backupWeight,heightCm:S.set.heightCm??null};const j=JSON.stringify({app:'slat',version:4,date:iso(),profile:backupProfile,workouts:S.workouts,custom:S.custom,routines:S.routines||[],exercisePreferences:S.exercisePreferences||{},bw:S.bw,settings:S.set,rk:S.rk,checks:S.checks,cur:S.cur,editingId:S.editingId,rankingVersion:S.rankingVersion,undo:S.undo||null}),f=new File([j],`slat-backup-${iso()}.json`,{type:'application/json'});
  try{if(navigator.canShare?.({files:[f]}))await navigator.share({files:[f]});else throw 0}catch(e){if(e&&e.name=='AbortError')return;const a=document.createElement('a');const url=URL.createObjectURL(f);a.href=url;a.download=f.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),0)}
- const previousTime=S.lastBackup,previousRevision=S.lastBackupRevision;S.lastBackup=Date.now();S.lastBackupRevision=durableRevision+1;if(!await save()){S.lastBackup=previousTime;S.lastBackupRevision=previousRevision;render();return toast('Backup exported, but its reminder status could not be saved.')}render();toast('Backup exported · no changes since export')}};
+ const previousTime=S.lastBackup,previousRevision=S.lastBackupRevision;S.lastBackup=Date.now();S.lastBackupRevision=durableRevision+1;backupMarkerPending=true;const markerSave=save();render();let markerSaved=false;try{markerSaved=await markerSave}finally{backupMarkerPending=false}if(!markerSaved){S.lastBackup=previousTime;S.lastBackupRevision=previousRevision;render();return toast('Backup exported, but its reminder status could not be saved.')}toast('Backup exported · no changes since export')}};
 const addCustom=c=>{const n=safeName(c.n);if(n){c.n=n;EX[n]=EX[n]||{g:EXERCISE_SPLITS.includes(c.g)?c.g:'Custom',t:['B','D','W','M','U'].includes(c.t)?c.t:'B',c:c.c||'Custom'}}};
 const stableValue=v=>Array.isArray(v)?v.map(stableValue):v&&typeof v==='object'?Object.fromEntries(Object.keys(v).sort().map(k=>[k,stableValue(v[k])])):v;
 const sameWorkout=(a,b)=>JSON.stringify(stableValue(a))===JSON.stringify(stableValue(b));
