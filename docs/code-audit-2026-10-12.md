@@ -2,7 +2,7 @@
 
 Maintenance update (5.7.17): F14 restore compatibility now explicitly permits ordinary tabs and line breaks in bounded historical text. Unsupported control characters and non-string values are rejected before replacement. Set editing accounts for browser text-input newline removal, so an unrelated measurement or RPE edit preserves untouched note/band bytes; explicit text edits still use today's limits.
 
-Current maintenance release: **5.7.18**, based on main `d32224c2d679fc5555bd827101355a6d4d39d997`. Personal-record badges now compare recorded equipment setups, exclude future-dated history and use logged set order across duplicate/alias entries. Rendering does not rewrite recorded data. This release retains the recent toast and browser-fixture fixes along with earlier backup/update fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.19**, based on main `fa6fc70372fc27a5edd44c5b8ca2b761e514640c`. Valid backups are no longer rejected solely because their JSON file exceeds 25 MiB. Selected files still pass the complete version-4 record contract and review screen before atomic replacement; malformed or over-budget records remain rejected. This release retains the personal-record, toast and browser-fixture fixes along with earlier backup/update fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
@@ -56,13 +56,13 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 | F17 keyboard conflict bypass | Addressed by the shared import/finish/conflict guards in A08; the Ctrl/Cmd+Z conflict fixture preserves the set. |
 | F18 legal listeners | Addressed by A09. |
 | F19 HTML-string composition | Open maintenance risk: feature insertion still depends on literal view fragments. Current view tests pass; no missing current control is claimed. |
-| F20 export/import capacity | Open: sufficiently large valid exports can exceed the 25 MiB import ceiling. A measured, restorable large-backup route is needed. |
+| F20 export/import capacity | Addressed in 5.7.19: import no longer applies an arbitrary file-byte ceiling that Slat's own exporter did not enforce. A real Chromium journey opens a structurally valid 25+ MiB backup and the isolated regression exercises the same selection path. The device/browser still needs enough memory to parse a selected JSON file. |
 
 ## Validation and release gate
 
 `tools/test-release.mjs` runs each regression script in an isolated copy, so build-mutating tests cannot hide stale committed outputs. The suite includes focused import-text-budget coverage plus the broader data-contract, browser and native build checks.
 
-Required checks: all 63 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
+Required checks: all 64 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
 
 No catalogue entries, standard ladders, raw workout loads or user notes are automatically rewritten by this release. Reset cleanup runs only after the user invokes and confirms Reset. Unsafe backups are rejected before replacement, with existing durable state preserved. The in-app glass rest countdown remains live; web notifications remain explicitly static next-set reminders, as requested.
 
@@ -74,8 +74,8 @@ Actual iPhone Home Screen suspension, VoiceOver/TalkBack, OS notification delive
 
 ## Focused next work
 
-1. Provide a compatible route for large backups and, where the platform permits, stronger confirmation that a copy was retained (F12/F20).
-2. Measure logging/save latency on a real iPhone before changing full-history storage or caching (F13).
+1. Where the platform permits, strengthen confirmation that a backup copy was retained outside Slat (F12).
+2. Measure logging/save and large-backup parsing latency on a real iPhone before changing full-history storage or caching (F13).
 3. Design explicit movement-family compatibility for custom benchmarks; keep uncertain mappings unranked (F07).
 4. Reduce duplicate offline assets and replace literal-string feature assembly with explicit composition points (F16/F19), with existing durability/offline checks retained.
 

@@ -227,6 +227,13 @@ try{
    await page.locator('#imp').setInputFiles(file);await page.bringToFront();await page.locator('#confirm-import').waitFor();assert(await page.locator('.action-card').evaluate(el=>el.getBoundingClientRect().right<=innerWidth&&el.getBoundingClientRect().left>=0),'backup dialog fits viewport');assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);await clickControl(page.getByRole('button',{name:'Cancel',exact:true}));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
    await page.locator('#imp').setInputFiles(file);await clickControl(page.locator('#confirm-import'));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal((await saved()).workouts[0].ex[0].n,'Cable Curl');assert(await page.evaluate(()=>localStorage.getItem('liftlog-import-recovery')));
   });
+  if(name==='chromium')await check(name+': a valid backup over 25 MiB reaches review',async()=>{
+   await open();await clickTab('settings');
+   const note='n'.repeat(16384),workouts=Array.from({length:1650},(_,i)=>({id:i+1,d:'2026-10-13',ex:[{n:'Cable Curl',sets:[{kg:25,reps:8,note}]}]}));
+   const buffer=Buffer.from(JSON.stringify({app:'slat',version:4,date:'2026-10-13',workouts,bw:[],settings:base().set}));assert(buffer.length>25*1024*1024);
+   await page.locator('#imp').setInputFiles({name:'slat-large-backup.json',mimeType:'application/json',buffer});
+   await page.locator('#confirm-import').waitFor();assert((await page.locator('.backup-summary').textContent()).includes('1650'));await clickControl(page.getByRole('button',{name:'Cancel',exact:true}));
+  });
   await check(name+': audit backup fields cannot create elements or event attributes',async()=>{
    const payload='8" autofocus onfocus="this.dataset.audit=1',initial={...base(),cur:workout()};initial.cur.drafts={'Bench Press':{kg:payload,reps:payload,n:'spoofed',entryId:'spoofed'}};initial.cur.ex[0].target={sets:'<img src=x onerror="this.dataset.audit=1">',reps:8,seconds:30,meters:20,rest:90};
    await open(initial,undefined,'[data-a=log]');assert.equal(await page.locator('.routine-target img').count(),0);assert.equal(await page.locator('#qol-reps[onfocus],#ws[onfocus],#ws[onpointerdown]').count(),0);assert.equal(await page.evaluate(()=>dr.n),'Bench Press');
