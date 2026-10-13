@@ -1,5 +1,7 @@
 # SLAT code audit - 12 October 2026
 
+Maintenance update (5.7.15): F12 is partially addressed. A completed export now records the exact durable content revision, and later edits to existing workouts are shown as changes since that export. Legacy timestamps remain visible as freshness unknown instead of being treated as current. Browser download/share APIs still cannot prove that a user retained the resulting file outside Slat.
+
 Release candidate: **5.7.14**, based on main `f287470f84f0088a93c0abf26428e8968cb3e946` (5.7.13 / PR #113). This audit preserves the recently merged updater and earlier exact set-edit fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
@@ -46,7 +48,7 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 | F09 fractional saved checks | Addressed by A14. |
 | F10 routine references | Addressed by A15; unresolved sessions do not start. |
 | F11 calendar date range | Addressed by A16 for new imports/corrections; old archival records are retained. |
-| F12 backup freshness | Open: reminders still use workout IDs/export requests rather than an exported content revision or confirmed retained file. |
+| F12 backup freshness | Partially addressed in 5.7.15: status and reminders use the exported durable content revision, including edits to older workouts. Browser APIs still cannot confirm that the exported file was retained outside Slat. |
 | F13 full-history work | Open: rendering/rank rebuilding/saving still scan or serialize the full history. Container stress timings are not phone latency measurements. |
 | F14 text budgets | Open: imported notes/bands can exceed creation/edit limits. Do not silently truncate historical text. |
 | F15 cache reuse | Addressed by A20; retains the active-cache isolation already merged in #113. |
@@ -72,7 +74,7 @@ Actual iPhone Home Screen suspension, VoiceOver/TalkBack, OS notification delive
 
 ## Focused next work
 
-1. Make backup freshness reflect content changes and provide a compatible route for large backups (F12/F20).
+1. Provide a compatible route for large backups and, where the platform permits, stronger confirmation that a copy was retained (F12/F20).
 2. Define field/record budgets with a visible legacy-data policy (F14).
 3. Measure logging/save latency on a real iPhone before changing full-history storage or caching (F13).
 4. Design explicit movement-family compatibility for custom benchmarks; keep uncertain mappings unranked (F07).
