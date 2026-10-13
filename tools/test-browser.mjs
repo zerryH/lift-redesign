@@ -90,7 +90,10 @@ try{
    await clickControl(page.locator('[data-a=editSet]').first());await page.locator('#edit-note').fill('Unconfirmed edit');
    const before=await page.evaluate(()=>JSON.stringify(S));
    await second.evaluate(async()=>{S.cur.name='Saved by second tab';await save();});await page.locator('#storage-conflict').waitFor();
-   await clickControl(page.locator('#save-set-edit'));
+   // The warning covers this button on mobile; the still-open editor is keyboard reachable.
+   await page.bringToFront();await page.locator('#edit-note').press('Tab');
+   assert(await page.locator('#save-set-edit').evaluate(el=>document.activeElement===el));
+   await page.keyboard.press('Enter');
    assert.equal(await page.evaluate(()=>JSON.stringify(S)),before,'paused editor must not change its in-memory recovery copy');
    assert.equal((await saved()).cur.name,'Saved by second tab','latest stored copy remains untouched');
    assert.equal((await saved()).cur.ex[0].sets[0].note,undefined);
