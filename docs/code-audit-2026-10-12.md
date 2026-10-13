@@ -1,8 +1,8 @@
 # SLAT code audit - 12 October 2026
 
-Maintenance update (5.7.15): F12 is partially addressed. A completed export now records the exact durable content revision, and later edits to existing workouts are shown as changes since that export. Legacy timestamps remain visible as freshness unknown instead of being treated as current. Browser download/share APIs still cannot prove that a user retained the resulting file outside Slat.
+Maintenance update (5.7.16): F14 is addressed. Imported notes and band labels now have bounded restore budgets, control characters and non-string values are rejected before replacement, and the existing state remains untouched on failure. Older local text is retained without automatic rewriting; editing another field preserves it, while changed or newly logged text must meet the visible 500-character note and 80-character band-label limits.
 
-Release candidate: **5.7.14**, based on main `f287470f84f0088a93c0abf26428e8968cb3e946` (5.7.13 / PR #113). This audit preserves the recently merged updater and earlier exact set-edit fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.16**, based on the published 5.7.15 main branch. This audit preserves the recently merged updater, backup-freshness correction and earlier exact set-edit fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
@@ -50,7 +50,7 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 | F11 calendar date range | Addressed by A16 for new imports/corrections; old archival records are retained. |
 | F12 backup freshness | Partially addressed in 5.7.15: status and reminders use the exported durable content revision, including edits to older workouts. Browser APIs still cannot confirm that the exported file was retained outside Slat. |
 | F13 full-history work | Open: rendering/rank rebuilding/saving still scan or serialize the full history. Container stress timings are not phone latency measurements. |
-| F14 text budgets | Open: imported notes/bands can exceed creation/edit limits. Do not silently truncate historical text. |
+| F14 text budgets | Addressed in 5.7.16: imports apply bounded restore budgets (16,384-character notes and 1,024-character band labels), while creation/edit limits remain 500/80. Historical local text is not rewritten, and editing another field preserves unchanged legacy text instead of truncating it. |
 | F15 cache reuse | Addressed by A20; retains the active-cache isolation already merged in #113. |
 | F16 duplicate offline package | Open improvement: generated HTML and precached source contain duplicate payloads. Reducing the runtime graph needs offline/local-file acceptance tests. |
 | F17 keyboard conflict bypass | Addressed by the shared import/finish/conflict guards in A08; the Ctrl/Cmd+Z conflict fixture preserves the set. |
@@ -60,9 +60,9 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 
 ## Validation and release gate
 
-`tools/test-release.mjs` runs each regression script in an isolated copy, so build-mutating tests cannot hide stale committed outputs. The release includes two new regression scripts (`full-audit-regressions.mjs` and `audit-data-contracts.mjs`) and adds three Chromium/WebKit browser journeys for malformed backups, delayed imports and exact calculator units/dialog Escape behavior.
+`tools/test-release.mjs` runs each regression script in an isolated copy, so build-mutating tests cannot hide stale committed outputs. The suite includes focused import-text-budget coverage plus the broader data-contract, browser and native build checks.
 
-Required checks: all 60 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
+Required checks: all 62 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
 
 No catalogue entries, standard ladders, raw workout loads or user notes are automatically rewritten by this release. Reset cleanup runs only after the user invokes and confirms Reset. Unsafe backups are rejected before replacement, with existing durable state preserved. The in-app glass rest countdown remains live; web notifications remain explicitly static next-set reminders, as requested.
 
@@ -75,9 +75,8 @@ Actual iPhone Home Screen suspension, VoiceOver/TalkBack, OS notification delive
 ## Focused next work
 
 1. Provide a compatible route for large backups and, where the platform permits, stronger confirmation that a copy was retained (F12/F20).
-2. Define field/record budgets with a visible legacy-data policy (F14).
-3. Measure logging/save latency on a real iPhone before changing full-history storage or caching (F13).
-4. Design explicit movement-family compatibility for custom benchmarks; keep uncertain mappings unranked (F07).
-5. Reduce duplicate offline assets and replace literal-string feature assembly with explicit composition points (F16/F19), with existing durability/offline checks retained.
+2. Measure logging/save latency on a real iPhone before changing full-history storage or caching (F13).
+3. Design explicit movement-family compatibility for custom benchmarks; keep uncertain mappings unranked (F07).
+4. Reduce duplicate offline assets and replace literal-string feature assembly with explicit composition points (F16/F19), with existing durability/offline checks retained.
 
 These are tracked follow-ups, not completed features. The current release prioritizes demonstrated safety and correctness failures.
