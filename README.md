@@ -4,14 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.20**
+**Build: 5.7.21**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.20: “Last Time” and Repeat now select the chronologically latest recorded set when a workout contains duplicate or aliased exercise entries. Legacy sessions without set timestamps keep their deterministic entry order, and saved workout data is not reordered or rewritten. See [the 5.7.20 fix note](docs/fixes-5.7.20.md) and [the current code audit](docs/code-audit-2026-10-12.md).
+New in 5.7.21: saved rest timers now apply the same 24-hour restore safety limit as the iPhone Live Activity bridge. Invalid multi-day deadlines are cleared instead of starting a permanent fast update loop, while ordinary in-progress timers still resume. See [the 5.7.21 fix note](docs/fixes-5.7.21.md) and [the current code audit](docs/code-audit-2026-10-12.md).
 
 New in 5.7.19: large valid backups are no longer rejected solely for crossing the old 25 MiB file-size ceiling. Every selected backup still passes the same strict record validation and review step before it can replace device data.
 

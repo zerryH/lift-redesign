@@ -6,7 +6,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.20';
+const BUILD_VERSION='5.7.21';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -923,6 +923,7 @@ const qolAcquireWake=()=>{
  qolState.wakePending=pending;return pending;
 };
 const qolReleaseWake=async()=>{qolState.wakeRevision++;qolState.wakePending=null;const lock=qolState.wake;qolState.wake=null;try{await lock?.release()}catch{}};
+const QOL_MAX_REST_MS=86400000;
 const qolState={wake:null,wakePending:null,wakeRevision:0,endAt:0,startedAt:0,timer:null,modal:null,notifications:null,notificationError:false,notificationBusy:false};
 const qolNativeRestState={client:null,allowed:null,error:''};
 const qolNativeClient=()=>{if(!SlatNativeRest.available())return null;return qolNativeRestState.client??=SlatNativeRest.create(message=>window.webkit.messageHandlers.slatRestTimer.postMessage(message));};
@@ -966,7 +967,7 @@ const qolToggleRestNotifications=async()=>{
  finally{qolState.notificationBusy=false;}
 };
 const qolStopRest=()=>{qolState.endAt=0;qolState.startedAt=0;document.body.classList.remove('has-rest');if(S?.cur&&(Object.hasOwn(S.cur,'restEndAt')||Object.hasOwn(S.cur,'restStartedAt'))){delete S.cur.restEndAt;delete S.cur.restStartedAt;save();}if(qolState.timer){clearInterval(qolState.timer);qolState.timer=null}qolReleaseWake();document.querySelector('#qol-rest')?.remove();qolClearRestNotification();qolSyncNativeRest();};
-const qolRestoreRest=()=>{if(importing)return;if(qolState.timer){clearInterval(qolState.timer);qolState.timer=null;}qolState.endAt=S.set.restEnabled===false?0:num(S.cur?.restEndAt);qolState.startedAt=num(S.cur?.restStartedAt)||qolState.endAt-(S.set.rest||90)*1000;if(qolState.endAt>Date.now()){qolAcquireWake();qolRenderRest();qolState.timer=setInterval(qolRenderRest,250);qolNotifyRest(qolState.endAt);qolSyncNativeRest();}else qolStopRest();};
+const qolRestoreRest=()=>{if(importing)return;if(qolState.timer){clearInterval(qolState.timer);qolState.timer=null;}const now=Date.now(),endAt=S.set.restEnabled===false?0:num(S.cur?.restEndAt);if(!(endAt>now)||endAt-now>QOL_MAX_REST_MS){qolStopRest();return;}qolState.endAt=endAt;const startedAt=num(S.cur?.restStartedAt);qolState.startedAt=startedAt>0&&startedAt<endAt?startedAt:endAt-(S.set.rest||90)*1000;if(S.cur&&qolState.startedAt!==startedAt){S.cur.restStartedAt=qolState.startedAt;save();}qolAcquireWake();qolRenderRest();qolState.timer=setInterval(qolRenderRest,250);qolNotifyRest(qolState.endAt);qolSyncNativeRest();};
 const qolRestStart=(seconds=S.set.rest||90)=>{qolState.startedAt=Date.now();qolState.endAt=qolState.startedAt+seconds*1000;if(S.cur){S.cur.restEndAt=qolState.endAt;S.cur.restStartedAt=qolState.startedAt;save();}qolAcquireWake();qolRenderRest();if(qolState.timer)clearInterval(qolState.timer);qolState.timer=setInterval(qolRenderRest,250);qolNotifyRest(qolState.endAt);qolSyncNativeRest()};
 const qolAdjustRest=seconds=>{if(!(qolState.endAt>Date.now()))return false;const next=qolState.endAt+seconds*1000;if(next<=Date.now()){qolStopRest();return true;}qolState.endAt=next;if(S.cur){S.cur.restEndAt=next;save();}qolRenderRest();qolNotifyRest(next);qolSyncNativeRest();return true;};
 const qolRenderRest=()=>{
