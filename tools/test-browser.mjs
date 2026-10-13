@@ -132,7 +132,7 @@ try{
    const note='First line\r\nSecond line\tcontext',band='Light\nold band label',cur=workout('Resistance Band Curl',0,8);
    Object.assign(cur.ex[0].sets[0],{trackingMode:'band_reps',note,band});
    await open();await clickTab('settings');
-   await page.locator('#imp').setInputFiles({name:'formatted-notes.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({workouts:[],bw:[],cur}))});
+   await page.locator('#imp').setInputFiles({name:'formatted-notes.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({workouts:[],bw:[],cur,settings:base().set}))});
    await clickControl(page.locator('#confirm-import'));await page.locator('#confirm-import').waitFor({state:'detached'});
    await clickTab('today');await clickControl(page.getByRole('button',{name:'Edit set 1',exact:true}));
    assert.equal(await page.locator('#edit-note').inputValue(),note.replace(/[\r\n]/g,''));
