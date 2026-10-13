@@ -21,6 +21,14 @@ assert(!clock.intervals.has(originalTimer));assert.equal(clock.intervals.size,1)
 await clock.h.importBackup({...imported,settings:{restEnabled:false}});
 assert.equal(clock.intervals.size,0);assert.equal(clock.h.qolState.endAt,0);
 
+// Corrupt or stale multi-day deadlines must not leave a permanent fast interval running.
+const tooFar=await boot({...base(),cur:{...workout(),restStartedAt:Date.now(),restEndAt:Date.now()+172800000}});
+assert.equal(tooFar.h.qolState.endAt,0);assert.equal(tooFar.intervals.size,0);
+assert.equal(tooFar.h.S.cur.restStartedAt,undefined);assert.equal(tooFar.h.S.cur.restEndAt,undefined);
+const invalidStart=await boot({...base(),cur:{...workout(),restStartedAt:Date.now()+120000,restEndAt:Date.now()+60000}});
+assert(invalidStart.h.qolState.timer);assert(invalidStart.h.qolState.startedAt<invalidStart.h.qolState.endAt);
+assert.equal(invalidStart.h.S.cur.restStartedAt,invalidStart.h.qolState.startedAt);
+
 // Zero-rest exercises stop the previous exercise's timer; editing another workout clears its draft and clock.
 const zero=await boot({...base(),cur:workout(),workouts:[{...workout('Cable Curl',25),id:2}]});
 zero.h.qolRestStart(90);zero.h.S.exercisePreferences={ex001:{rest:0}};
@@ -45,5 +53,5 @@ for(const name of ['constructor','prototype','__proto__'])assert.throws(()=>cust
 custom.h.dr={kg:60,reps:8,rpe:'0x8'};custom.h.S.cur=workout();assert.equal(custom.h.makeDraftSet(),null);
 custom.h.gr={n:'Bench Press',w:'60',r:'0x8',b:'80',h:'178',u:'kg',f:'M',res:null};await custom.h.A.calc();assert.equal(custom.h.gr.res,null);
 custom.h.gr={n:'Bench Press',w:'60',r:'8',b:'80',h:'178oops',u:'kg',f:'M',res:null};await custom.h.A.calc();assert.equal(custom.h.gr.res,null);
-assert.deepEqual([...reuse.errors,...clock.errors,...zero.errors,...custom.errors],[]);
-console.log('Draft reuse, imported and zero-rest timers, workout switching, custom summaries and consistent import/input contracts passed');
+assert.deepEqual([...reuse.errors,...clock.errors,...tooFar.errors,...invalidStart.errors,...zero.errors,...custom.errors],[]);
+console.log('Draft reuse, imported, zero-rest and out-of-range timers, workout switching, custom summaries and consistent import/input contracts passed');

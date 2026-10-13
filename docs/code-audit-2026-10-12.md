@@ -2,11 +2,11 @@
 
 Maintenance update (5.7.17): F14 restore compatibility now explicitly permits ordinary tabs and line breaks in bounded historical text. Unsupported control characters and non-string values are rejected before replacement. Set editing accounts for browser text-input newline removal, so an unrelated measurement or RPE edit preserves untouched note/band bytes; explicit text edits still use today's limits.
 
-Current maintenance release: **5.7.20**, based on main `19eee58cfc9c74b91431fa3078c4a5ce7ac702e2`. “Last Time” and Repeat now use the chronologically latest recorded set across duplicate and aliased exercise entries instead of trusting entry-array order. Legacy sets without timestamps retain deterministic array order, and lookup does not rewrite saved history. This release retains the large-backup, personal-record, toast and browser-fixture fixes along with earlier backup/update fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.21**. Saved rest timers now share the iPhone bridge's 24-hour restore limit. A corrupt or stale multi-day deadline is cleared instead of starting a permanent 250 ms update loop, and an invalid start time is repaired without affecting workout sets. Ordinary active timers continue to resume. This release retains the chronological “Last Time”, large-backup, personal-record, toast and browser-fixture fixes along with earlier backup/update fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
-The release addresses twenty-one reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
+The release addresses twenty-two reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
 
 | Case | Before | Change and regression evidence |
 | --- | --- | --- |
@@ -31,6 +31,7 @@ The release addresses twenty-one reproduced defect or failure-path cases. It als
 | A19 | Reset removed primary state but retained personal import/migration/startup recovery copies. | Delete and verify the explicit personal-key inventory, preserve unrelated origin keys and retain rollback on failure. |
 | A20 | Same-key worker reinstall could replace an active cache before validation failed. | Existing caches are verified without rewriting; new invalid staging is deleted. Include normalized worker source in the cache fingerprint so worker-only changes receive a new identity. |
 | A21 | “Last Time” and Repeat could choose an older set when aliases or duplicate exercise entries were stored out of chronological order. | Order eligible sets by their positive `loggedAt` value, with original array position as the deterministic legacy fallback. Share that ordering with PR badges and current-session last-set lookup; isolated and browser regressions verify the 50 kg later set wins over the 40 kg older set without rewriting history. |
+| A22 | A stale or malformed saved rest deadline more than a day ahead started a permanent 250 ms update loop and displayed a multi-day “rest.” | Apply the iPhone bridge's existing 24-hour restore limit to the web timer, clear only the ephemeral timer fields, and repair an invalid start time. Focused regressions retain normal active-timer restore. |
 
 ## Prior register reconciliation
 
