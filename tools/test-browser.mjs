@@ -128,6 +128,22 @@ try{
     await page.waitForFunction(()=>S.cur.ex[0].sets[0].kg!==60.123456);await page.evaluate(()=>saveTail);assert.equal((await saved()).cur.ex[0].sets[0].kg,unit==='kg'?65.5:144.4/2.20462);
    }
   });
+  await check(name+': formatted legacy notes restore and survive unrelated set edits',async()=>{
+   const note='First line\r\nSecond line\tcontext',band='Light\nold band label',cur=workout('Resistance Band Curl',0,8);
+   Object.assign(cur.ex[0].sets[0],{trackingMode:'band_reps',note,band});
+   await open();await clickTab('settings');
+   await page.locator('#imp').setInputFiles({name:'formatted-notes.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({workouts:[],bw:[],cur}))});
+   await clickControl(page.locator('#confirm-import'));await page.locator('#confirm-import').waitFor({state:'detached'});
+   await clickTab('today');await clickControl(page.getByRole('button',{name:'Edit set 1',exact:true}));
+   assert.equal(await page.locator('#edit-note').inputValue(),note.replace(/[\r\n]/g,''));
+   await page.locator('#edit-amount').fill('9');await clickControl(page.locator('#save-set-edit'));
+   let state=await saved();assert.equal(state.cur.ex[0].sets[0].reps,9);assert.equal(state.cur.ex[0].sets[0].note,note);assert.equal(state.cur.ex[0].sets[0].band,band);
+   await page.reload();await page.locator('[data-a=fin]').waitFor();
+   assert.equal((await saved()).cur.ex[0].sets[0].note,note);
+   await clickControl(page.getByRole('button',{name:'Edit set 1',exact:true}));
+   await page.locator('#edit-note').fill('Changed intentionally');await page.locator('#edit-band').fill('Medium');await clickControl(page.locator('#save-set-edit'));
+   state=await saved();assert.equal(state.cur.ex[0].sets[0].note,'Changed intentionally');assert.equal(state.cur.ex[0].sets[0].band,'Medium');
+  });
   await check(name+': compact rest dock reserves space and preserves its clock across reload',async()=>{
    await open({...base(),cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]}},undefined,'[data-a=log]');
    await page.locator('#qol-weight').fill('60');await page.locator('#qol-reps').fill('8');await clickControl(page.locator('[data-a=log]'));
