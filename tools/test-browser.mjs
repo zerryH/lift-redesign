@@ -121,6 +121,15 @@ try{
    await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).workouts[0].ex[0].sets[0].kg,27.5);
    await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).workouts[0].ex[0].sets[0].note,'Controlled tempo');await clickTab('history');assert.equal(await page.locator('[data-a=he]').count(),1);
   });
+  await check(name+': personal records isolate equipment and ignore future or later duplicate sets',async()=>{
+   const s=(kg,label,loggedAt)=>({kg,reps:8,t:'',equipmentContext:{label},loggedAt}),older={...workout('Cable Curl'),id:10,d:'2026-09-19',ex:[{n:'Cable Curl',sets:[s(40,'A',1),s(100,'B',2)]}]},future={...workout('Cable Curl'),id:11,d:'2026-09-21',ex:[{n:'Cable Curl',sets:[s(500,'A',3)]}]},cur={...workout('Cable Curl'),id:12,d:'2026-09-20',ex:[{n:'Cable Curl',sets:[s(45,'A',20)]},{n:'Cable Bicep Curl',sets:[s(50,'A',10)]}]};
+   await open({...base(),workouts:[older,future],cur},undefined,'[data-a=fin]');
+   assert.equal(await page.locator('.srow em').textContent(),'');
+   await clickControl(page.locator('[data-a=selectExercise][data-i="1"]'));assert.equal(await page.locator('.srow em').textContent(),'PR');
+   await page.reload();await page.locator('[data-a=fin]').waitFor();assert.equal(await page.locator('.srow em').textContent(),'');
+   await clickControl(page.locator('[data-a=selectExercise][data-i="1"]'));assert.equal(await page.locator('.srow em').textContent(),'PR');
+   const state=await saved();assert.equal(state.workouts[0].ex[0].sets[1].kg,100);assert.equal(state.workouts[1].ex[0].sets[0].kg,500);assert.equal(state.cur.ex[0].sets[0].kg,45);
+  });
   await check(name+': note and RPE edits retain exact recorded weight in kg and lb',async()=>{
    for(const unit of ['kg','lb']){
     const initial=base();initial.set.unit=unit;initial.cur=workout('Bench Press',60.123456,8);
