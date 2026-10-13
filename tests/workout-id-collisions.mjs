@@ -12,7 +12,7 @@ assert.equal(app.h.S.cur.id,43,'a free-workout draft must not reuse an existing 
 assert.equal(app.h.newWorkoutId(),43,'allocation remains deterministic until the draft is saved');
 
 app.h.S.cur=null;
-const routine={id:'routine:one',name:'Collision proof',split:'Push',ex:[{n:'Bench Press',exerciseId:'slat:v4:ex1',sets:3,reps:8,seconds:30,meters:20,rest:90}]};
+const routine={id:'routine:one',name:'Collision proof',split:'Push',ex:[{n:'Bench Press',exerciseId:app.h.catalogueRecord('Bench Press').id,sets:3,reps:8,seconds:30,meters:20,rest:90}]};
 assert.equal(app.h.routineSession(routine).id,43,'routine sessions use the same collision-safe allocator');
 
 app.h.S.cur={...workout(),id:42};app.h.S.editingId=null;app.h.repairState();

@@ -4,14 +4,16 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.22**
+**Build: 5.7.23**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.22: forms and confirmation dialogs opened before a cross-tab conflict now honor the same pause checks as the main controls. Workout dates, sets, equipment preferences, routines, custom names and deletion confirmations cannot mutate the paused recovery copy. See [the 5.7.22 fix note](docs/fixes-5.7.22.md) and [the current code audit](docs/code-audit-2026-10-12.md).
+New in 5.7.23: routine saving validates exercise references using the same contract as backup restore. Unknown archival movements can be replaced explicitly in the routine editor while retaining targets and rest; original workout history stays unchanged. See [the 5.7.23 fix note](docs/fixes-5.7.23.md) and [the current code audit](docs/code-audit-2026-10-12.md).
+
+New in 5.7.22: forms and confirmation dialogs opened before a cross-tab conflict honor the same pause checks as the main controls. Workout dates, sets, equipment preferences, routines, custom names and deletion confirmations cannot mutate the paused recovery copy.
 
 New in 5.7.21: saved rest timers apply the same 24-hour restore safety limit as the iPhone Live Activity bridge. Invalid multi-day deadlines are cleared instead of starting a permanent fast update loop, while ordinary in-progress timers still resume.
 
