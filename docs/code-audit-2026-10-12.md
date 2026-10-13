@@ -2,11 +2,11 @@
 
 Maintenance update (5.7.17): F14 restore compatibility now explicitly permits ordinary tabs and line breaks in bounded historical text. Unsupported control characters and non-string values are rejected before replacement. Set editing accounts for browser text-input newline removal, so an unrelated measurement or RPE edit preserves untouched note/band bytes; explicit text edits still use today's limits.
 
-Current maintenance release: **5.7.19**, based on main `fa6fc70372fc27a5edd44c5b8ca2b761e514640c`. Valid backups are no longer rejected solely because their JSON file exceeds 25 MiB. Selected files still pass the complete version-4 record contract and review screen before atomic replacement; malformed or over-budget records remain rejected. This release retains the personal-record, toast and browser-fixture fixes along with earlier backup/update fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.20**, based on main `19eee58cfc9c74b91431fa3078c4a5ce7ac702e2`. “Last Time” and Repeat now use the chronologically latest recorded set across duplicate and aliased exercise entries instead of trusting entry-array order. Legacy sets without timestamps retain deterministic array order, and lookup does not rewrite saved history. This release retains the large-backup, personal-record, toast and browser-fixture fixes along with earlier backup/update fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
-The release addresses twenty reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
+The release addresses twenty-one reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
 
 | Case | Before | Change and regression evidence |
 | --- | --- | --- |
@@ -30,6 +30,7 @@ The release addresses twenty reproduced defect or failure-path cases. It also re
 | A18 | Two writers could both acknowledge successful local fallback after failed database writes without coordination. | Require Web Locks for online database-failure fallback; otherwise report failure without writing. Keep coordinated fallback and IndexedDB-only saves available. |
 | A19 | Reset removed primary state but retained personal import/migration/startup recovery copies. | Delete and verify the explicit personal-key inventory, preserve unrelated origin keys and retain rollback on failure. |
 | A20 | Same-key worker reinstall could replace an active cache before validation failed. | Existing caches are verified without rewriting; new invalid staging is deleted. Include normalized worker source in the cache fingerprint so worker-only changes receive a new identity. |
+| A21 | “Last Time” and Repeat could choose an older set when aliases or duplicate exercise entries were stored out of chronological order. | Order eligible sets by their positive `loggedAt` value, with original array position as the deterministic legacy fallback. Share that ordering with PR badges and current-session last-set lookup; isolated and browser regressions verify the 50 kg later set wins over the 40 kg older set without rewriting history. |
 
 ## Prior register reconciliation
 
@@ -62,7 +63,7 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 
 `tools/test-release.mjs` runs each regression script in an isolated copy, so build-mutating tests cannot hide stale committed outputs. The suite includes focused import-text-budget coverage plus the broader data-contract, browser and native build checks.
 
-Required checks: all 64 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
+Required checks: all 65 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
 
 No catalogue entries, standard ladders, raw workout loads or user notes are automatically rewritten by this release. Reset cleanup runs only after the user invokes and confirms Reset. Unsafe backups are rejected before replacement, with existing durable state preserved. The in-app glass rest countdown remains live; web notifications remain explicitly static next-set reminders, as requested.
 

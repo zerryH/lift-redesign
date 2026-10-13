@@ -6,7 +6,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.19';
+const BUILD_VERSION='5.7.20';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -458,12 +458,13 @@ const RG=t=>t=='W'?[-60,100,.5]:t=='D'?[0,80,.5]:[0,300,2.5],TC=RANK_FAMILY_COLO
 const rankDraftValue=field=>{const cached=gr?.measurements?.[field],raw=String(gr?.[field]??'');return cached&&cached.unit===gr.u&&cached.shown===raw?cached.kg:gr.u==='lb'?strictNumber(raw)/2.20462:strictNumber(raw);};
 const rememberRankDraft=(field,kg)=>{(gr.measurements??={})[field]={kg,shown:String(gr[field]??''),unit:gr.u};};
 const historicalBest=(n,editingId=null,context={})=>{let best=0;for(const w of S.workouts)if(w.id!==editingId&&(!context.date||w.d<=context.date))for(const x of w.ex)if(canonicalExercise(x.n)===canonicalExercise(n))for(const z of x.sets){if(context.equipmentLabel!=null&&(z.equipmentContext?.label||'')!==context.equipmentLabel)continue;const e=rankSetEst(n,z,num(z.bw)||bwAtDate(w.d));if(e>best)best=e}return best};
+const chronologicalSets=sets=>(sets||[]).map((set,index)=>({set,index,time:Number.isFinite(Number(set.loggedAt))&&Number(set.loggedAt)>0?Number(set.loggedAt):0})).sort((a,b)=>a.time-b.time||a.index-b.index).map(x=>x.set);
 const workoutPRs=n=>{
- const records=(S.cur?.ex||[]).filter(x=>canonicalExercise(x.n)===canonicalExercise(n)).flatMap(x=>x.sets),ordered=records.map((set,index)=>({set,index,time:Number.isFinite(Number(set.loggedAt))&&Number(set.loggedAt)>0?Number(set.loggedAt):0})).sort((a,b)=>a.time-b.time||a.index-b.index),baselines=new Map(),flags=new Map();
- for(const {set} of ordered){const label=set.equipmentContext?.label||'';if(!baselines.has(label))baselines.set(label,historicalBest(n,S.editingId,{date:S.cur.d,equipmentLabel:label}));const best=baselines.get(label),estimate=rankSetEst(n,set,num(set.bw)||bwAtDate(S.cur.d));flags.set(set,estimate>best);baselines.set(label,Math.max(best,estimate));}
+ const records=(S.cur?.ex||[]).filter(x=>canonicalExercise(x.n)===canonicalExercise(n)).flatMap(x=>x.sets),ordered=chronologicalSets(records),baselines=new Map(),flags=new Map();
+ for(const set of ordered){const label=set.equipmentContext?.label||'';if(!baselines.has(label))baselines.set(label,historicalBest(n,S.editingId,{date:S.cur.d,equipmentLabel:label}));const best=baselines.get(label),estimate=rankSetEst(n,set,num(set.bw)||bwAtDate(S.cur.d));flags.set(set,estimate>best);baselines.set(label,Math.max(best,estimate));}
  return flags;
 };
-const lastSet=n=>{const x=S.cur?.ex?.[ci],label=S.exercisePreferences?.[catalogueRecord(n)?.id]?.equipmentLabel||'',sets=x?.n===n?x.sets.filter(s=>s.t!=='w'&&(s.equipmentContext?.label||'')===label):[];return sets.at(-1)||qolPrevSet(n);};
+const lastSet=n=>{const x=S.cur?.ex?.[ci],label=S.exercisePreferences?.[catalogueRecord(n)?.id]?.equipmentLabel||'',sets=x?.n===n?x.sets.filter(s=>s.t!=='w'&&(s.equipmentContext?.label||'')===label):[];return chronologicalSets(sets).at(-1)||qolPrevSet(n);};
 const chk=n=>{const r=S.checks[n],u=S.set.unit||'kg';if(r.unavailable)return `<div class=row><div><b>${esc(displayExercise(n))}</b><small>${fm(cv(num(r.w),u))} ${u} × ${esc(r.r)} at ${fm(cv(num(r.b),u))} ${u} BW</small><small>Check retained · choose a compatible comparison standard in Profile.</small></div><button class=pill data-a=gr data-v="${esc(n)}">Review</button></div>`;const f=v=>fm(cv(v,u)),ratio=Number.isFinite(Number(r.rawX))?Number(r.rawX):(Number(r.e)>0&&Number(r.b)>0?Number(r.e)/Number(r.b):0),assisted=exerciseMeta(n)?.loadMode==='assisted',loadText=assisted?`Assistance ${f(Math.abs(r.w))} ${u} · effective ${f(Math.max(0,num(r.b)-Math.abs(num(r.w))))} ${u}`:`${f(r.w)} ${u} × ${r.r}`;return `<div class=row><div><b>${esc(displayExercise(n))}</b><small>${loadText}${assisted?' · '+r.r+' reps':` at ${f(r.b)} ${u} BW`} · ${ratio.toFixed(2)}x BW</small><i class=bar><u style="width:${r.pc}%"></u></i><small>${rankProgressText(r,u)}</small></div><div class=col><span class=rank-badge>${rankIcon(r.i)}<span class=badge style="--c:${rankColor(r.i)}">${r.i<0?'Unranked':TN[r.i]}</span></span><button class=pill data-a=gr data-v="${esc(n)}">Update</button></div></div>`};
 const sheet=()=>{let s=$('#sh');if(!gr){s&&s.remove();return}if(!s){s=document.createElement('div');s.id='sh';s.className='sheet';document.body.append(s)}
  const u=gr.u,r=gr.res,assistRank=exerciseMeta(gr.n)?.loadMode==='assisted',f=v=>fm(cv(v,u)),ch=(a,v,l,on)=>`<button class="pill ${on?'dark':''}" data-a=${a} data-v=${v}>${l}</button>`;
@@ -908,7 +909,7 @@ globalThis.SlatNativeRest=(()=>{
 const qolFormat=v=>{const u=S.set.unit||'kg',x=u==='lb'?num(v)*2.20462:num(v);return (+x.toFixed(1)).toString()};
 const qolKg=v=>(S.set.unit||'kg')==='lb'?strictNumber(v)/2.20462:strictNumber(v);
 const qolTodayIso=iso;
-const qolPrevSet=n=>{const date=S.cur?.d||iso(),label=S.exercisePreferences?.[catalogueRecord(n)?.id]?.equipmentLabel||'',ws=[...S.workouts].filter(w=>w.id!==S.editingId&&w.d<=date).sort((a,b)=>b.d.localeCompare(a.d)||Number(b.id)-Number(a.id));for(const w of ws){const sets=(w.ex||[]).filter(e=>canonicalExercise(e.n)===canonicalExercise(n)).flatMap(x=>x.sets||[]).filter(s=>s.t!=='w'&&(s.equipmentContext?.label||'')===label);if(sets.length)return {...sets.at(-1),date:w.d}}return null};
+const qolPrevSet=n=>{const date=S.cur?.d||iso(),label=S.exercisePreferences?.[catalogueRecord(n)?.id]?.equipmentLabel||'',ws=[...S.workouts].filter(w=>w.id!==S.editingId&&w.d<=date).sort((a,b)=>b.d.localeCompare(a.d)||Number(b.id)-Number(a.id));for(const w of ws){const sets=(w.ex||[]).filter(e=>canonicalExercise(e.n)===canonicalExercise(n)).flatMap(x=>x.sets||[]).filter(s=>s.t!=='w'&&(s.equipmentContext?.label||'')===label);if(sets.length)return {...chronologicalSets(sets).at(-1),date:w.d}}return null};
 const qolWakeStatus=()=>location.protocol==='file:'?'Unavailable in local file mode — the screen may still sleep':!window.isSecureContext?'Unavailable here — screen wake lock requires HTTPS':!('wakeLock' in navigator)?'Unavailable here — browser does not support screen wake lock':qolState.wake&&!qolState.wake.released?'Screen wake lock active':'Screen wake lock supported when permitted';
 const qolAcquireWake=()=>{
  if(location.protocol==='file:'||!window.isSecureContext||!('wakeLock' in navigator)){const el=$('#qol-wake-status');if(el)el.textContent=qolWakeStatus();return;}
