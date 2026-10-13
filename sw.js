@@ -1,4 +1,4 @@
-const V='liftlog-v5.7.21-5947f2baa94c',F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','ranking-engine.js','data-integrity.js','catalogue-model.js','performance-contract.js','persistence.js','workout-model.js','dialog-view.js','enhanced-features.js','rest-notifications.js','native-rest.js','anatomy-map.css','manifest.webmanifest','lift-icon-photo-fit.png','apple-touch-icon-photo-fit.png'];const CACHE_PREFIX='liftlog-';
+const V='liftlog-v5.7.22-573246de8864',F=['./','index.html','lift-local.html','app.js','exercises.json','ranks-config.json','ranking-engine.js','data-integrity.js','catalogue-model.js','performance-contract.js','persistence.js','workout-model.js','dialog-view.js','enhanced-features.js','rest-notifications.js','native-rest.js','anatomy-map.css','manifest.webmanifest','lift-icon-photo-fit.png','apple-touch-icon-photo-fit.png'];const CACHE_PREFIX='liftlog-';
 const stageBuild=async()=>{
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),25000),existed=await caches.has(V);
  try{

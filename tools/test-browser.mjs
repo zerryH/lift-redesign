@@ -84,6 +84,21 @@ try{
    await page.waitForFunction(()=>qolState.wake===wakeSentinels[1]);await clickControl(page.getByRole('button',{name:'Stop rest timer',exact:true}));
    await page.waitForFunction(()=>wakeSentinels[1].releases===1);assert(await page.evaluate(()=>wakeSentinels.every(s=>s.releases===1)));
   });
+  await check(name+': open set editor cannot mutate a tab paused by another writer',async()=>{
+   await open({...base(),cur:workout('Bench Press',60,8)},undefined,'[data-a=log]');
+   const second=await context.newPage();await second.goto(url);await second.locator('[data-a=log]').waitFor();
+   await clickControl(page.locator('[data-a=editSet]').first());await page.locator('#edit-note').fill('Unconfirmed edit');
+   const before=await page.evaluate(()=>JSON.stringify(S));
+   await second.evaluate(async()=>{S.cur.name='Saved by second tab';await save();});await page.locator('#storage-conflict').waitFor();
+   // The warning covers this button on mobile; the still-open editor is keyboard reachable.
+   await page.bringToFront();await page.locator('#edit-note').press('Tab');
+   assert(await page.locator('#save-set-edit').evaluate(el=>document.activeElement===el));
+   await page.keyboard.press('Enter');
+   assert.equal(await page.evaluate(()=>JSON.stringify(S)),before,'paused editor must not change its in-memory recovery copy');
+   assert.equal((await saved()).cur.name,'Saved by second tab','latest stored copy remains untouched');
+   assert.equal((await saved()).cur.ex[0].sets[0].note,undefined);
+   await second.close();
+  });
   await check(name+': activity calendar counts completed sessions, dates, edits, deletion and undo',async()=>{
    const day='2024-07-01',one={...workout(),id:101,d:day},draft={...workout(),id:102,d:day},other={...workout(),id:103,d:'2024-07-03'};
    await open({...base(),workouts:[one,other,{...workout(),id:104,d:'2023-12-31'}],cur:draft},undefined,'[data-a=fin]');
