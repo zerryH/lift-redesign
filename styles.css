@@ -822,6 +822,8 @@ body.has-rest nav{grid-row:3;}
 .toast{pointer-events:none}
 .toast button{pointer-events:auto}
 [data-motion="1"] .toast-action{animation:toastIn .36s cubic-bezier(.2,.9,.2,1)}
+/* Keep inert background notification actions out of view during modal dialogs. */
+.dialog-open .toast-action{visibility:hidden}
 
 .save-status{color:var(--mu);font-size:12px;padding:8px 0;text-align:center;min-height:24px}.save-status .pill{margin-left:6px}
 
