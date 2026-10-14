@@ -2,11 +2,11 @@
 
 Maintenance update (5.7.17): F14 restore compatibility now explicitly permits ordinary tabs and line breaks in bounded historical text. Unsupported control characters and non-string values are rejected before replacement. Set editing accounts for browser text-input newline removal, so an unrelated measurement or RPE edit preserves untouched note/band bytes; explicit text edits still use today's limits.
 
-Current maintenance release: **5.7.28**. Future-dated completed workouts remain visible in History and the activity calendar but are deferred from earned exercise and muscle ranks until their recorded date. This release retains the guarded and transparent backup restore, workflow guard, rollback-safe reset, routine-reference, timer restore, chronological “Last Time”, large-backup, personal-record and static-reminder fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.29**. Future-dated bodyweight entries remain preserved but are deferred from today's logging, rank defaults and exported current-profile metadata until their recorded date. This release retains the future-workout rank guard, transparent backup restore, workflow guard, rollback-safe reset, routine-reference, timer restore, chronological “Last Time”, large-backup, personal-record and static-reminder fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
-The release addresses twenty-nine reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
+The release addresses thirty reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
 
 | Case | Before | Change and regression evidence |
 | --- | --- | --- |
@@ -39,6 +39,7 @@ The release addresses twenty-nine reproduced defect or failure-path cases. It al
 | A27 | A backup review opened before a workout finish could still replace state while the workout save was pending because its direct confirmation listener bypassed the document-level pause guard. The review also hid newer backed-up categories, making calendar/routine/setup coverage hard to verify. | Gate backup confirmation and the import entry point against an in-progress finish. Show calendar-day, routine and exercise-setting counts, explain that activity/ranks rebuild from workout history and list the full backup/reset scope. The direct-listener regression preserves both live and durable state under finish, import and conflict locks. |
 | A28 | Restoring a backup with static reminders enabled onto a device without notification permission made the control claim the reminder was on. Its first tap then disabled the stored preference instead of requesting permission. | Derive the displayed/toggle state from both the saved preference and current device permission. The first explicit tap requests permission and enables the reminder; no logging, restore or background path prompts automatically. |
 | A29 | A valid backup or legacy state could contain a completed workout dated in the future. The date editor blocked creating that state, but rank rebuilding still used it immediately, allowing a mistaken future record to inflate earned exercise and muscle ranks. | Keep the workout and its calendar/history date unchanged, but defer it from earned rank rebuilding until the local date reaches its recorded date or the user corrects it. The Ranks screen discloses deferred sessions. |
+| A30 | A valid backup could contain a future-dated bodyweight entry. Slat treated the last array entry as today's weight, so a set logged today could capture a measurement that had not happened yet and the rank calculator opened with the wrong default. | Resolve current and workout-date bodyweight only from entries eligible on that local date. Preserve and display future entries, disclose the deferral in Profile, and let them become active automatically on their recorded date. Exported current-profile metadata uses the same eligible value. |
 
 ## Prior register reconciliation
 
@@ -71,7 +72,7 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 
 `tools/test-release.mjs` runs each regression script in an isolated copy, so build-mutating tests cannot hide stale committed outputs. The suite includes focused import-text-budget coverage plus the broader data-contract, browser and native build checks.
 
-Required checks: all 68 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
+Required checks: all 69 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
 
 No catalogue entries, standard ladders, raw workout loads or user notes are automatically rewritten by this release. Reset cleanup runs only after the user invokes and confirms Reset. Unsafe backups are rejected before replacement, with existing durable state preserved. The in-app glass rest countdown remains live; web notifications remain explicitly static next-set reminders, as requested.
 
