@@ -62,7 +62,11 @@ const app=await boot({...base(),cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]
 app.ctx.URL=URL;app.ctx.location.protocol='https:';app.ctx.window.isSecureContext=true;
 app.ctx.navigator.serviceWorker={getRegistration:async()=>reg,ready:Promise.resolve(reg)};
 app.ctx.Notification={permission:'default',async requestPermission(){requests++;this.permission='granted';return this.permission;}};
-app.h.qolRestStart();assert.equal(requests,0);assert.equal(cards.size,0);
+await app.h.importBackup({version:4,workouts:[],bw:[],settings:{...base().set,restNotifications:true},cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]}});
+assert.match(app.h.V.settings(),/Enable static reminder/,'a restored preference is not active without device permission');
+await app.h.qolToggleRestNotifications();assert.equal(requests,1,'restored preference requests this device permission on the first tap');assert.equal(app.h.S.set.restNotifications,true);
+await app.h.qolToggleRestNotifications();assert.equal(app.h.S.set.restNotifications,false);
+app.h.qolRestStart();assert.equal(requests,1);assert.equal(cards.size,0);
 await app.h.qolToggleRestNotifications();assert.equal(requests,1);assert.equal(app.h.S.set.restNotifications,true);
 assert.equal(cards.get(api.tag).data.endAt,app.h.qolState.endAt);
 const startedAt=app.h.S.cur.restStartedAt,deadline=app.h.qolState.endAt;

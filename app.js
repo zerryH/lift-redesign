@@ -6,7 +6,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.26';
+const BUILD_VERSION='5.7.27';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -948,12 +948,13 @@ const qolNativeRestStatus=()=>qolNativeRestState.error||(qolNativeRestState.allo
 const qolNativeRestSettings=()=>`<div class=rest-notification-settings><b>Lock-screen timer</b><p id=native-rest-status class=support-copy role=status>${esc(qolNativeRestStatus())}</p><button class=pill data-a=nativeRestToggle>${S.set.nativeRestLiveActivity===false?'Enable live countdown':'Disable live countdown'}</button><small>A translucent glass card shows the live countdown and progress. Tap it to return to your workout.</small></div>`;
 const qolNotificationIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const qolNotificationAvailable=()=>location.protocol!=='file:'&&window.isSecureContext&&typeof Notification!=='undefined'&&!!navigator.serviceWorker&&(!qolNotificationIOS()||installGuideDevice()==='installed');
+const qolRestNotificationsEnabled=()=>qolNotificationAvailable()&&S.set.restNotifications===true&&Notification.permission==='granted';
 const qolNotificationStatus=()=>{
  if(qolNotificationIOS()&&installGuideDevice()!=='installed')return 'On iPhone, add Slat to your Home Screen and open it there to enable notifications.';
  if(!qolNotificationAvailable())return 'Notifications are unavailable here. Open the hosted app in a supported browser.';
  if(Notification.permission==='denied')return 'Notifications are blocked. Allow them for Slat in your browser or phone settings.';
  if(qolState.notificationError)return 'This device could not show a rest card. The in-app timer is still available.';
- return S.set.restNotifications&&Notification.permission==='granted'?'Static rest reminders enabled. Open Slat for the live countdown.':'Enable a static next-set reminder in your phone notifications.';
+ return qolRestNotificationsEnabled()?'Static rest reminders enabled. Open Slat for the live countdown.':'Enable a static next-set reminder in your phone notifications.';
 };
 const qolNotificationClient=()=>{
  if(!qolNotificationAvailable())return null;
@@ -972,7 +973,7 @@ const qolNotifyRest=endAt=>{
 const qolToggleRestNotifications=async()=>{
  if(qolState.notificationBusy)return;qolState.notificationBusy=true;
  try{
-  if(S.set.restNotifications){S.set.restNotifications=false;await qolClearRestNotification();await save();render();return;}
+  if(qolRestNotificationsEnabled()){S.set.restNotifications=false;await qolClearRestNotification();await save();render();return;}
   if(!qolNotificationAvailable()){toast(qolNotificationStatus());return;}
   // Ask only from this explicit button gesture; never from logging, reload or import.
   const permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();
@@ -1268,7 +1269,7 @@ function routineProgressMarkup(w){const p=routineProgress(w);if(!p.total)return 
 A.nextUnfinished=()=>{const ex=S.cur?.ex;if(!ex)return;for(let step=1;step<=ex.length;step++){const i=(ci+step)%ex.length,x=ex[i];if(x.target&&x.sets.filter(z=>z.t!=='w').length<x.target.sets){A.selectExercise({i});queueViewTop();return;}}toast('All routine targets reached');};
 A.moveExercise=d=>{const ex=S.cur?.ex,i=ci,step=Number(d.v),j=i+step;if(!ex||![-1,1].includes(step)||j<0||j>=ex.length)return;[ex[i],ex[j]]=[ex[j],ex[i]];ci=j;go();};
 const originalToday=V.today;V.today=function(){let html=originalToday();if(!S.cur)return html+routinesMarkup();const x=S.cur.ex[ci],t=x?.target;const controls=`<div class="chips enhanced-session-tools">${enhancedButton('sessionInfo','Name & date')}${enhancedButton('routineSave','Save routine')}${x?enhancedButton('exerciseOptions','Exercise settings'):''}</div>`;const weighted=catalogueRecord(x?.n)?.weightedVariant;const variant=weighted?enhancedButton('weightedVariant','Use '+esc(weighted),`data-v="${esc(weighted)}"`):'';const target=t?`<div class="note routine-target"><b>Routine target</b><small>${esc(t.sets)} sets · ${esc(trackingMode(x.n)==='duration'?t.seconds+' sec':trackingMode(x.n)==='load_distance'?t.meters+' m':t.reps+' reps')} · ${esc(t.rest??exercisePreference(x.n).rest??S.set.rest??90)}s rest. ${x.sets.filter(s=>s.t!=='w').length} of ${esc(t.sets)} working sets logged.</small></div>`:'';if(S.cur.name)html=html.replace('<div class="top">','<div class="top"><b class=session-name>'+esc(S.cur.name)+'</b>');const order=x&&S.cur.ex.length>1?`<div class=chips aria-label="Exercise order">${enhancedButton('moveExercise','Move earlier',`data-v=-1 ${ci===0?'disabled':''}`)}${enhancedButton('moveExercise','Move later',`data-v=1 ${ci===S.cur.ex.length-1?'disabled':''}`)}</div>`:'';return html.replace('<div class=\"workout-exercise-tabs\">',routineProgressMarkup(S.cur)+'<div class=\"workout-exercise-tabs\">').replace('<section class=\"logging-card\">',controls+variant+target+'<section class=\"logging-card\">')+order+(x?'':controls);};
-const originalSettings=V.settings;V.settings=function(){return originalSettings()+`<section class=note><b>Rest timer</b><p class=support-copy>Starts after you log a set. The compact timer stays below your workout, with room for every control. Exercise settings can override the default duration.</p><div class=chips>${enhancedButton('timerToggle',S.set.restEnabled===false?'Timer off · enable':'Timer on · disable')}${enhancedButton('timerFeedback',S.set.restFeedback?'Vibration on':'Vibration off')}</div>${SlatNativeRest.available()?qolNativeRestSettings():`<div class=rest-notification-settings><b>Static rest reminder</b><p id=rest-notification-status class=support-copy role=status>${esc(qolNotificationStatus())}</p>${enhancedButton('restNotifyToggle',S.set.restNotifications?'Reminder on · disable':'Enable static reminder')}<small>Shows a fixed next-set time, without a countdown or finish alert. New sets and timer adjustments replace the reminder. Open Slat for the live timer, or dismiss the card. Live iPhone widgets require the installed Slat iPhone app.</small></div>`}</section>`;};
+const originalSettings=V.settings;V.settings=function(){return originalSettings()+`<section class=note><b>Rest timer</b><p class=support-copy>Starts after you log a set. The compact timer stays below your workout, with room for every control. Exercise settings can override the default duration.</p><div class=chips>${enhancedButton('timerToggle',S.set.restEnabled===false?'Timer off · enable':'Timer on · disable')}${enhancedButton('timerFeedback',S.set.restFeedback?'Vibration on':'Vibration off')}</div>${SlatNativeRest.available()?qolNativeRestSettings():`<div class=rest-notification-settings><b>Static rest reminder</b><p id=rest-notification-status class=support-copy role=status>${esc(qolNotificationStatus())}</p>${enhancedButton('restNotifyToggle',qolRestNotificationsEnabled()?'Reminder on · disable':'Enable static reminder')}<small>Shows a fixed next-set time, without a countdown or finish alert. New sets and timer adjustments replace the reminder. Open Slat for the live timer, or dismiss the card. Live iPhone widgets require the installed Slat iPhone app.</small></div>`}</section>`;};
 A.restNotifyToggle=()=>qolToggleRestNotifications();
 A.nativeRestToggle=()=>{S.set.nativeRestLiveActivity=S.set.nativeRestLiveActivity===false;qolNativeRestState.error='';qolSyncNativeRest();go();};
 A.timerToggle=()=>{S.set.restEnabled=S.set.restEnabled===false;if(!S.set.restEnabled)qolStopRest();go();};
