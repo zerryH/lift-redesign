@@ -1,0 +1,133 @@
+/** Browser hooks and exact selectors used by the shipped HTML program. */
+interface SlatDOMSelectors {
+  "#ws": HTMLInputElement;
+  "#rs": HTMLInputElement;
+  "#rp": HTMLInputElement;
+  "[data-rest-progress]": HTMLElement;
+  "[data-ig]": HTMLButtonElement;
+  ".rank-guide-list": HTMLDivElement;
+  ".activity-day": HTMLButtonElement;
+  "[role=button][data-a]": HTMLElement;
+  ".sheet .sb,.exercise-library-panel,.action-card,.reset-card,.tutorial-shell,.install-guide-card,.rank-list-card": HTMLElement;
+  "button:not([disabled]),input:not([hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,a[href],[tabindex=\"0\"]": HTMLElement;
+  "[data-a=gx],[data-a=closex],[data-a=legalClose],[data-qol=closeModal],[data-rank-guide-close],[data-action-cancel],[data-reset-cancel],[data-ig=close],[data-tut=skip]": HTMLElement;
+  "#n [aria-current=\"page\"]": HTMLElement;
+  "#activity-detail": HTMLDivElement;
+  "#activity-month": HTMLSelectElement;
+  "#activity-title": HTMLHeadingElement;
+  "#activity-year": HTMLElement;
+  "#age": HTMLInputElement;
+  "#boot-export": HTMLButtonElement;
+  "#boot-retry": HTMLButtonElement;
+  "#bw": HTMLInputElement;
+  "#confirm-import": HTMLButtonElement;
+  "#conflict-export": HTMLButtonElement;
+  "#conflict-reload": HTMLButtonElement;
+  "#custom-ex-cat": HTMLSelectElement;
+  "#custom-ex-count": HTMLSelectElement;
+  "#custom-ex-equipment": HTMLSelectElement;
+  "#custom-ex-name": HTMLInputElement;
+  "#custom-ex-split": HTMLSelectElement;
+  "#custom-ex-tracking": HTMLSelectElement;
+  "#custom-ex-type": HTMLSelectElement;
+  "#custom-rename": HTMLInputElement;
+  "#custom-retire": HTMLButtonElement;
+  "#edit-amount": HTMLInputElement;
+  "#edit-band": HTMLInputElement;
+  "#edit-note": HTMLInputElement;
+  "#edit-rpe": HTMLInputElement;
+  "#edit-weight": HTMLInputElement;
+  "#equipment-label": HTMLInputElement;
+  "#ex-equipment": HTMLSelectElement;
+  "#ex-muscle": HTMLSelectElement;
+  "#ex-search": HTMLInputElement;
+  "#exercise-count": HTMLElement;
+  "#exercise-options-error": HTMLParagraphElement;
+  "#exercise-options-save": HTMLButtonElement;
+  "#exercise-rest": HTMLInputElement;
+  "#exercise-results": HTMLDivElement;
+  "#heightCm": HTMLInputElement;
+  "#history-exercise": HTMLSelectElement;
+  "#history-query": HTMLInputElement;
+  "#history-split": HTMLSelectElement;
+  "#imp": HTMLInputElement;
+  "#import-status": HTMLParagraphElement;
+  "#legal-title": HTMLHeadingElement;
+  "#log-band": HTMLInputElement;
+  "#log-meters": HTMLInputElement;
+  "#log-seconds": HTMLInputElement;
+  "#native-rest-status": HTMLParagraphElement;
+  "#progress-band": HTMLSelectElement;
+  "#progress-help": HTMLElement;
+  "#progress-legend": HTMLDivElement;
+  "#progress-metric": HTMLSelectElement;
+  "#progress-profile": HTMLSelectElement;
+  "#qol-bar-preset": HTMLSelectElement;
+  "#qol-chart": HTMLCanvasElement;
+  "#qol-custom-map": HTMLDivElement;
+  "#qol-note": HTMLInputElement;
+  "#qol-plate-bar": HTMLInputElement;
+  "#qol-plate-result": HTMLDivElement;
+  "#qol-plate-target": HTMLInputElement;
+  "#qol-progress-lift": HTMLSelectElement;
+  "#qol-progress-window": HTMLSelectElement;
+  "#qol-reps": HTMLInputElement;
+  "#qol-rest-setting": HTMLInputElement;
+  "#qol-rpe": HTMLInputElement;
+  "#qol-wake-status": HTMLElement;
+  "#qol-weight": HTMLInputElement;
+  "#rank-guide-title": HTMLHeadingElement;
+  "#reset-countdown": HTMLElement;
+  "#rest-notification-status": HTMLParagraphElement;
+  "#routine-add": HTMLButtonElement;
+  "#routine-delete": HTMLButtonElement;
+  "#routine-error": HTMLParagraphElement;
+  "#routine-exercise": HTMLSelectElement;
+  "#routine-name": HTMLInputElement;
+  "#routine-replace-back": HTMLButtonElement;
+  "#routine-replace-save": HTMLButtonElement;
+  "#routine-replacement": HTMLSelectElement;
+  "#routine-save": HTMLButtonElement;
+  "#save-custom-name": HTMLButtonElement;
+  "#save-retry": HTMLButtonElement;
+  "#save-set-edit": HTMLButtonElement;
+  "#save-state-label": HTMLSpanElement;
+  "#session-date": HTMLInputElement;
+  "#session-info-error": HTMLParagraphElement;
+  "#session-info-save": HTMLButtonElement;
+  "#session-name": HTMLInputElement;
+  "#session-repeat": HTMLButtonElement;
+  "#session-routine": HTMLButtonElement;
+  "#summary-date": HTMLInputElement;
+  "#summary-mode": HTMLSelectElement;
+  "#wv": HTMLElement;
+  ".range": HTMLInputElement;
+  ".value-slider": HTMLDivElement;
+  "[data-a]": HTMLButtonElement;
+  "[data-action-cancel]": HTMLButtonElement;
+  "[data-action-confirm]": HTMLButtonElement;
+  "[data-plate-size]": HTMLInputElement;
+  "[data-qol]": HTMLButtonElement;
+  "[data-reset-cancel]": HTMLButtonElement;
+  "[data-reset-confirm]": HTMLButtonElement;
+  "[data-routine-move]": HTMLButtonElement;
+  "[data-routine-remove]": HTMLButtonElement;
+  "[data-routine-replace]": HTMLButtonElement;
+  "[data-tut]": HTMLButtonElement;
+}
+type SlatElement<K extends string> = K extends keyof SlatDOMSelectors ? SlatDOMSelectors[K] : HTMLElement;
+interface ParentNode {
+  querySelector<K extends keyof SlatDOMSelectors>(selectors: K): SlatDOMSelectors[K] | null;
+  querySelectorAll<K extends keyof SlatDOMSelectors>(selectors: K): NodeListOf<SlatDOMSelectors[K]>;
+}
+interface Element {
+  closest<K extends keyof SlatDOMSelectors>(selectors: K): SlatDOMSelectors[K] | null;
+}
+interface Navigator { standalone?: boolean; }
+interface Window {
+  MSStream?: unknown;
+  webkit?: {messageHandlers?: {slatRestTimer?: {postMessage(message: {version: number; action: string; workoutID?: string; startedAt?: number; endAt?: number; accent?: string}): void}}};
+}
+interface WindowEventMap {
+  'slat-native-rest-status': CustomEvent<{allowed?: boolean; error?: string}>;
+}

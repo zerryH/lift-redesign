@@ -4,12 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.33**
+**Build: 5.7.34**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
+
+New in 5.7.34: the browser source has an explicit VS Code project with type checking enabled. Source fragments and generated copies no longer conflict, DOM controls and optional browser APIs have accurate declarations, and editor checks run in CI. `app-core.js` is the editable app shell; build the generated `app.js` and HTML with `npm run build`. See [the editor diagnostic fix note](docs/fixes-5.7.34.md).
 
 New in 5.7.32: closing feature dialogs immediately restores navigation and page controls instead of swallowing the next tap. Typed weight/reps drafts keep exact text through exercise switches, reload and backups, including errors that need correction. Precise weights no longer round in the input, sliders announce selected units correctly, and search/Profile controls have stable accessible names. Free sessions display Free workout instead of the internal Empty label. See [the 5.7.32 fix note](docs/fixes-5.7.32.md) and [the current code audit](docs/code-audit-2026-10-12.md).
 
@@ -64,7 +66,7 @@ The shipped app is a self-contained HTML build for GitHub Pages and a local `lif
 - Ranking standards and tier names are sourced from `ranks-config.json`.
 - `data-integrity.js` validates backup candidates before replacement. A previous-state recovery copy is retained; imports never clear the current state first.
 - Saves are serialized. A newer saved revision in another tab pauses stale writes and offers draft export.
-- `app.js` contains data and anatomy source markers; `build.mjs` injects JSON and `anatomy-front.svg` / `anatomy-back.svg` into the self-contained build.
+- `app-core.js` contains the editable shell with data, contract and anatomy source markers; `app.js` is generated from that shell and the source fragments. `build.mjs` injects JSON and `anatomy-front.svg` / `anatomy-back.svg` into the self-contained build.
 - `index.html` and `lift-local.html` are generated self-contained builds and are kept byte-identical.
 - Hosted writes use an IndexedDB transaction with revision checks, followed by the localStorage recovery copy. Either acknowledged store can preserve a save; conflicting tabs pause, and failed saves offer retry. Local-file mode uses localStorage.
 - The local `file://` build intentionally uses localStorage because service workers and other secure-context APIs are unavailable there.
@@ -107,7 +109,7 @@ See `THIRD_PARTY_NOTICES.md`, `ANATOMY_CREDITS.md`, and `LICENSE-MUSCLE-MAPPER.t
 
 ## Validation and audit traceability
 
-Install the test dependency with `npm install --no-save --ignore-scripts playwright@1.64.0`, then `npx playwright install chromium webkit`. Run `SLAT_BROWSERS=chromium,webkit node tools/check-release.mjs` for all independent regression scripts, reproducible standards/build checks and real-browser journeys. Missing browser binaries fail the gate. GitHub Actions runs these checks on pull requests and main pushes; feature branches use the PR checks to avoid duplicate push/PR runs. Manual dispatch remains available.
+Install the pinned development dependencies with `npm ci --ignore-scripts`, then `npx playwright install chromium webkit`. Run `npm run check:editor` for the canonical browser source, generated bundle and CSS diagnostics. Run `SLAT_BROWSERS=chromium,webkit node tools/check-release.mjs` for all independent regression scripts, reproducible standards/build checks and real-browser journeys. Missing browser binaries fail the gate. GitHub Actions runs these checks on pull requests and main pushes; feature branches use the PR checks to avoid duplicate push/PR runs. Manual dispatch remains available.
 
 Prepare and validate the complete source and generated output before opening a PR. If the hosted API requires several upload commits, stage them on a fresh branch first, then open the PR after the final tree matches the validated build. When updating an existing PR, keep generated output with its source in one commit where possible. See [the CI failure audit](docs/ci-audit-2026-10-14.md).
 

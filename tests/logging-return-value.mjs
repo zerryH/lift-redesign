@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {boot,base,workout} from './support/runtime.mjs';
+const z=await boot({...base(),cur:workout('Cable Curl',25)});
+z.h.V.today();z.h.dr.kg=30;z.h.dr.reps=8;
+const count=z.h.S.cur.ex[0].sets.length;
+assert.equal(z.h.A.log(),true,'the timer wrapper retains the successful logging result');
+assert.equal(z.h.S.cur.ex[0].sets.length,count+1);
+const deadline=z.h.qolState.endAt;
+z.h.dr.invalidWeight=true;
+assert.equal(z.h.A.log(),false,'rejected input returns false through the same wrapper');
+assert.equal(z.h.S.cur.ex[0].sets.length,count+1);
+assert.equal(z.h.qolState.endAt,deadline,'a rejected set does not restart the timer');
+await z.h.flush();assert.deepEqual(z.errors,[]);
+console.log('logging acceptance survives the timer wrapper');

@@ -676,7 +676,7 @@ html,body{overflow-x:clip;}
 .exercise-results{min-height:0;flex:1 1 auto;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
 .exercise-option{height:auto;}
 .exercise-option-main{min-width:0;}
-.exercise-option-main b{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:ellipsis;}
+.exercise-option-main b{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;text-overflow:ellipsis;}
 .exercise-custom{padding-bottom:max(env(safe-area-inset-bottom),4px);}
 @media(max-width:430px){
 #v{padding-left:14px;padding-right:14px;}

@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import crypto from 'node:crypto';
 import vm from 'node:vm';
 const catalogueContext=vm.createContext({});vm.runInContext(fs.readFileSync('catalogue-model.js','utf8'),catalogueContext);
-const BUILD_VERSION = '5.7.33';
+const BUILD_VERSION = '5.7.34';
 const read = p => fs.readFileSync(p, 'utf8');
 const write = (p, s) => fs.writeFileSync(p, s);
 function validateData(ex, ranks) {
@@ -61,7 +61,7 @@ const engine = read('ranking-engine.js');
 const ex = JSON.parse(read('exercises.json'));
 const ranks = JSON.parse(read('ranks-config.json'));
 validateData(ex, ranks);
-let app = injectData(read('app.js').replace(/const BUILD_VERSION='[^']+';/, "const BUILD_VERSION='" + BUILD_VERSION + "';"), ex, ranks, engine);
+let app = injectData(read('app-core.js').replace(/const BUILD_VERSION='[^']+';/, "const BUILD_VERSION='" + BUILD_VERSION + "';"), ex, ranks, engine);
 write('app.js', app);
 const anatomyCss = read('anatomy-map.css');
 const stylesCss = read('styles.css');

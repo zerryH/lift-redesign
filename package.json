@@ -1,0 +1,16 @@
+{
+  "name": "slat-development-checks",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs",
+    "check:editor": "node tools/check-editor.mjs",
+    "test": "node tools/test-release.mjs",
+    "test:browser": "node tools/test-browser.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.64.0",
+    "typescript": "5.9.3",
+    "vscode-css-languageservice": "6.3.10",
+    "vscode-languageserver-textdocument": "1.0.15"
+  }
+}
