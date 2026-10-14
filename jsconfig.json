@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "allowJs": true,
+    "strict": false
+  },
+  "files": [
+    "app-core.js",
+    "ranking-engine.js",
+    "catalogue-model.js",
+    "workout-model.js",
+    "performance-contract.js",
+    "data-integrity.js",
+    "persistence.js",
+    "dialog-view.js",
+    "enhanced-features.js",
+    "rest-notifications.js",
+    "native-rest.js",
+    "types/browser.d.ts"
+  ]
+}

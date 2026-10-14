@@ -5,9 +5,10 @@ const storageRequest=(db,mode,operation)=>new Promise((resolve,reject)=>{let set
 let unreadableLocal=false;const localGet=()=>{try{const raw=localStorage.getItem('liftlog-state');const value=JSON.parse(raw||'null');unreadableLocal=raw!==null&&(!value||typeof value!=='object'||Array.isArray(value));return unreadableLocal?null:value}catch{unreadableLocal=true;return null}};
 const localSave=value=>{try{localStorage.setItem('liftlog-state',JSON.stringify(value));return true}catch{return false}};
 const dbRead=async()=>{const d=await idb();return storageRequest(d,'readonly',(tx,finish)=>{const q=tx.objectStore('kv').get('s');q.onsuccess=event=>finish(null,q.result??event?.target?.result??null);q.onerror=()=>finish(q.error||new Error('IndexedDB read failed'));tx.onabort=()=>finish(tx.error||new Error('IndexedDB read aborted'));});};
-const dbWrite=async(value,expectedSavedAt,expectedRevision)=>{const d=await idb();return storageRequest(d,'readwrite',(tx,finish)=>{const store=tx.objectStore('kv');let failure=null;const q=store.get('s');q.onsuccess=event=>{const previous=q.result??event?.target?.result;if(Number(previous?.savedAt)>expectedSavedAt||Number(previous?.revision)>expectedRevision){failure=new Error('Another tab saved changes');failure.code='STATE_CONFLICT';tx.abort();return;}store.put(value,'s');};q.onerror=()=>{failure=q.error||new Error('IndexedDB comparison failed');tx.abort();};tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(failure||tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>finish(failure||tx.error||new Error('IndexedDB write aborted'));});};
+const dbWrite=async(value,expectedSavedAt,expectedRevision)=>{const d=await idb();return storageRequest(d,'readwrite',(tx,finish)=>{const store=tx.objectStore('kv');let failure=null;const q=store.get('s');q.onsuccess=event=>{const previous=q.result??event?.target?.result;if(Number(previous?.savedAt)>expectedSavedAt||Number(previous?.revision)>expectedRevision){failure=Object.assign(new Error('Another tab saved changes'),{code:'STATE_CONFLICT'});tx.abort();return;}store.put(value,'s');};q.onerror=()=>{failure=q.error||new Error('IndexedDB comparison failed');tx.abort();};tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(failure||tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>finish(failure||tx.error||new Error('IndexedDB write aborted'));});};
 const dbClear=async()=>{const d=await idb();await storageRequest(d,'readwrite',(tx,finish)=>{tx.objectStore('kv').delete('s');tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(tx.error||new Error('IndexedDB delete failed'));tx.onabort=()=>finish(tx.error||new Error('IndexedDB delete aborted'));});return (await dbRead())==null;};
 const dbGet=async()=>{const l=localGet();let d=null;if(location.protocol!=='file:')try{d=await dbRead()}catch{}const out=l&&(!d||Number(l.revision||0)>Number(d.revision||0)||(Number(l.revision||0)===Number(d.revision||0)&&(Number(l.savedAt)||0)>(Number(d.savedAt)||0)))?l:(d||l);if(!out&&unreadableLocal)throw new Error('Saved data could not be read. Export a recovery copy before retrying.');return out};
+/** @type {Promise<boolean|void>} */
 let saveTail=Promise.resolve(),saveEpoch=0,storageRevision=0,storageConflict=false;
 let durableRevision=0,persistenceStatus='saved';const stateChannel=location.protocol!=='file:'&&typeof BroadcastChannel==='function'?new BroadcastChannel('slat-state'):null;
 const save=()=>{
@@ -28,7 +29,7 @@ const save=()=>{
   else {setPersistenceStatus('failed');toast('Could not save. Keep this tab open and export a backup.');}
   return localOk||dbOk;
  };
- const run=()=>navigator.locks?.request?navigator.locks.request('slat-state-write',job):job();
+ const run=async()=>navigator.locks?.request?navigator.locks.request('slat-state-write',job):job();
  const result=saveTail.then(run,run);saveTail=result.catch(()=>false);return result;
 };
 const PERSONAL_STORAGE_KEYS=['liftlog-state','liftlog-import-recovery','liftlog-ranking-migration-backup','liftlog-startup-recovery'];

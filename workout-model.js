@@ -1,5 +1,5 @@
 /* Pure session transitions; persistence is acknowledged by the caller. */
-globalThis.SlatWorkout=(()=>{
+var SlatWorkout=globalThis.SlatWorkout=(()=>{
  const phase=(state,saving=false)=>saving?'saving':!state.cur?'idle':state.editingId!=null?'editing':'active';
  function targets(value){
   const out={...value};
