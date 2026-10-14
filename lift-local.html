@@ -989,7 +989,7 @@ body.has-rest nav{grid-row:3;}
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.30';
+const BUILD_VERSION='5.7.31';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -1932,10 +1932,11 @@ const qolAcquireWake=()=>{
 };
 const qolReleaseWake=async()=>{qolState.wakeRevision++;qolState.wakePending=null;const lock=qolState.wake;qolState.wake=null;try{await lock?.release()}catch{}};
 const QOL_MAX_REST_MS=86400000;
+const qolRestStatePaused=()=>finishing||importing||storageConflict;
 const qolState={wake:null,wakePending:null,wakeRevision:0,endAt:0,startedAt:0,timer:null,modal:null,notifications:null,notificationError:false,notificationBusy:false};
 const qolNativeRestState={client:null,allowed:null,error:''};
 const qolNativeClient=()=>{if(!SlatNativeRest.available())return null;return qolNativeRestState.client??=SlatNativeRest.create(message=>window.webkit.messageHandlers.slatRestTimer.postMessage(message));};
-const qolSyncNativeRest=()=>{if(importing)return;const client=qolNativeClient();if(!client)return;try{const raw=typeof getComputedStyle==='function'?getComputedStyle(document.documentElement).getPropertyValue('--ac').trim():'#756bff';client.sync({enabled:S.set.nativeRestLiveActivity!==false&&S.set.restEnabled!==false,workoutID:S.cur?.id,startedAt:qolState.startedAt,endAt:qolState.endAt,accent:raw});}catch{qolNativeRestState.error='The lock-screen timer could not connect. Reopen the Slat iPhone app.';}};
+const qolSyncNativeRest=()=>{if(qolRestStatePaused())return;const client=qolNativeClient();if(!client)return;try{const raw=typeof getComputedStyle==='function'?getComputedStyle(document.documentElement).getPropertyValue('--ac').trim():'#756bff';client.sync({enabled:S.set.nativeRestLiveActivity!==false&&S.set.restEnabled!==false,workoutID:S.cur?.id,startedAt:qolState.startedAt,endAt:qolState.endAt,accent:raw});}catch{qolNativeRestState.error='The lock-screen timer could not connect. Reopen the Slat iPhone app.';}};
 const qolNativeRestStatus=()=>qolNativeRestState.error||(qolNativeRestState.allowed===false?'Allow Live Activities for Slat in iPhone Settings.':S.set.nativeRestLiveActivity===false?'Lock-screen countdown off.':'Live countdown and progress continue on your lock screen.');
 const qolNativeRestSettings=()=>`<div class=rest-notification-settings><b>Lock-screen timer</b><p id=native-rest-status class=support-copy role=status>${esc(qolNativeRestStatus())}</p><button class=pill data-a=nativeRestToggle>${S.set.nativeRestLiveActivity===false?'Enable live countdown':'Disable live countdown'}</button><small>A translucent glass card shows the live countdown and progress. Tap it to return to your workout.</small></div>`;
 const qolNotificationIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -1976,11 +1977,11 @@ const qolToggleRestNotifications=async()=>{
  finally{qolState.notificationBusy=false;}
 };
 const qolStopRest=()=>{qolState.endAt=0;qolState.startedAt=0;document.body.classList.remove('has-rest');if(S?.cur&&(Object.hasOwn(S.cur,'restEndAt')||Object.hasOwn(S.cur,'restStartedAt'))){delete S.cur.restEndAt;delete S.cur.restStartedAt;save();}if(qolState.timer){clearInterval(qolState.timer);qolState.timer=null}qolReleaseWake();document.querySelector('#qol-rest')?.remove();qolClearRestNotification();qolSyncNativeRest();};
-const qolRestoreRest=()=>{if(importing)return;if(qolState.timer){clearInterval(qolState.timer);qolState.timer=null;}const now=Date.now(),endAt=S.set.restEnabled===false?0:num(S.cur?.restEndAt);if(!(endAt>now)||endAt-now>QOL_MAX_REST_MS){qolStopRest();return;}qolState.endAt=endAt;const startedAt=num(S.cur?.restStartedAt);qolState.startedAt=startedAt>0&&startedAt<endAt?startedAt:endAt-(S.set.rest||90)*1000;if(S.cur&&qolState.startedAt!==startedAt){S.cur.restStartedAt=qolState.startedAt;save();}qolAcquireWake();qolRenderRest();qolState.timer=setInterval(qolRenderRest,250);qolNotifyRest(qolState.endAt);qolSyncNativeRest();};
+const qolRestoreRest=()=>{if(qolRestStatePaused())return;if(qolState.timer){clearInterval(qolState.timer);qolState.timer=null;}const now=Date.now(),endAt=S.set.restEnabled===false?0:num(S.cur?.restEndAt);if(!(endAt>now)||endAt-now>QOL_MAX_REST_MS){qolStopRest();return;}qolState.endAt=endAt;const startedAt=num(S.cur?.restStartedAt);qolState.startedAt=startedAt>0&&startedAt<endAt?startedAt:endAt-(S.set.rest||90)*1000;if(S.cur&&qolState.startedAt!==startedAt){S.cur.restStartedAt=qolState.startedAt;save();}qolAcquireWake();qolRenderRest();qolState.timer=setInterval(qolRenderRest,250);qolNotifyRest(qolState.endAt);qolSyncNativeRest();};
 const qolRestStart=(seconds=S.set.rest||90)=>{qolState.startedAt=Date.now();qolState.endAt=qolState.startedAt+seconds*1000;if(S.cur){S.cur.restEndAt=qolState.endAt;S.cur.restStartedAt=qolState.startedAt;save();}qolAcquireWake();qolRenderRest();if(qolState.timer)clearInterval(qolState.timer);qolState.timer=setInterval(qolRenderRest,250);qolNotifyRest(qolState.endAt);qolSyncNativeRest()};
 const qolAdjustRest=seconds=>{if(!(qolState.endAt>Date.now()))return false;const next=qolState.endAt+seconds*1000;if(next<=Date.now()){qolStopRest();return true;}qolState.endAt=next;if(S.cur){S.cur.restEndAt=next;save();}qolRenderRest();qolNotifyRest(next);qolSyncNativeRest();return true;};
 const qolRenderRest=()=>{
- if(importing)return;
+ if(qolRestStatePaused())return;
  if(S.set.restEnabled===false){qolStopRest();return;}
  if(!S.cur||qolState.endAt<=Date.now()){const endAt=qolState.endAt,complete=!!(endAt&&S.cur);qolStopRest();if(complete){toast('Rest complete');if(S.set.restFeedback&&document.visibilityState==='visible'&&Date.now()-endAt<=15000)navigator.vibrate?.([150,80,150]);}return;}
  document.body.classList.add('has-rest');let el=$('#qol-rest');if(!el){el=document.createElement('section');el.id='qol-rest';el.className='rest-dock';el.setAttribute('aria-label','Rest timer');el.innerHTML='<div class=rest-dock-inner><div class=rest-readout><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6M12 2v3"/></svg><span>Rest</span><b data-rest-clock role=timer aria-live=off></b></div><div class=rest-actions><button data-qol=restMinus aria-label="Subtract 30 seconds">−30s</button><button data-qol=restPlus aria-label="Add 30 seconds">+30s</button><button data-qol=restStop aria-label="Stop rest timer">Stop</button></div></div><div class=rest-track aria-hidden="true"><i data-rest-progress></i></div>';document.body.append(el);}

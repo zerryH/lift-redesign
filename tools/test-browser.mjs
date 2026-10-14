@@ -136,6 +136,28 @@ try{
    await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).workouts[0].ex[0].sets[0].kg,27.5);
    await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).workouts[0].ex[0].sets[0].note,'Controlled tempo');await clickTab('history');assert.equal(await page.locator('[data-a=he]').count(),1);
   });
+  await check(name+': active rest survives timer ticks during a failed workout finish',async()=>{
+   await open({...base(),cur:{...workout('Bench Press',60,8),ex:[{n:'Bench Press',sets:[]}]}},undefined,'[data-a=log]',url,false,true);
+   await clickControl(page.locator('[data-a=log]'));await page.evaluate(()=>saveTail);
+   const before=await page.evaluate(()=>({cur:JSON.stringify(S.cur),stored:localStorage.getItem('liftlog-state'),end:qolState.endAt,start:qolState.startedAt,stops:slatNativeMessages.filter(m=>m.action==='stop').length}));
+   await page.evaluate(()=>{
+    window.slatOriginalSetItem=Storage.prototype.setItem;window.slatOriginalTransaction=IDBDatabase.prototype.transaction;
+    Storage.prototype.setItem=function(key,value){if(key==='liftlog-state')throw new DOMException('Synthetic quota','QuotaExceededError');return slatOriginalSetItem.call(this,key,value);};
+    IDBDatabase.prototype.transaction=function(...args){if(args[1]==='readwrite')throw new DOMException('Synthetic write failure','UnknownError');return slatOriginalTransaction.apply(this,args);};
+    saveTail=new Promise(resolve=>window.slatReleaseFinish=resolve);
+   });
+   await clickControl(page.locator('[data-a=fin]'));await page.waitForFunction(()=>finishing&&S.cur===null);
+   await page.waitForTimeout(650);await page.evaluate(()=>{document.dispatchEvent(new Event('visibilitychange'));window.dispatchEvent(new Event('slat-native-rest-resume'));});
+   assert.equal(await page.evaluate(()=>qolState.endAt),before.end);
+   assert.equal(await page.evaluate(()=>slatNativeMessages.filter(m=>m.action==='stop').length),before.stops);
+   await page.evaluate(()=>slatReleaseFinish(true));await page.waitForFunction(()=>!finishing&&!!S.cur);
+   const after=await page.evaluate(()=>({cur:JSON.stringify(S.cur),stored:localStorage.getItem('liftlog-state'),end:qolState.endAt,start:qolState.startedAt,workouts:S.workouts.length}));
+   assert.equal(after.cur,before.cur);assert.equal(after.stored,before.stored);assert.equal(after.end,before.end);assert.equal(after.start,before.start);assert.equal(after.workouts,0);
+   assert.equal(await page.locator('#qol-rest').count(),1);
+   await page.evaluate(()=>{Storage.prototype.setItem=slatOriginalSetItem;IDBDatabase.prototype.transaction=slatOriginalTransaction;});
+   await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();
+   assert.equal((await saved()).workouts.length,1);assert.equal(await page.locator('#qol-rest').count(),0);assert.equal(await page.evaluate(()=>slatNativeMessages.at(-1).action),'stop');
+  });
   await check(name+': personal records isolate equipment and ignore future or later duplicate sets',async()=>{
    const s=(kg,label,loggedAt)=>({kg,reps:8,t:'',equipmentContext:{label},loggedAt}),older={...workout('Cable Curl'),id:10,d:'2026-09-19',ex:[{n:'Cable Curl',sets:[s(40,'A',1),s(100,'B',2)]}]},future={...workout('Cable Curl'),id:11,d:'2026-09-21',ex:[{n:'Cable Curl',sets:[s(500,'A',3)]}]},cur={...workout('Cable Curl'),id:12,d:'2026-09-20',ex:[{n:'Cable Curl',sets:[s(45,'A',20)]},{n:'Cable Bicep Curl',sets:[s(50,'A',10)]}]};
    await open({...base(),workouts:[older,future],cur},undefined,'[data-a=fin]');
