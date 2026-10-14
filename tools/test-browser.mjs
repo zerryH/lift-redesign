@@ -128,6 +128,33 @@ try{
    await page.locator('#qol-reps').fill('11');await page.evaluate(()=>saveTail);await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-reps').inputValue(),'11');
    await clickControl(page.locator('[data-a=openx]'));await page.locator('#ex-search').fill('Dumbbell Bicep Curl');assert(await page.locator('.exercise-option[data-v="Dumbbell Curl"]').count());
   });
+  await check(name+': malformed and precise typed drafts remain editable across navigation and reload',async()=>{
+   await open({...base(),cur:{...workout(),split:'Empty',ex:[{n:'Bench Press',sets:[]},{n:'Plank',sets:[]}]}},undefined,'[data-a=log]');
+   await page.locator('#qol-weight').fill('oops');await page.locator('#qol-reps').fill('8abc');
+   await clickControl(page.locator('[data-a=selectExercise][data-i="1"]'));await clickControl(page.locator('[data-a=selectExercise][data-i="0"]'));
+   assert.equal(await page.locator('#qol-weight').inputValue(),'oops');assert.equal(await page.locator('#qol-reps').inputValue(),'8abc');
+   assert.equal(await page.locator('#qol-weight').getAttribute('aria-invalid'),'true');assert.equal(await page.locator('#ws').getAttribute('aria-valuetext'),'Enter a valid weight');assert.equal(await page.locator('#ws').inputValue(),'0');
+   await clickControl(page.locator('[data-a=log]'));assert.equal((await saved()).cur.ex[0].sets.length,0);
+   await page.evaluate(()=>saveTail);await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-weight').inputValue(),'oops');assert.equal(await page.locator('#qol-reps').inputValue(),'8abc');
+   await page.locator('#qol-weight').fill('67.25');await page.locator('#qol-reps').fill('10');await page.evaluate(()=>saveTail);await page.reload();await page.locator('[data-a=log]').waitFor();
+   assert.equal(await page.locator('#qol-weight').inputValue(),'67.25');assert.equal(await page.locator('#ws').getAttribute('aria-valuetext'),'67.25 kg');
+   await clickTab('settings');assert.equal(await page.getByRole('textbox',{name:'Bodyweight (kg)',exact:true}).count(),1);assert.equal(await page.getByRole('button',{name:'Age adjustment',exact:true}).count(),1);
+   await clickControl(page.locator('[data-qol=unit][data-v=lb]'));await clickTab('today');assert.equal(await page.locator('#qol-weight').inputValue(),'148.260695');assert.equal(await page.locator('#ws').getAttribute('aria-valuetext'),'148.260695 lb');
+   await clickControl(page.locator('[data-a=log]'));assert.equal((await saved()).cur.ex[0].sets[0].kg,67.25);
+   await clickControl(page.locator('[data-a=openx]'));assert.equal(await page.getByRole('searchbox',{name:'Search exercises',exact:true}).count(),1);await clickControl(page.locator('.exercise-library-close'));
+   await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();await clickTab('history');assert((await page.locator('.history-session').textContent()).includes('Free workout'));assert.equal((await saved()).workouts[0].split,'Empty');
+   await clickControl(page.locator('[data-a=sessionView]'));assert.equal(await page.getByRole('dialog',{name:'Free workout',exact:true}).count(),1);await clickControl(page.locator('#session-routine'));assert.equal(await page.locator('#routine-name').inputValue(),'Free workout');await clickControl(page.locator('button[data-qol=closeModal]'));
+   assert.equal(await page.locator('#n').getAttribute('inert'),null);assert.equal(await page.locator('#v').getAttribute('inert'),null);await clickTab('settings');assert.equal(await page.getByRole('heading',{name:'Your profile',exact:true}).count(),1);
+  });
+  await check(name+': closing feature dialogs leaves the next control ready immediately',async()=>{
+   await open({...base(),workouts:[workout()]});await clickTab('history');
+   for(const action of ['progress','plate']){
+    await clickControl(page.locator('[data-qol='+action+']'));await page.locator('.qol-modal [role=dialog]').waitFor();await clickControl(page.locator('button[data-qol=closeModal]'));
+    assert.equal(await page.locator('#n').getAttribute('inert'),null);assert.equal(await page.locator('#v').getAttribute('inert'),null);
+    await clickTab('settings');assert.equal(await page.getByRole('heading',{name:'Your profile',exact:true}).count(),1);await clickTab('history');
+   }
+   await clickControl(page.locator('[data-a=sessionView]'));await clickControl(page.locator('button[data-qol=closeModal]'));assert.equal(await page.locator('#n').getAttribute('inert'),null);await clickTab('ranks');assert.equal(await page.getByRole('heading',{name:'Your rank',exact:true}).count(),1);
+  });
   await check(name+': log, edit, finish and reload a workout',async()=>{
    await open();await clickControl(page.getByRole('button',{name:'Free workout',exact:true}));await clickControl(page.getByRole('button',{name:'+ Add exercise',exact:true}));
    await page.locator('#ex-search').fill('Cable Curl');await clickControl(page.locator('.exercise-option[data-v="Cable Curl"]'));
