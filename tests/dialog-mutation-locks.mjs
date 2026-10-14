@@ -18,6 +18,17 @@ async function form(action,control,fields,lock,extra={},args={i:0,j:0}){
 }
 
 for(const lock of ['storageConflict','importing','finishing']){
+ const restore=await boot({...base(),workouts:[workout()]});
+ const restoreCreate=restore.ctx.document.createElement;
+ restore.ctx.document.createElement=()=>{const el=restoreCreate();el.querySelector=restore.get;return el;};
+ restore.h.showBackupPreview({version:4,workouts:[],bw:[],routines:[],exercisePreferences:{}});
+ await restore.h.flush();const restoreBefore=JSON.stringify(restore.h.S),restoreStored=restore.store.get('liftlog-state');
+ vm.runInContext(lock+'=true',restore.ctx);
+ await restore.get('#confirm-import').listeners.click.at(-1)();await restore.h.flush();
+ assert.equal(JSON.stringify(restore.h.S),restoreBefore,'Backup replacement must honor '+lock);
+ assert.equal(restore.store.get('liftlog-state'),restoreStored,'Backup replacement must preserve durable state under '+lock);
+ assert.deepEqual(restore.errors,[]);
+
  await form('sessionInfo','#session-info-save',{'#session-date':'2026-09-19','#session-name':'Changed while paused'},lock);
  await form('exerciseOptions','#exercise-options-save',{'#exercise-rest':'120','#equipment-label':'Changed setup'},lock);
  await form('editSet','#save-set-edit',{'#edit-weight':'110','#edit-amount':'5','#edit-rpe':'8','#edit-note':'Changed while paused'},lock);
@@ -57,4 +68,4 @@ for(const lock of ['storageConflict','importing','finishing']){
   assert.equal(JSON.stringify(builder.h.routineDraft),builderBefore,'Routine draft controls must honor '+lock);
  }
 }
-console.log('Workout, equipment, set, routine, History and deletion dialogs honor conflict, import and finish locks');
+console.log('Backup, workout, equipment, set, routine, History and deletion dialogs honor conflict, import and finish locks');
