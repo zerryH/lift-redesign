@@ -5,12 +5,14 @@
     "build": "node build.mjs",
     "check:editor": "node tools/check-editor.mjs",
     "test": "node tools/test-release.mjs",
-    "test:browser": "node tools/test-browser.mjs"
+    "test:browser": "node tools/test-browser.mjs",
+    "check:editor:modern": "node node_modules/typescript-modern/bin/tsc -p jsconfig.json && node node_modules/typescript-modern/bin/tsc -p tools/tsconfig.generated.json"
   },
   "devDependencies": {
     "playwright": "1.64.0",
     "typescript": "5.9.3",
     "vscode-css-languageservice": "6.3.10",
-    "vscode-languageserver-textdocument": "1.0.15"
+    "vscode-languageserver-textdocument": "1.0.15",
+    "typescript-modern": "npm:typescript@7.0.2"
   }
 }

@@ -1,5 +1,5 @@
 /* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
-globalThis.LiftRankingEngine=(()=>{
+var LiftRankingEngine=globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const lerp=(a,b,t)=>a+(b-a)*t;
 const interp=(p,x)=>{if(!p?.length)return 1;if(x<=p[0][0])return p[0][1];for(let i=1;i<p.length;i++){if(x<=p[i][0]){const[x0,y0]=p[i-1],[x1,y1]=p[i];return lerp(y0,y1,(x-x0)/(x1-x0))}}return p[p.length-1][1]};

@@ -1,5 +1,5 @@
 /* Measurement provenance is retained separately from current ranking comparisons. */
-globalThis.SlatPerformance=(()=>{
+var SlatPerformance=globalThis.SlatPerformance=(()=>{
  const units={load:'kg',repetitions:'reps',duration:'s',distance:'m'};
  function provenance(record,meta,context){
   return {exerciseId:record.id,trackingMode:record.tracking,catalogueVersion:context.catalogueVersion,

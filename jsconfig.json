@@ -8,7 +8,8 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "allowJs": true
+    "allowJs": true,
+    "strict": false
   },
   "files": [
     "app-core.js",

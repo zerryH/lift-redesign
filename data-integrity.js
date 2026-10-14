@@ -1,5 +1,5 @@
 /* Slat state contract. Pure validation runs before any backup replacement. */
-globalThis.SlatData = (() => {
+var SlatData=globalThis.SlatData= (() => {
   const object = v => v !== null && typeof v === 'object' && !Array.isArray(v);
   const number = v => typeof v==='number'?v:typeof v==='string'&&/^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:[eE][+-]?\d+)?$/.test(v.trim())?Number(v.trim().replace(',','.')):NaN;
   const finite = v => Number.isFinite(number(v))&&Number.isFinite(Number(v));

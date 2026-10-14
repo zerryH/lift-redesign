@@ -1,5 +1,5 @@
 /* Pure catalogue identity and protocol validation. */
-globalThis.SlatCatalogue=(()=>{
+var SlatCatalogue=globalThis.SlatCatalogue=(()=>{
  const zones=['chest','frontDelts','rearDelts','sideDelts','biceps','triceps','lats','upperBack','abs','glutes','quads','hamstrings','calves','forearms','adductors','tibialis'];
  const splits=['Push','Pull','Legs','Core','Full Body'];
  const tracking=['load_reps','reps','duration','load_distance','band_reps'];

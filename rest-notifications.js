@@ -1,5 +1,5 @@
 /* Web notifications are static next-set reminders. The live countdown stays in the app. */
-globalThis.SlatRestNotifications = (() => {
+var SlatRestNotifications=globalThis.SlatRestNotifications= (() => {
   const tag = 'slat-rest-timer';
   function card(endAt, scope) {
     const ready = new Date(endAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});

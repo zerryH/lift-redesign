@@ -1,5 +1,5 @@
 /* Versioned, foreground-only bridge to the installed Slat iPhone app. */
-globalThis.SlatNativeRest=(()=>{
+var SlatNativeRest=globalThis.SlatNativeRest=(()=>{
  const available=()=>typeof globalThis.window?.webkit?.messageHandlers?.slatRestTimer?.postMessage==='function';
  function create(post,now=()=>Date.now()){
   let key='';

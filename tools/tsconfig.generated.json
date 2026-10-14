@@ -1,0 +1,4 @@
+{
+  "extends": "../jsconfig.json",
+  "files": ["../app.js", "../types/browser.d.ts"]
+}

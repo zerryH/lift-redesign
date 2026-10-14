@@ -9,7 +9,7 @@
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
 const BUILD_VERSION='5.7.34';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
-globalThis.LiftRankingEngine=(()=>{
+var LiftRankingEngine=globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 const lerp=(a,b,t)=>a+(b-a)*t;
 const interp=(p,x)=>{if(!p?.length)return 1;if(x<=p[0][0])return p[0][1];for(let i=1;i<p.length;i++){if(x<=p[i][0]){const[x0,y0]=p[i-1],[x1,y1]=p[i];return lerp(y0,y1,(x-x0)/(x1-x0))}}return p[p.length-1][1]};
@@ -27,7 +27,7 @@ return{interp,ageMultiplier,heightMultiplier,repReliability,effectiveLoad,estima
 })();
 /*END:RANKING_ENGINE*/
 /*BEGIN:CATALOGUE_MODEL*//* Pure catalogue identity and protocol validation. */
-globalThis.SlatCatalogue=(()=>{
+var SlatCatalogue=globalThis.SlatCatalogue=(()=>{
  const zones=['chest','frontDelts','rearDelts','sideDelts','biceps','triceps','lats','upperBack','abs','glutes','quads','hamstrings','calves','forearms','adductors','tibialis'];
  const splits=['Push','Pull','Legs','Core','Full Body'];
  const tracking=['load_reps','reps','duration','load_distance','band_reps'];
@@ -69,7 +69,7 @@ globalThis.SlatCatalogue=(()=>{
 })();
 /*END:CATALOGUE_MODEL*/
 /*BEGIN:WORKOUT_MODEL*//* Pure session transitions; persistence is acknowledged by the caller. */
-globalThis.SlatWorkout=(()=>{
+var SlatWorkout=globalThis.SlatWorkout=(()=>{
  const phase=(state,saving=false)=>saving?'saving':!state.cur?'idle':state.editingId!=null?'editing':'active';
  function targets(value){
   const out={...value};
@@ -115,7 +115,7 @@ globalThis.SlatWorkout=(()=>{
 })();
 /*END:WORKOUT_MODEL*/
 /*BEGIN:PERFORMANCE_CONTRACT*//* Measurement provenance is retained separately from current ranking comparisons. */
-globalThis.SlatPerformance=(()=>{
+var SlatPerformance=globalThis.SlatPerformance=(()=>{
  const units={load:'kg',repetitions:'reps',duration:'s',distance:'m'};
  function provenance(record,meta,context){
   return {exerciseId:record.id,trackingMode:record.tracking,catalogueVersion:context.catalogueVersion,
@@ -138,7 +138,7 @@ globalThis.SlatPerformance=(()=>{
 })();
 /*END:PERFORMANCE_CONTRACT*/
 /*BEGIN:DATA_INTEGRITY*//* Slat state contract. Pure validation runs before any backup replacement. */
-globalThis.SlatData = (() => {
+var SlatData=globalThis.SlatData= (() => {
   const object = v => v !== null && typeof v === 'object' && !Array.isArray(v);
   const number = v => typeof v==='number'?v:typeof v==='string'&&/^[+-]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:[eE][+-]?\d+)?$/.test(v.trim())?Number(v.trim().replace(',','.')):NaN;
   const finite = v => Number.isFinite(number(v))&&Number.isFinite(Number(v));
@@ -882,7 +882,7 @@ async function sw(){if(location.protocol==='file:'||!('serviceWorker' in navigat
 
 
 /*BEGIN:REST_NOTIFICATIONS*//* Web notifications are static next-set reminders. The live countdown stays in the app. */
-globalThis.SlatRestNotifications = (() => {
+var SlatRestNotifications=globalThis.SlatRestNotifications= (() => {
   const tag = 'slat-rest-timer';
   function card(endAt, scope) {
     const ready = new Date(endAt).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
@@ -932,7 +932,7 @@ globalThis.SlatRestNotifications = (() => {
 /*END:REST_NOTIFICATIONS*/
 
 /*BEGIN:NATIVE_REST*//* Versioned, foreground-only bridge to the installed Slat iPhone app. */
-globalThis.SlatNativeRest=(()=>{
+var SlatNativeRest=globalThis.SlatNativeRest=(()=>{
  const available=()=>typeof globalThis.window?.webkit?.messageHandlers?.slatRestTimer?.postMessage==='function';
  function create(post,now=()=>Date.now()){
   let key='';

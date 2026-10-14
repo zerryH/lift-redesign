@@ -20,6 +20,7 @@ jobs:
           node-version: '22'
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run check:editor
+      - run: npm run check:editor:modern
       - run: node tools/test-release.mjs
       - run: node tools/generate-rank-standards-v9.mjs --check
       - run: node build.mjs && git diff --exit-code

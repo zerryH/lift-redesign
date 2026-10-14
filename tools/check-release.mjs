@@ -9,6 +9,8 @@ function run(script,args=[]){
  if(r.status!==0){if(r.error)console.error(r.error);process.exit(r.status||1);}
 }
 run('tools/check-editor.mjs');
+run('node_modules/typescript-modern/bin/tsc',['-p','jsconfig.json']);
+run('node_modules/typescript-modern/bin/tsc',['-p','tools/tsconfig.generated.json']);
 run('tools/test-release.mjs');
 run('tools/generate-rank-standards-v9.mjs',['--check']);
 run('build.mjs');
