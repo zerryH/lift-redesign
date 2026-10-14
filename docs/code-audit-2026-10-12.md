@@ -2,11 +2,11 @@
 
 Maintenance update (5.7.17): F14 restore compatibility now explicitly permits ordinary tabs and line breaks in bounded historical text. Unsupported control characters and non-string values are rejected before replacement. Set editing accounts for browser text-input newline removal, so an unrelated measurement or RPE edit preserves untouched note/band bytes; explicit text edits still use today's limits.
 
-Current maintenance release: **5.7.31**. An active rest countdown survives a failed workout finish. Ticks, restored timers and native synchronization wait while a finish, import or conflict is pending; a successful save stops normally, and elapsed rest is processed after rollback. This release retains date-consistent ranks, future-date bodyweight/workout guards, transparent backup restore, rollback-safe reset, routine-reference, timer restore, chronological “Last Time”, large-backup, personal-record and static-reminder fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.32**. A live UI audit reproduced weight/reps text disappearing or rounding after navigation/reload, misleading invalid-weight sliders, and missing/incorrect accessible control names. Typed drafts now retain exact text, independently validate restored measurements and announce selected units correctly. This release retains the active-rest finish rollback fix and all earlier data-safety fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
-The release addresses thirty-two reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
+The release addresses thirty-five reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
 
 | Case | Before | Change and regression evidence |
 | --- | --- | --- |
@@ -45,6 +45,13 @@ The release addresses thirty-two reproduced defect or failure-path cases. It als
 
 ## Prior register reconciliation
 
+Additional live UI findings in 5.7.32:
+
+| Case | Before | Change and regression evidence |
+| --- | --- | --- |
+| A33 | Typing `oops`/`8abc`, switching exercise or reloading replaced the weight with 0 and blanked reps, while validation still blocked logging. A valid 67.25 kg draft displayed as 67.3. The invalid range input jumped to its midpoint. | Retain source text and its unit separately from canonical kg, revalidate it on restore, display exact typed text, mark invalid fields and use a finite slider fallback. Navigation, reload, backup, decimal commas, blank input, Repeat, setup reset and injection safety are covered. Saved sets are unchanged. |
+| A34 | A pound-labelled range announced its canonical kg value (67.5 instead of the displayed pound load). Exercise search was named only by the search glyph; Profile bodyweight's name changed to its placeholder value, and two ranking toggles were both named On. | Add accurate unit-aware slider value text and stable Search exercises, Bodyweight, Age adjustment and Height / ROM adjustment names. Chromium/WebKit journeys assert the rendered controls and kilogram provenance. |
+
 The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a historical baseline; this status supersedes its implementation plan.
 
 | Prior finding | Current status |
@@ -72,9 +79,11 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 
 ## Validation and release gate
 
+A35 (5.7.32): live History displayed free sessions as the internal `Empty` split. History rows/filters, read-only details and newly derived routine names now display Free workout. Filter values and stored records remain unchanged; search includes the displayed label. `tests/workout-display-labels.mjs` and browser journeys cover the presentation contract.
+
 `tools/test-release.mjs` runs each regression script in an isolated copy, so build-mutating tests cannot hide stale committed outputs. The suite includes focused import-text-budget coverage plus the broader data-contract, browser and native build checks.
 
-Required checks: all 71 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
+Required checks: all 73 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
 
 No catalogue entries, standard ladders, raw workout loads or user notes are automatically rewritten by this release. Reset cleanup runs only after the user invokes and confirms Reset. Unsafe backups are rejected before replacement, with existing durable state preserved. The in-app glass rest countdown remains live; web notifications remain explicitly static next-set reminders, as requested.
 

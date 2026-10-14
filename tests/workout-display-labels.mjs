@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {boot,base,workout} from './support/runtime.mjs';
+const w={...workout(),split:'Empty'},run=await boot({...base(),workouts:[w]});
+const before=JSON.stringify(run.h.S.workouts),html=run.h.V.history();
+assert(html.includes('2026-09-20 · Free workout'));
+assert(html.includes('<option value="Empty" >Free workout</option>'));
+assert(!html.includes('2026-09-20 · Empty'));
+assert.equal(run.h.routineFromWorkout(w).name,'Free workout');
+run.get('#history-query').value='free workout';run.h.A.historyApply();assert(run.h.historyMatches(w));
+run.get('#history-query').value='';run.get('#history-split').value='Empty';run.h.A.historyApply();assert(run.h.historyMatches(w));
+assert.equal(JSON.stringify(run.h.S.workouts),before,'presentation labels cannot rename stored splits');
+const named={...w,name:'My & session'};assert.equal(run.h.routineFromWorkout(named).name,'My & session');
+run.h.S.workouts=[named];assert(run.h.V.history().includes('My &amp; session'));
+assert.deepEqual(run.errors,[]);console.log('Free workout labels are searchable, filters retain stored split keys, and explicit names/history remain unchanged');

@@ -4,14 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.31**
+**Build: 5.7.32**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.31: a failed workout finish preserves its active rest countdown. Timer ticks and native resume cannot stop it before the save is acknowledged; elapsed rest is processed after rollback and a successful retry stops normally. See [the 5.7.31 fix note](docs/fixes-5.7.31.md) and [the current code audit](docs/code-audit-2026-10-12.md).
+New in 5.7.32: typed weight/reps drafts keep their exact text through exercise switches, reload and backups, including errors that need correction. Precise weights no longer round in the input, the slider announces the correct selected units, and exercise search/Profile controls have stable accessible names. Free sessions display Free workout instead of the internal Empty label. See [the 5.7.32 fix note](docs/fixes-5.7.32.md) and [the current code audit](docs/code-audit-2026-10-12.md).
 
 New in 5.7.30: earned exercise and muscle ranks refresh together when the local date changes, including midnight, returning to the app and a backwards clock/timezone change. Refreshing derived results does not save or rewrite workout history. See [the 5.7.30 fix note](docs/fixes-5.7.30.md).
 
