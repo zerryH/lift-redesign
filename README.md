@@ -4,14 +4,16 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.23**
+**Build: 5.7.24**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.23: routine saving validates exercise references using the same contract as backup restore. Unknown archival movements can be replaced explicitly in the routine editor while retaining targets and rest; original workout history stays unchanged. See [the 5.7.23 fix note](docs/fixes-5.7.23.md) and [the current code audit](docs/code-audit-2026-10-12.md).
+New in 5.7.24: a failed Reset now preserves an IndexedDB-only data copy. Slat checks session storage before deleting the database and restores every captured store if later cleanup fails. See [the 5.7.24 fix note](docs/fixes-5.7.24.md) and [the current code audit](docs/code-audit-2026-10-12.md).
+
+New in 5.7.23: routine saving validates exercise references using the same contract as backup restore. Unknown archival movements can be replaced explicitly in the routine editor while retaining targets and rest; original workout history stays unchanged.
 
 New in 5.7.22: forms and confirmation dialogs opened before a cross-tab conflict honor the same pause checks as the main controls. Workout dates, sets, equipment preferences, routines, custom names and deletion confirmations cannot mutate the paused recovery copy.
 

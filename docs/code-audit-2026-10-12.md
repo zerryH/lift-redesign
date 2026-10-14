@@ -2,11 +2,11 @@
 
 Maintenance update (5.7.17): F14 restore compatibility now explicitly permits ordinary tabs and line breaks in bounded historical text. Unsupported control characters and non-string values are rejected before replacement. Set editing accounts for browser text-input newline removal, so an unrelated measurement or RPE edit preserves untouched note/band bytes; explicit text edits still use today's limits.
 
-Current maintenance release: **5.7.23**. Routine saving now uses catalogue-aware identity validation, matching backup restore. Unknown archival exercises cannot create unusable routines or self-exports rejected on import. The editor provides explicit reference replacement while preserving targets and original history. This release retains the dialog-lock, timer restore, chronological “Last Time”, large-backup and personal-record fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.24**. Reset now snapshots local, session and database state before cleanup, checks failure-prone session storage before deleting IndexedDB, and restores captured stores if cleanup cannot complete. This release retains the routine-reference, dialog-lock, timer restore, chronological “Last Time”, large-backup and personal-record fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
-The release addresses twenty-four reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
+The release addresses twenty-five reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
 
 | Case | Before | Change and regression evidence |
 | --- | --- | --- |
@@ -34,6 +34,7 @@ The release addresses twenty-four reproduced defect or failure-path cases. It al
 | A22 | A stale or malformed saved rest deadline more than a day ahead started a permanent 250 ms update loop and displayed a multi-day “rest.” | Apply the iPhone bridge's existing 24-hour restore limit to the web timer, clear only the ephemeral timer fields, and repair an invalid start time. Focused regressions retain normal active-timer restore. |
 | A23 | Direct dialog listeners could mutate a paused state before the document-level conflict/import/finish guard ran. | Use one shared pre-mutation gate for workout/date, set, equipment, routine and custom editors plus destructive confirmations. Isolated direct-listener tests and a real two-tab browser journey verify the in-memory and durable copies stay unchanged. |
 | A24 | Saving a routine from an unknown archival exercise created an unusable reference and made the app's own backup fail restore validation. | Validate routine saves with catalogue/custom identities. Offer explicit replacement on unresolved rows, retain targets, exclude unresolved names from new choices and block dangling identities at launch. Export/import and browser regressions preserve original archival history. |
+| A25 | If IndexedDB was the only durable data copy, Reset could delete it and then fail while clearing session storage, despite reporting that saved data was retained. | Snapshot all stores before mutation, clear and verify session storage before IndexedDB, and restore local/session/database copies if any later step fails. The regression starts with an IndexedDB-only workout and a failing session store. |
 
 ## Prior register reconciliation
 
@@ -43,7 +44,7 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 | --- | --- |
 | F01 database requests | Addressed by A17; deterministic stalled-open/read and blocked-open tests. Physical storage-eviction behavior remains a device gate. |
 | F02 fallback writer race | Addressed by A18 through a conservative coordination policy. No unlocked online fallback write is acknowledged. |
-| F03 reset recovery copies | Addressed by A19, including startup recovery and unrelated-key preservation. |
+| F03 reset recovery copies | Addressed by A19/A25, including startup recovery, unrelated-key preservation and rollback of IndexedDB-only state when reset cannot complete. |
 | F04 duplicate editing IDs | Addressed by A11 for import and existing local state. |
 | F05 custom name shadowing | Addressed by A05. |
 | F06 contradictory typed measurements | Addressed by A12. |
