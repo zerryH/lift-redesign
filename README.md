@@ -105,6 +105,8 @@ See `THIRD_PARTY_NOTICES.md`, `ANATOMY_CREDITS.md`, and `LICENSE-MUSCLE-MAPPER.t
 
 ## Validation and audit traceability
 
-Install the test dependency with `npm install --no-save --ignore-scripts playwright@1.64.0`, then `npx playwright install chromium webkit`. Run `SLAT_BROWSERS=chromium,webkit node tools/check-release.mjs` for all independent regression scripts, reproducible standards/build checks and real-browser journeys. Missing browser binaries fail the gate. GitHub Actions runs these checks on pull requests and review-branch pushes.
+Install the test dependency with `npm install --no-save --ignore-scripts playwright@1.64.0`, then `npx playwright install chromium webkit`. Run `SLAT_BROWSERS=chromium,webkit node tools/check-release.mjs` for all independent regression scripts, reproducible standards/build checks and real-browser journeys. Missing browser binaries fail the gate. GitHub Actions runs these checks on pull requests and main pushes; feature branches use the PR checks to avoid duplicate push/PR runs. Manual dispatch remains available.
+
+Prepare and validate the complete source and generated output before opening a PR. If the hosted API requires several upload commits, stage them on a fresh branch first, then open the PR after the final tree matches the validated build. When updating an existing PR, keep generated output with its source in one commit where possible. See [the CI failure audit](docs/ci-audit-2026-10-14.md).
 
 For focused checks, use `node tools/test-release.mjs` or `node tools/test-browser.mjs`. Browser reports/screenshots are written to `test-results/browser/`. Alternate local runtime paths can be supplied with `SLAT_PLAYWRIGHT_PATH` and `SLAT_CHROMIUM_PATH`. See [the implementation register](docs/audit-implementation-5.6.md) and [plan completion record](docs/plan-completion.md) for evidence and outstanding device/product gates.

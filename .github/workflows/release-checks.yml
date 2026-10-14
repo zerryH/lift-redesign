@@ -2,7 +2,7 @@ name: Release checks
 on:
   pull_request:
   push:
-    branches: [main, 'fix/audit-reliability-*']
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: read
