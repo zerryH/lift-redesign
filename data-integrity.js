@@ -86,7 +86,8 @@ globalThis.SlatData = (() => {
   const canonicalName = (name,catalogue) => catalogue?.[name]?.canonicalName || name;
   function backupSummary(data) {
     const workouts=data.workouts||[],sets=workouts.reduce((n,w)=>n+w.ex.reduce((m,x)=>m+x.sets.length,0),0);
-    return {version:data.version||'Legacy',workouts:workouts.length,sets,bodyweights:(data.bw||[]).length,custom:(data.custom||[]).length,checks:Object.keys(data.checks||{}).length,hasDraft:!!data.cur};
+    const activityDays=new Set(workouts.filter(w=>w.ex.some(x=>x.sets.length)).map(w=>w.d)).size;
+    return {version:data.version||'Legacy',workouts:workouts.length,activityDays,sets,bodyweights:(data.bw||[]).length,custom:(data.custom||[]).length,routines:(data.routines||[]).length,exercisePreferences:Object.keys(data.exercisePreferences||{}).length,checks:Object.keys(data.checks||{}).length,hasDraft:!!data.cur};
   }
   return {validateBackup,canonicalName,date,backupSummary,number,IMPORT_TEXT_BUDGETS};
 })();

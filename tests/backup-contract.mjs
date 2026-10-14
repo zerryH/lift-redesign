@@ -19,4 +19,6 @@ const nested=backup();let child=nested;for(let i=0;i<70;i++)child=child.extra={}
 const legacy=backup();delete legacy.version;delete legacy.settings;legacy.workouts[0].ex[0].sets[0]={kg:'-30',reps:'8',rpe:'0'};
 const before=JSON.stringify(legacy),restored=validate(legacy);assert.equal(JSON.stringify(restored),before);assert.equal(restored.workouts[0].ex[0].sets[0].kg,'-30');
 const shared=backup();shared.extra=shared.settings;validate(shared);
+const summary=context.SlatData.backupSummary({...backup(),workouts:[backup().workouts[0],{...backup().workouts[0],id:2}],routines:[{id:'routine:1'}],exercisePreferences:{ex001:{rest:90},ex002:{equipmentLabel:'Gym A'}}});
+assert.deepEqual(JSON.parse(JSON.stringify(summary)),{version:4,workouts:2,activityDays:1,sets:2,bodyweights:1,custom:0,routines:1,exercisePreferences:2,checks:0,hasDraft:false});
 console.log('backup scalar measurements, enums, cycles and legacy numeric strings validated');
