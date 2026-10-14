@@ -314,13 +314,32 @@ try{
    await page.locator('#imp').setInputFiles({name:'slat-large-backup.json',mimeType:'application/json',buffer});
    await page.locator('#confirm-import').waitFor();assert((await page.locator('.backup-summary').textContent()).includes('1650'));await clickControl(page.getByRole('button',{name:'Cancel',exact:true}));
   });
+  await check(name+': latest backup selection keeps its review when an older read finishes',async()=>{
+   await open({...base(),workouts:[workout()]});await clickTab('settings');const before=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
+   await page.evaluate(()=>{const read=File.prototype.text;File.prototype.text=function(...args){const raw=read.apply(this,args);if(this.name==='slow-first.json')return new Promise(resolve=>window.releaseOldBackupRead=()=>raw.then(resolve));return raw;};});
+   const file=(name,label)=>({name,mimeType:'application/json',buffer:Buffer.from(JSON.stringify({version:4,workouts:[{...workout(),name:label}],bw:[]}))});
+   await page.locator('#imp').setInputFiles(file('slow-first.json','Obsolete selection'));await page.waitForFunction(()=>typeof releaseOldBackupRead==='function');assert.equal(await page.locator('#imp').inputValue(),'');
+   await page.locator('#imp').setInputFiles(file('latest-second.json','Latest selection'));await page.getByRole('dialog',{name:'Review backup',exact:true}).filter({hasText:'latest-second.json'}).waitFor();
+   await page.evaluate(()=>releaseOldBackupRead());assert((await page.getByRole('dialog',{name:'Review backup',exact:true}).textContent()).includes('latest-second.json'));
+   assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),before);await clickControl(page.getByRole('button',{name:'Cancel',exact:true}));
+  });
+  await check(name+': pending reset stays protected and safely failed cleanup resumes the workout',async()=>{
+   await open({...base(),cur:workout('Bench Press',60,8)},undefined,'[data-a=log]');await clickTab('settings');const before=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
+   await clickControl(page.getByRole('button',{name:'Reset all data',exact:true}));await page.waitForFunction(()=>document.querySelector('[data-reset-confirm]')?.disabled===false);
+   await page.evaluate(()=>{saveTail=new Promise(resolve=>window.releaseResetSave=resolve);const remove=Storage.prototype.removeItem;Storage.prototype.removeItem=function(key){if(key==='liftlog-state')throw new Error('Test cleanup denied');return remove.call(this,key);};});
+   await clickControl(page.locator('[data-reset-confirm]'));assert.equal(await page.locator('[data-reset-confirm]').isEnabled(),false);assert.equal(await page.locator('[data-reset-cancel]').isEnabled(),false);assert.equal(await page.locator('.reset-card').count(),1);
+   await page.keyboard.press('Escape');assert.equal(await page.locator('.reset-card').count(),1);assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),before);
+   await page.evaluate(()=>releaseResetSave(true));await page.waitForFunction(()=>document.querySelector('[data-reset-confirm]')?.textContent==='Retry reset'&&!document.querySelector('[data-reset-confirm]').disabled);
+   assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),before);await clickControl(page.locator('[data-reset-cancel]'));await clickTab('today');await clickControl(page.locator('[data-a=log]'));assert.equal((await saved()).cur.ex[0].sets.length,2);
+  });
   await check(name+': audit backup fields cannot create elements or event attributes',async()=>{
    const payload='8" autofocus onfocus="this.dataset.audit=1',initial={...base(),cur:workout()};initial.cur.drafts={'Bench Press':{kg:payload,reps:payload,n:'spoofed',entryId:'spoofed'}};initial.cur.ex[0].target={sets:'<img src=x onerror="this.dataset.audit=1">',reps:8,seconds:30,meters:20,rest:90};
    await open(initial,undefined,'[data-a=log]');assert.equal(await page.locator('.routine-target img').count(),0);assert.equal(await page.locator('#qol-reps[onfocus],#ws[onfocus],#ws[onpointerdown]').count(),0);assert.equal(await page.evaluate(()=>dr.n),'Bench Press');
    await open({...base(),workouts:[workout()]});await clickTab('settings');const raw=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
    const correction=workout();correction.corrections='invalid';const target=workout();target.ex[0].target={sets:'<img src=x>'};
-   for(const backup of [{workouts:[correction],bw:[]},{workouts:[],bw:[],cur:target},{workouts:[],bw:[],custom:[{id:'custom:shadow',n:'Bench Press',t:'D'}]}]){
-    await page.locator('#imp').setInputFiles({name:'invalid-audit.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});await page.waitForFunction(()=>document.querySelector('#imp').value==='');assert.equal(await page.locator('#confirm-import').count(),0);assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
+   for(const [index,backup] of [{workouts:[correction],bw:[]},{workouts:[],bw:[],cur:target},{workouts:[],bw:[],custom:[{id:'custom:shadow',n:'Bench Press',t:'D'}]}].entries()){
+    const error=['Invalid backup: workouts[0].corrections','Invalid backup: cur.target.sets','Invalid backup: custom name collision'][index];
+    await page.locator('#imp').setInputFiles({name:'invalid-audit-'+index+'.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});await page.getByRole('status').filter({hasText:error}).waitFor();assert.equal(await page.locator('#imp').inputValue(),'');assert.equal(await page.locator('#confirm-import').count(),0);assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
    }
   });
   await check(name+': import cannot release the old screen while replacement is saving',async()=>{

@@ -37,10 +37,13 @@ const restoreCopies=(storage,copies)=>{for(const [key,value] of copies)try{if(va
 const clearCopies=(storage,copies,label)=>{for(const [key] of copies){storage.removeItem(key);if(storage.getItem(key)!==null)throw new Error(label+' reset verification failed');}};
 const clearStoredState=async()=>{
  saveEpoch++;await saveTail.catch(()=>false);
+ const clear=async()=>{
  let localCopies,sessionCopies=null,dbCopy=null;const web=location.protocol!=='file:',session=typeof sessionStorage!=='undefined'?sessionStorage:null;
  try{localCopies=storageCopies(localStorage);if(session)sessionCopies=storageCopies(session);if(web)dbCopy=await dbRead();}catch{return false;}
  const restore=async()=>{restoreCopies(localStorage,localCopies);if(session&&sessionCopies)restoreCopies(session,sessionCopies);if(web)try{if(dbCopy==null)await dbClear();else await dbWrite(dbCopy,Infinity,Infinity);}catch{}};
  try{clearCopies(localStorage,localCopies,'Local storage');if(session&&sessionCopies)clearCopies(session,sessionCopies,'Session storage');if(web&&!await dbClear())throw new Error('IndexedDB reset verification failed');}
  catch{await restore();return false;}
  return true;
+ };
+ try{return await (navigator.locks?.request?navigator.locks.request('slat-state-write',clear):clear());}catch{return false;}
 };
