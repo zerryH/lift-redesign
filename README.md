@@ -4,14 +4,16 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.29**
+**Build: 5.7.30**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.29: future-dated bodyweight entries restored from backup remain preserved but no longer become today's logging or rank default before their recorded date. Profile explains when an entry is deferred. See [the 5.7.29 fix note](docs/fixes-5.7.29.md) and [the current code audit](docs/code-audit-2026-10-12.md).
+New in 5.7.30: earned exercise and muscle ranks refresh together when the local date changes, including midnight, returning to the app and a backwards clock/timezone change. Refreshing derived results does not save or rewrite workout history. See [the 5.7.30 fix note](docs/fixes-5.7.30.md) and [the current code audit](docs/code-audit-2026-10-12.md).
+
+New in 5.7.29: future-dated bodyweight entries restored from backup remain preserved but no longer become today's logging or rank default before their recorded date. Profile explains when an entry is deferred. See [the 5.7.29 fix note](docs/fixes-5.7.29.md).
 
 New in 5.7.28: future-dated workouts restored from backup stay visible in History and the activity calendar but no longer inflate earned exercise or muscle ranks before their recorded date. The Ranks screen explains when a future session is being deferred. See [the 5.7.28 fix note](docs/fixes-5.7.28.md).
 

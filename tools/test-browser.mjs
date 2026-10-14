@@ -235,6 +235,22 @@ try{
    await clickControl(page.locator('[data-a=saveCheck]'));const after=await saved();assert.equal(after.checks['Bench Press'].w,180);assert.deepEqual(after.workouts,before.workouts);assert.equal(after.set.table,'M');await page.keyboard.press('Escape');
    await clickControl(page.locator('[data-a=rankList]'));await page.keyboard.press('Escape');assert.equal(await page.locator('#rank-list-modal').count(),0);
   });
+  await check(name+': local date rollover refreshes earned exercise and muscle ranks together',async()=>{
+   const today={...workout('Bench Press',60,8),d:'2026-10-14'},future={...workout('Bench Press',300,8),id:2,d:'2026-10-15'};
+   await open({...base(),workouts:[today,future]});
+   await page.evaluate(()=>{const NativeDate=Date;window.slatClock=NativeDate.UTC(2026,9,14,12);window.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[window.slatClock]))}static now(){return window.slatClock}};refreshRanks();});
+   await clickTab('ranks');
+   const before=await page.evaluate(()=>({rank:S.rk['Bench Press'].e,chest:muscleStates({},80).find(x=>x.id==='chest').i,history:JSON.stringify(S.workouts),revision:S.revision}));
+   await page.evaluate(()=>{slatClock=Date.UTC(2026,9,15,12);document.dispatchEvent(new Event('visibilitychange'));});
+   await page.waitForFunction(()=>S.rk['Bench Press'].d==='2026-10-15');
+   assert.equal(await page.locator('.rank-note + .note').count(),0);
+   const after=await page.evaluate(()=>({rank:S.rk['Bench Press'].e,chest:muscleStates({},80).find(x=>x.id==='chest').i,history:JSON.stringify(S.workouts),revision:S.revision}));
+   assert(after.rank>before.rank);assert(after.chest>before.chest);assert.equal(after.history,before.history);assert.equal(after.revision,before.revision);
+   await page.evaluate(()=>{slatClock=Date.UTC(2026,9,14,12);window.dispatchEvent(new Event('focus'));});
+   await page.waitForFunction(()=>S.rk['Bench Press'].d==='2026-10-14');
+   assert.equal(await page.evaluate(()=>S.rk['Bench Press'].e),before.rank);
+   assert((await page.locator('#v').textContent()).includes('1 future-dated workout'));
+  });
   await check(name+': backup preview cancels safely and confirms atomic replacement',async()=>{
    await open({...base(),workouts:[workout()]});await clickTab('settings');const raw=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
    await page.locator('#imp').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({workouts:[{d:'2026-10-10',ex:{}}],bw:[]}))});assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
@@ -451,7 +467,11 @@ try{
   });
   // Native keyboard activation keeps the local-file journey independent of WebKit startup scroll timing.
   await check(name+': local-file distribution logs, reloads and keeps its draft',async()=>{
-   await open({...base(),cur:workout('Cable Curl',25)},undefined,'[data-a=log]',new URL('file://'+path.join(root,'lift-local.html')).href);await page.locator('#qol-note').fill('Local file draft');await page.waitForFunction(()=>{const state=JSON.parse(localStorage.getItem('liftlog-state')||'null');return Object.values(state?.cur?.drafts||{}).some(d=>d?.note==='Local file draft')});await page.evaluate(()=>saveTail);await page.reload();await page.locator('[data-a=log]').waitFor();await page.waitForFunction(()=>document.querySelector('#qol-note')?.value==='Local file draft');assert.equal(await page.locator('#qol-note').inputValue(),'Local file draft');await page.locator('[data-a=log]').focus();await page.keyboard.press('Enter');await page.waitForFunction(()=>S.cur?.ex[0]?.sets.length===2);await page.evaluate(()=>saveTail);assert.equal((await saved()).cur.ex[0].sets.length,2);await clickTab('settings');assert((await page.locator('[data-a=update]').textContent()).includes('Reload'));await page.locator('[data-a=update]').focus();await Promise.all([page.waitForNavigation({waitUntil:'load'}),page.keyboard.press('Enter')]);await page.locator('[data-a=log]').waitFor();assert.equal((await saved()).cur.ex[0].sets.length,2);
+   await open({...base(),cur:workout('Cable Curl',25)},undefined,'[data-a=log]',new URL('file://'+path.join(root,'lift-local.html')).href);await page.locator('#qol-note').fill('Local file draft');await page.waitForFunction(()=>{const state=JSON.parse(localStorage.getItem('liftlog-state')||'null');return Object.values(state?.cur?.drafts||{}).some(d=>d?.note==='Local file draft')});await page.evaluate(()=>saveTail);
+   const draftBefore=await page.evaluate(()=>({entryId:S.cur.ex[0].entryId,drafts:S.cur.drafts,revision:S.revision}));
+   await page.reload();await page.locator('[data-a=log]').waitFor();
+   try{await page.waitForFunction(()=>document.querySelector('#qol-note')?.value==='Local file draft');}catch(error){report.localFileDraft={before:draftBefore,after:await page.evaluate(()=>({entryId:S.cur.ex[0].entryId,drafts:S.cur.drafts,dr,stored:JSON.parse(localStorage.getItem('liftlog-state')||'null')?.cur,seed:localStorage.getItem('slat-test-seeded')}))};console.error('Local-file draft diagnostics:',JSON.stringify(report.localFileDraft));throw error;}
+   assert.equal(await page.locator('#qol-note').inputValue(),'Local file draft');await page.locator('[data-a=log]').focus();await page.keyboard.press('Enter');await page.waitForFunction(()=>S.cur?.ex[0]?.sets.length===2);await page.evaluate(()=>saveTail);assert.equal((await saved()).cur.ex[0].sets.length,2);await clickTab('settings');assert((await page.locator('[data-a=update]').textContent()).includes('Reload'));await page.locator('[data-a=update]').focus();await Promise.all([page.waitForNavigation({waitUntil:'load'}),page.keyboard.press('Enter')]);await page.locator('[data-a=log]').waitFor();assert.equal((await saved()).cur.ex[0].sets.length,2);
   });
   if(name==='chromium')await check(name+': every canonical exercise logs through its real rendered form',async()=>{
    const entries=Object.values(JSON.parse(await fs.readFile('exercises.json','utf8')).catalogue).filter(c=>!c.canonicalName);await open();await clickControl(page.locator('[data-a=start][data-v=Empty]'));
