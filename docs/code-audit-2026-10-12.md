@@ -2,11 +2,11 @@
 
 Maintenance update (5.7.17): F14 restore compatibility now explicitly permits ordinary tabs and line breaks in bounded historical text. Unsupported control characters and non-string values are rejected before replacement. Set editing accounts for browser text-input newline removal, so an unrelated measurement or RPE edit preserves untouched note/band bytes; explicit text edits still use today's limits.
 
-Current maintenance release: **5.7.32**. A live UI audit reproduced weight/reps text disappearing or rounding after navigation/reload, misleading invalid-weight sliders, and missing/incorrect accessible control names. Typed drafts now retain exact text, independently validate restored measurements and announce selected units correctly. This release retains the active-rest finish rollback fix and all earlier data-safety fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.32**. A live UI audit reproduced dialogs leaving navigation/page controls inert after closing, weight/reps text disappearing or rounding after navigation/reload, misleading invalid-weight sliders, missing/incorrect accessible control names and the internal Empty label in History. Modal closing now synchronously restores controls and focus. Typed drafts retain exact text and source units and independently validate restored measurements. This release retains the active-rest finish rollback fix and all earlier data-safety fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
-The release addresses thirty-five reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
+The release addresses thirty-six reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
 
 | Case | Before | Change and regression evidence |
 | --- | --- | --- |
@@ -81,9 +81,11 @@ The separate 5.7.13 report uses identifiers F01-F20. Preserve that report as a h
 
 A35 (5.7.32): live History displayed free sessions as the internal `Empty` split. History rows/filters, read-only details and newly derived routine names now display Free workout. Filter values and stored records remain unchanged; search includes the displayed label. `tests/workout-display-labels.mjs` and browser journeys cover the presentation contract.
 
+A36 (5.7.32): closing a feature dialog removed its DOM but retained `inert` on navigation and main content. The first subsequent tap cleared the stale gate instead of activating its target. The deferred document-click lifecycle could run before the later-registered feature listener removed the dialog. Closing now synchronously reconciles dialog state and return focus, while keeping the import lock. The live public UI and baseline isolated test reproduce the missed-tap state; `tests/modal-close-readiness.mjs` and Chromium/WebKit journeys assert readiness without an extra click.
+
 `tools/test-release.mjs` runs each regression script in an isolated copy, so build-mutating tests cannot hide stale committed outputs. The suite includes focused import-text-budget coverage plus the broader data-contract, browser and native build checks.
 
-Required checks: all 73 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
+Required checks: all 74 independent scripts; the deterministic 475-exercise ranking generator; a reproducible build with no generated-file diff; Chromium and WebKit journeys on the exact PR head; and the optional iOS project compile. Merge only after those checks pass. Verify the Pages merge SHA and compare live `version.json`, `app.js`, both generated HTML files and `sw.js` to the release bytes.
 
 No catalogue entries, standard ladders, raw workout loads or user notes are automatically rewritten by this release. Reset cleanup runs only after the user invokes and confirms Reset. Unsafe backups are rejected before replacement, with existing durable state preserved. The in-app glass rest countdown remains live; web notifications remain explicitly static next-set reminders, as requested.
 

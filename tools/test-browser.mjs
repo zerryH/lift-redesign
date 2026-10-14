@@ -144,6 +144,16 @@ try{
    await clickControl(page.locator('[data-a=openx]'));assert.equal(await page.getByRole('searchbox',{name:'Search exercises',exact:true}).count(),1);await clickControl(page.locator('.exercise-library-close'));
    await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();await clickTab('history');assert((await page.locator('.history-session').textContent()).includes('Free workout'));assert.equal((await saved()).workouts[0].split,'Empty');
    await clickControl(page.locator('[data-a=sessionView]'));assert.equal(await page.getByRole('dialog',{name:'Free workout',exact:true}).count(),1);await clickControl(page.locator('#session-routine'));assert.equal(await page.locator('#routine-name').inputValue(),'Free workout');await clickControl(page.locator('button[data-qol=closeModal]'));
+   assert.equal(await page.locator('#n').getAttribute('inert'),null);assert.equal(await page.locator('#v').getAttribute('inert'),null);await clickTab('settings');assert.equal(await page.getByRole('heading',{name:'Your profile',exact:true}).count(),1);
+  });
+  await check(name+': closing feature dialogs leaves the next control ready immediately',async()=>{
+   await open({...base(),workouts:[workout()]});await clickTab('history');
+   for(const action of ['progress','plate']){
+    await clickControl(page.locator('[data-qol='+action+']'));await page.locator('.qol-modal [role=dialog]').waitFor();await clickControl(page.locator('button[data-qol=closeModal]'));
+    assert.equal(await page.locator('#n').getAttribute('inert'),null);assert.equal(await page.locator('#v').getAttribute('inert'),null);
+    await clickTab('settings');assert.equal(await page.getByRole('heading',{name:'Your profile',exact:true}).count(),1);await clickTab('history');
+   }
+   await clickControl(page.locator('[data-a=sessionView]'));await clickControl(page.locator('button[data-qol=closeModal]'));assert.equal(await page.locator('#n').getAttribute('inert'),null);await clickTab('ranks');assert.equal(await page.getByRole('heading',{name:'Your rank',exact:true}).count(),1);
   });
   await check(name+': log, edit, finish and reload a workout',async()=>{
    await open();await clickControl(page.getByRole('button',{name:'Free workout',exact:true}));await clickControl(page.getByRole('button',{name:'+ Add exercise',exact:true}));
