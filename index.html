@@ -990,7 +990,7 @@ body.has-rest nav{grid-row:3;}
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.32';
+const BUILD_VERSION='5.7.33';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -1272,12 +1272,15 @@ const restoreCopies=(storage,copies)=>{for(const [key,value] of copies)try{if(va
 const clearCopies=(storage,copies,label)=>{for(const [key] of copies){storage.removeItem(key);if(storage.getItem(key)!==null)throw new Error(label+' reset verification failed');}};
 const clearStoredState=async()=>{
  saveEpoch++;await saveTail.catch(()=>false);
+ const clear=async()=>{
  let localCopies,sessionCopies=null,dbCopy=null;const web=location.protocol!=='file:',session=typeof sessionStorage!=='undefined'?sessionStorage:null;
  try{localCopies=storageCopies(localStorage);if(session)sessionCopies=storageCopies(session);if(web)dbCopy=await dbRead();}catch{return false;}
  const restore=async()=>{restoreCopies(localStorage,localCopies);if(session&&sessionCopies)restoreCopies(session,sessionCopies);if(web)try{if(dbCopy==null)await dbClear();else await dbWrite(dbCopy,Infinity,Infinity);}catch{}};
  try{clearCopies(localStorage,localCopies,'Local storage');if(session&&sessionCopies)clearCopies(session,sessionCopies,'Session storage');if(web&&!await dbClear())throw new Error('IndexedDB reset verification failed');}
  catch{await restore();return false;}
  return true;
+ };
+ try{return await (navigator.locks?.request?navigator.locks.request('slat-state-write',clear):clear());}catch{return false;}
 };
 /*END:PERSISTENCE*/
 // Direct dialog callbacks run before delegated document handlers.
@@ -1814,26 +1817,38 @@ const confirmReset=()=>{
  const m=document.createElement('div');m.id='reset-modal';m.className='reset-modal';
  m.innerHTML=`<div class=reset-backdrop></div><div class=reset-card><div class=reset-kicker>DANGER ZONE</div><h2>Reset all data?</h2><p>This permanently clears your workouts and calendar history, ranks, routines, bodyweight history, custom exercises, exercise preferences and profile settings stored on this device.</p><div class=reset-count><b id=reset-countdown>5</b><span>seconds</span></div><div class=reset-bar><i id=reset-progress></i></div><div class=reset-actions><button class=pill data-reset-cancel>Cancel</button><button class="pill danger" data-reset-confirm disabled>Reset data</button></div></div>`;
  document.body.append(m);
- let left=5; const cd=$('#reset-countdown'),prog=$('#reset-progress'),ok=m.querySelector('[data-reset-confirm]');
+  let left=5,running=false; const cd=$('#reset-countdown'),prog=$('#reset-progress'),ok=m.querySelector('[data-reset-confirm]'),cancel=m.querySelector('[data-reset-cancel]');
  let alive=true;const tick=()=>{if(!alive)return;cd.textContent=left;prog.style.width=((5-left)/5*100)+'%';if(left<=0){cd.textContent='0';ok.disabled=false;prog.style.width='100%';ok.textContent='Reset now';return}left--;setTimeout(tick,1000)};tick();
  const close=()=>{alive=false;m.remove()};
  m.addEventListener('click',async e=>{
+    if(running)return;
    if(e.target.closest('[data-reset-cancel]')||e.target.classList.contains('reset-backdrop')){close();return}
    if(e.target.closest('[data-reset-confirm]')&&!ok.disabled){
      if(!stateMutationAllowed())return;
      microTouch(innerWidth/2,innerHeight/2);
-     close();
-     const cleared=await clearStoredState();
-     if(!cleared){toast('Reset failed safely — your saved data was not deleted');return}
-     stateChannel?.postMessage({reset:true});S=resetDefaults();
-     location.reload();
+      running=true;alive=false;importing=true;ok.disabled=true;cancel.disabled=true;ok.textContent='Resetting…';
+      try{
+        const cleared=await clearStoredState();
+        if(!cleared){ok.textContent='Retry reset';toast('Reset failed safely — your saved data was not deleted');return}
+        stateChannel?.postMessage({reset:true});S=resetDefaults();close();location.reload();
+      }finally{importing=false;running=false;ok.disabled=false;cancel.disabled=false;manageDialogs();}
    }
  });
 };
 document.addEventListener('keydown',e=>{if(finishing||importing||storageConflict)return;const b=e.target.closest('[role=button][data-a]');if(!b)return;if(e.key!=='Enter'&&e.key!==' ' )return;e.preventDefault();if(typeof b.click==='function')b.click();else A[b.dataset.a]?.(b.dataset)});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;try{const action=Object.hasOwn(A,b.dataset.a)?A[b.dataset.a]:null;if(typeof action!=='function'){console.warn('Slat action not registered:',b.dataset.a);toast('This action is not available in this build. Refresh the app.');return}if(finishing||importing)return;if(storageConflict&&!['exp','tab'].includes(b.dataset.a))return showStorageConflict();const result=action(b.dataset);if(result&&typeof result.catch==='function')result.catch(err=>{console.error('Slat action failed:',b.dataset.a,err);toast('That action failed. Please try again.')})}catch(err){console.error('Slat action failed:',b.dataset.a,err);toast('That action failed. Please try again.')}});
 document.addEventListener('input',e=>{if(finishing||importing||storageConflict)return;const t=e.target;if(t.id==='ex-search'){exercisePickerQuery=t.value;exercisePickerResults()}if(t.dataset.g&&gr){gr[t.dataset.g]=t.value;if(gr.measurements)delete gr.measurements[t.dataset.g];gr.res=null;$('#sh .res')?.remove();}if(t.id=='rp'){dr.reps=Math.min(30,Math.max(1,Math.round(num(t.value)||1)));syncPickers()}if(t.id=='ws'){dr.kg=Math.min(dr.hi,Math.max(dr.lo,num(t.value)));const wv=$('#wv');if(wv)wv.textContent=qolFormat(dr.kg);syncSlider(t,dr.kg)}if(t.id=='rs'){dr.reps=Math.min(30,Math.max(1,Math.round(num(t.value)||1)));const rv=$('#rv');if(rv)rv.textContent=dr.reps;const ri=$('#rp');if(ri)ri.value=dr.reps;syncSlider(t,dr.reps)}});
-document.addEventListener('change',async e=>{const t=e.target;if(t.id!=='imp'||!t.files?.[0])return;try{const file=t.files[0];const raw=typeof file.text==='function'?await file.text():await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=()=>reject(r.error);r.readAsText(file)});const d=SlatData.validateBackup(JSON.parse(raw),{}, {importText:true});showBackupPreview(d,file.name||'Backup file')}catch(err){toast(err?.message||'Not a valid backup file')}finally{t.value=''}});
+let backupReadRevision=0;
+document.addEventListener('change',async e=>{
+ const t=e.target;if(t.id!=='imp'||!t.files?.[0])return;
+ const file=t.files[0],revision=++backupReadRevision;t.value='';
+ if(!stateMutationAllowed())return;
+ try{
+  const raw=typeof file.text==='function'?await file.text():await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=()=>reject(r.error);r.onabort=()=>reject(new Error('Backup reading was cancelled'));r.readAsText(file)});
+  if(revision!==backupReadRevision||!stateMutationAllowed())return;
+  const d=SlatData.validateBackup(JSON.parse(raw),{}, {importText:true});showBackupPreview(d,file.name||'Backup file');
+ }catch(err){if(revision===backupReadRevision&&stateMutationAllowed())toast(err?.message||'Not a valid backup file');}
+});
 document.addEventListener('keydown',e=>{if(finishing||importing||storageConflict)return;const t=e.target,inp=t.tagName=='INPUT';
  if(e.key=='/'&&!inp){const q=$('#q');if(q){e.preventDefault();q.focus()}}
  if((e.ctrlKey||e.metaKey)&&e.key=='z'&&!['INPUT','TEXTAREA','SELECT'].includes(t.tagName)){if(S?.undo){e.preventDefault();A.undo();}else if(S?.cur?.ex?.[ci]?.sets.length){e.preventDefault();const x=S.cur.ex[ci],index=x.sets.length-1;retainRemoval('set',x.sets[index],{workoutId:S.cur.id,entryId:x.entryId,index});x.sets.pop();go();}}
