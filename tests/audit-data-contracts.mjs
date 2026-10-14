@@ -34,5 +34,28 @@ const make=()=>storage({indexedDB:failingDB,localStorage:{getItem:k=>shared.get(
 const a=make(),b=make();a.ctx.S.workouts=['A'];b.ctx.S.workouts=['B'];assert.deepEqual(await Promise.all([a.ctx.api.save(),b.ctx.api.save()]),[false,false]);assert.equal(writes.length,0,'an unsafe unlocked fallback never acknowledges or overwrites either writer');
 const safe=make();safe.ctx.navigator.locks={request(_name,job){return job();}};assert.equal(await safe.ctx.api.save(),true,'a coordinated local fallback remains available');
 const reset=storage({location:{protocol:'file:'}});for(const key of ['liftlog-import-recovery','liftlog-ranking-migration-backup','liftlog-startup-recovery'])reset.store.set(key,'private');reset.store.set('unrelated-origin-data','keep');assert.equal(await reset.ctx.api.clearStoredState(),true);assert.equal(reset.store.size,1);assert.equal(reset.store.get('unrelated-origin-data'),'keep');
+const dbOnlyState={savedAt:9,revision:4,workouts:[workout()],bw:[],set:{}};
+const dbOnly={value:structuredClone(dbOnlyState)};
+const dbOnlyIndexedDB={open(){
+ const request={result:{close(){},transaction(){
+  const tx={};
+  tx.objectStore=()=>({
+   get(){const q={};queueMicrotask(()=>{q.result=dbOnly.value;q.onsuccess?.({target:{result:q.result}})});return q;},
+   put(value){queueMicrotask(()=>{dbOnly.value=structuredClone(value);tx.oncomplete?.();});},
+   delete(){queueMicrotask(()=>{dbOnly.value=null;tx.oncomplete?.();});}
+  });
+  tx.abort=()=>queueMicrotask(()=>tx.onabort?.());
+  return tx;
+ }}};
+ queueMicrotask(()=>request.onsuccess?.());
+ return request;
+}};
+const dbOnlyReset=storage({
+ indexedDB:dbOnlyIndexedDB,
+ localStorage:{getItem:()=>null,setItem(){},removeItem(){}},
+ sessionStorage:{getItem:()=>null,removeItem(){throw new Error('session storage unavailable');}}
+});
+assert.equal(await dbOnlyReset.ctx.api.clearStoredState(),false);
+assert.deepEqual(dbOnly.value,dbOnlyState,'a failed reset must preserve an IndexedDB-only durable copy');
 assert.deepEqual([...z.errors,...custom.errors],[]);
-console.log('Ambiguous IDs, typed sets, saved checks, routine identities, zero factors, storage deadlines, unlocked fallbacks and complete reset are covered');
+console.log('Ambiguous IDs, typed sets, saved checks, routine identities, zero factors, storage deadlines, unlocked fallbacks and rollback-safe reset are covered');
