@@ -2,11 +2,11 @@
 
 Maintenance update (5.7.17): F14 restore compatibility now explicitly permits ordinary tabs and line breaks in bounded historical text. Unsupported control characters and non-string values are rejected before replacement. Set editing accounts for browser text-input newline removal, so an unrelated measurement or RPE edit preserves untouched note/band bytes; explicit text edits still use today's limits.
 
-Current maintenance release: **5.7.26**. Confirming a reviewed backup now checks the shared pause gate and cannot race an in-progress workout save. Backup and reset screens explicitly cover calendar history, routines and exercise settings. This release retains the workflow guard, rollback-safe reset, routine-reference, timer restore, chronological “Last Time”, large-backup and personal-record fixes. All probes use synthetic state, never production workout records.
+Current maintenance release: **5.7.27**. Static rest reminders now report the effective device state after restore: a backed-up preference is not shown as active until the current device has notification permission, and the first explicit tap requests that permission. This release retains the guarded and transparent backup restore, workflow guard, rollback-safe reset, routine-reference, timer restore, chronological “Last Time”, large-backup and personal-record fixes. All probes use synthetic state, never production workout records.
 
 ## What changed
 
-The release addresses twenty-seven reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
+The release addresses twenty-eight reproduced defect or failure-path cases. It also restricts custom benchmark comparisons when an explicitly supplied muscle or equipment family conflicts with the selected standard. It does not claim that every possible defect has been found, or that the benchmark model has been empirically validated.
 
 | Case | Before | Change and regression evidence |
 | --- | --- | --- |
@@ -37,6 +37,7 @@ The release addresses twenty-seven reproduced defect or failure-path cases. It a
 | A25 | If IndexedDB was the only durable data copy, Reset could delete it and then fail while clearing session storage, despite reporting that saved data was retained. | Snapshot all stores before mutation, clear and verify session storage before IndexedDB, and restore local/session/database copies if any later step fails. The regression starts with an IndexedDB-only workout and a failing session store. |
 | A26 | History's direct Repeat/Save as routine listeners and routine draft add/move/remove/delete controls could run before the document-level pause guard, changing transient workflow state during a conflict, import or finish. | Check the shared mutation gate at the start of every direct listener. Behavioral regressions prove Repeat cannot create a current workout and routine actions cannot change the draft under all three locks. |
 | A27 | A backup review opened before a workout finish could still replace state while the workout save was pending because its direct confirmation listener bypassed the document-level pause guard. The review also hid newer backed-up categories, making calendar/routine/setup coverage hard to verify. | Gate backup confirmation and the import entry point against an in-progress finish. Show calendar-day, routine and exercise-setting counts, explain that activity/ranks rebuild from workout history and list the full backup/reset scope. The direct-listener regression preserves both live and durable state under finish, import and conflict locks. |
+| A28 | Restoring a backup with static reminders enabled onto a device without notification permission made the control claim the reminder was on. Its first tap then disabled the stored preference instead of requesting permission. | Derive the displayed/toggle state from both the saved preference and current device permission. The first explicit tap requests permission and enables the reminder; no logging, restore or background path prompts automatically. |
 
 ## Prior register reconciliation
 

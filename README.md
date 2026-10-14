@@ -4,14 +4,16 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.26**
+**Build: 5.7.27**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.26: backup replacement now honors the workout-save, import and cross-tab pause gate. Profile and backup review explain that workout dates rebuild calendar history and show counts for calendar days, routines and exercise settings. See [the 5.7.26 fix note](docs/fixes-5.7.26.md) and [the current code audit](docs/code-audit-2026-10-12.md).
+New in 5.7.27: a restored static-reminder preference is shown as inactive until this device has notification permission. The first explicit tap now requests permission instead of silently switching the restored preference off. See [the 5.7.27 fix note](docs/fixes-5.7.27.md) and [the current code audit](docs/code-audit-2026-10-12.md).
+
+New in 5.7.26: backup replacement now honors the workout-save, import and cross-tab pause gate. Profile and backup review explain that workout dates rebuild calendar history and show counts for calendar days, routines and exercise settings. See [the 5.7.26 fix note](docs/fixes-5.7.26.md).
 
 New in 5.7.25: History's Repeat/Save as routine actions and every routine-draft control now honor the conflict, import and finish pause before changing workflow state.
 
