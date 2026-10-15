@@ -991,7 +991,7 @@ body.has-rest nav{grid-row:3;}
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.45';
+const BUILD_VERSION='5.7.46';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 var LiftRankingEngine=globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -2014,16 +2014,20 @@ const qolNotifyRest=endAt=>{
  return qolNotificationClient().show(endAt);
 };
 const qolToggleRestNotifications=async()=>{
- if(qolState.notificationBusy)return;qolState.notificationBusy=true;
+ if(qolState.notificationBusy||!stateMutationAllowed())return;
+ const requestedState=S,current=()=>S===requestedState&&stateMutationAllowed();qolState.notificationBusy=true;
  try{
-  if(qolRestNotificationsEnabled()){S.set.restNotifications=false;await qolClearRestNotification();await save();render();return;}
+  if(qolRestNotificationsEnabled()){S.set.restNotifications=false;await qolClearRestNotification();if(!current())return;await save();if(current())render();return;}
   if(!qolNotificationAvailable()){toast(qolNotificationStatus());return;}
   // Ask only from this explicit button gesture; never from logging, reload or import.
   const permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();
+  // Permission can settle after a tab conflict, reset or backup replacement.
+  if(!current())return;
   if(permission!=='granted'){toast(permission==='denied'?'Notifications blocked — allow Slat in your browser settings.':'Notifications left off.');render();return;}
   S.set.restNotifications=true;qolState.notificationError=false;await save();
-  if(qolState.endAt>Date.now())await qolNotifyRest(qolState.endAt);render();
- }catch{qolState.notificationError=true;toast('Notifications could not be enabled on this device.');render();}
+  if(!current())return;
+  if(qolState.endAt>Date.now())await qolNotifyRest(qolState.endAt);if(current())render();
+ }catch{if(!current())return;qolState.notificationError=true;toast('Notifications could not be enabled on this device.');render();}
  finally{qolState.notificationBusy=false;}
 };
 const qolStopRest=()=>{qolState.endAt=0;qolState.startedAt=0;document.body.classList.remove('has-rest');if(S?.cur&&(Object.hasOwn(S.cur,'restEndAt')||Object.hasOwn(S.cur,'restStartedAt'))){delete S.cur.restEndAt;delete S.cur.restStartedAt;save();}if(qolState.timer){clearInterval(qolState.timer);qolState.timer=null}qolReleaseWake();document.querySelector('#qol-rest')?.remove();qolClearRestNotification();qolSyncNativeRest();};
