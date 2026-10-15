@@ -4,12 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.38**
+**Build: 5.7.39**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
+
+New in 5.7.39: finite progress-chart windows end today for both workout and bodyweight series. All time retains valid pre-1970 and epoch-zero dates, with explicit window help. Stored history is unchanged. See [the chart date-window fix note](docs/fixes-5.7.39.md).
 
 New in 5.7.38: an unavailable cross-tab message channel no longer blocks startup. Reset completes even if its advisory message fails, so cleared workouts cannot return from stale in-memory state. See [the channel failure fix note](docs/fixes-5.7.38.md).
 
