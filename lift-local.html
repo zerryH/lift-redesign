@@ -991,7 +991,7 @@ body.has-rest nav{grid-row:3;}
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.37';
+const BUILD_VERSION='5.7.38';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 var LiftRankingEngine=globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -1253,7 +1253,9 @@ const dbClear=async()=>{const d=await idb();await storageRequest(d,'readwrite',(
 const dbGet=async()=>{const l=localGet();let d=null;if(location.protocol!=='file:')try{d=await dbRead()}catch{}const out=l&&(!d||Number(l.revision||0)>Number(d.revision||0)||(Number(l.revision||0)===Number(d.revision||0)&&(Number(l.savedAt)||0)>(Number(d.savedAt)||0)))?l:(d||l);if(!out&&unreadableLocal)throw new Error('Saved data could not be read. Export a recovery copy before retrying.');return out};
 /** @type {Promise<boolean|void>} */
 let saveTail=Promise.resolve(),saveEpoch=0,storageRevision=0,storageConflict=false;
-let durableRevision=0,persistenceStatus='saved';const stateChannel=location.protocol!=='file:'&&typeof BroadcastChannel==='function'?new BroadcastChannel('slat-state'):null;
+let durableRevision=0,persistenceStatus='saved';const stateChannel=(()=>{try{return location.protocol!=='file:'&&typeof BroadcastChannel==='function'?new BroadcastChannel('slat-state'):null;}catch{return null;}})();
+// Cross-tab messages are advisory; storage acknowledgements remain authoritative.
+const broadcastState=message=>{try{stateChannel?.postMessage(message);}catch{}};
 const save=()=>{
  if(storageConflict)return Promise.resolve(false);
  S.savedAt=Math.max(Date.now(),(Number(S.savedAt)||0)+1,storageRevision+1);
@@ -1268,7 +1270,7 @@ const save=()=>{
   if(!dbOk&&location.protocol!=='file:'&&!navigator.locks?.request){setPersistenceStatus('failed');toast('Storage is unavailable. Keep this tab open and export a backup. Retry in a browser with Web Locks.');return false;}
   const latest=localGet();if(!dbOk&&latest&&(Number(latest.savedAt)>storageRevision||Number(latest.revision)>durableRevision)){storageConflict=true;setPersistenceStatus('failed');showStorageConflict();return false;}
   const localOk=localSave(snapshot);
-  if(localOk||dbOk){storageRevision=Number(snapshot.savedAt);durableRevision=snapshot.revision;S.revision=durableRevision;setPersistenceStatus('saved');try{stateChannel?.postMessage({savedAt:storageRevision,revision:durableRevision});}catch{/* A failed advisory broadcast cannot undo an acknowledged write. */}}
+  if(localOk||dbOk){storageRevision=Number(snapshot.savedAt);durableRevision=snapshot.revision;S.revision=durableRevision;setPersistenceStatus('saved');broadcastState({savedAt:storageRevision,revision:durableRevision});}
   else {setPersistenceStatus('failed');toast('Could not save. Keep this tab open and export a backup.');}
   return localOk||dbOk;
  };
@@ -1840,7 +1842,7 @@ const confirmReset=()=>{
       try{
         const cleared=await clearStoredState();
         if(!cleared){ok.textContent='Retry reset';toast('Reset failed safely — your saved data was not deleted');return}
-        stateChannel?.postMessage({reset:true});S=resetDefaults();close();location.reload();
+        broadcastState({reset:true});S=resetDefaults();close();location.reload();
       }finally{importing=false;running=false;ok.disabled=false;cancel.disabled=false;manageDialogs();}
    }
  });

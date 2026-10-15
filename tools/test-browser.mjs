@@ -326,6 +326,24 @@ try{
    await page.evaluate(()=>releaseOldBackupRead());assert((await page.getByRole('dialog',{name:'Review backup',exact:true}).textContent()).includes('latest-second.json'));
    assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),before);await clickControl(page.getByRole('button',{name:'Cancel',exact:true}));
   });
+  await check(name+': refused cross-tab channel preserves startup and workout logging',async()=>{
+   await open({...base(),workouts:[workout('Bench Press',75,5)],cur:{...workout('Bench Press',60,8),id:2}},undefined,'[data-a=log]');
+   await page.addInitScript(()=>{window.BroadcastChannel=class{constructor(){throw new DOMException('Channel denied','SecurityError');}};});
+   await page.reload();await page.locator('[data-a=log]').waitFor();
+   assert.equal((await saved()).workouts[0].ex[0].sets[0].kg,75);assert.equal((await saved()).cur.ex[0].sets[0].kg,60);
+   await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();
+   assert.equal((await saved()).workouts.length,2);assert.equal((await saved()).cur,null);
+  });
+  await check(name+': closed cross-tab channel cannot interrupt reset or resurrect old workouts',async()=>{
+   await open({...base(),workouts:[workout()],cur:{...workout('Bench Press',60,8),id:2}},undefined,'[data-a=log]');await saved();
+   await page.evaluate(()=>stateChannel.close());await clickTab('settings');
+   await clickControl(page.getByRole('button',{name:'Reset all data',exact:true}));await waitCondition(()=>document.querySelector('[data-reset-confirm]')?.disabled===false);
+   const origin=await page.evaluate(()=>performance.timeOrigin);await clickControl(page.locator('[data-reset-confirm]'));
+   await waitCondition(previous=>performance.timeOrigin!==previous&&typeof S!=='undefined'&&S?.workouts?.length===0&&S?.cur==null,origin);
+   const cleared=await saved();assert(!cleared||cleared.workouts.length===0&&cleared.cur==null);
+   await page.reload();await waitCondition(()=>typeof S!=='undefined'&&S?.workouts?.length===0&&S?.cur==null);
+   const reloaded=await saved();assert(!reloaded||reloaded.workouts.length===0&&reloaded.cur==null);
+  });
   await check(name+': pending reset stays protected and safely failed cleanup resumes the workout',async()=>{
    await open({...base(),cur:workout('Bench Press',60,8)},undefined,'[data-a=log]');await clickTab('settings');const before=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
    await clickControl(page.getByRole('button',{name:'Reset all data',exact:true}));await waitCondition(()=>document.querySelector('[data-reset-confirm]')?.disabled===false);
