@@ -294,6 +294,30 @@ try{
    const before=await page.locator('#v').evaluate(el=>el.clientHeight);await clickControl(page.getByRole('button',{name:'Stop rest timer',exact:true}));assert.equal(await page.locator('#qol-rest').count(),0);assert((await page.locator('#v').evaluate(el=>el.clientHeight))>before+40);
    assert.equal((await saved()).cur.restEndAt,undefined);assert.equal((await saved()).cur.restStartedAt,undefined);
   });
+  await check(name+': late rest permission cannot change paused or imported state',async()=>{
+   const pendingPermission=()=>page.evaluate(async()=>{
+    window.slatPermissionRequests=0;window.slatReminderDeadlines=[];
+    const permission={permission:'default',requestPermission(){window.slatPermissionRequests++;return new Promise(resolve=>{window.slatResolvePermission=value=>{permission.permission=value;resolve(value);};});}};
+    Object.defineProperty(window,'Notification',{configurable:true,value:permission});
+    qolState.notifications={show:async end=>{window.slatReminderDeadlines.push(end);},close:async()=>{},flush:async()=>{}};
+    qolRestStart(90);await saveTail;
+   });
+   await open({...base(),set:{...base().set,restNotifications:false},cur:workout()},undefined,'[data-a=log]');await pendingPermission();
+   const second=await context.newPage();await second.goto(url);await second.locator('[data-a=log]').waitFor();await page.bringToFront();
+   await clickTab('settings');await clickControl(page.locator('[data-a=restNotifyToggle]'));await waitCondition(()=>qolState.notificationBusy&&typeof window.slatResolvePermission==='function');
+   const before=await page.evaluate(()=>JSON.stringify(S));
+   await second.evaluate(async()=>{S.cur.name='Saved while permission was pending';await save();});await page.locator('#storage-conflict').waitFor();
+   await page.evaluate(()=>window.slatResolvePermission('granted'));await waitCondition(()=>!qolState.notificationBusy);
+   assert.equal(await page.evaluate(()=>JSON.stringify(S)),before);assert.equal((await saved()).cur.name,'Saved while permission was pending');assert.deepEqual(await page.evaluate(()=>window.slatReminderDeadlines),[]);
+   assert.equal(await page.locator('#storage-conflict').count(),1);await second.close();
+   await open({...base(),set:{...base().set,restNotifications:false},cur:workout()},undefined,'[data-a=log]');await pendingPermission();
+   await clickTab('settings');await clickControl(page.locator('[data-a=restNotifyToggle]'));await waitCondition(()=>qolState.notificationBusy&&typeof window.slatResolvePermission==='function');
+   await page.evaluate(data=>importBackup(data),{version:4,workouts:[workout('Push-Up',0,17)],bw:[],settings:{...base().set,restNotifications:false},cur:null});
+   const imported=await page.evaluate(()=>JSON.stringify(S)),durable=await saved();
+   await page.evaluate(()=>window.slatResolvePermission('granted'));await waitCondition(()=>!qolState.notificationBusy);
+   assert.equal(await page.evaluate(()=>JSON.stringify(S)),imported);assert.deepEqual(await saved(),durable);assert.equal((await saved()).set.restNotifications,false);assert.deepEqual(await page.evaluate(()=>window.slatReminderDeadlines),[]);
+   await clickControl(page.locator('[data-a=restNotifyToggle]'));await waitCondition(()=>S.set.restNotifications===true);assert.equal((await saved()).set.restNotifications,true);assert.equal(await page.evaluate(()=>window.slatPermissionRequests),1);assert.equal((await saved()).workouts[0].ex[0].sets[0].reps,17);
+  });
   if(name==='chromium')await check(name+': static service-worker rest reminder replaces, restores and clears without a finish alert',async()=>{
    await open({...base(),cur:{...workout(),ex:[{n:'Bench Press',sets:[]}]}},undefined,'[data-a=log]');
    await context.grantPermissions(['notifications'],{origin:url});await waitCondition(()=>Notification.permission==='granted'&&!!navigator.serviceWorker.controller);
