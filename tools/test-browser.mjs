@@ -89,6 +89,28 @@ try{
    await waitCondition(()=>qolState.wake===wakeSentinels[1]);await clickControl(page.getByRole('button',{name:'Stop rest timer',exact:true}));
    await waitCondition(()=>wakeSentinels[1].releases===1);assert(await page.evaluate(()=>wakeSentinels.every(s=>s.releases===1)));
   });
+  await check(name+': Repeat respects tracking protocols and preserves legacy drafts',async()=>{
+   const cases=[
+    {n:'Plank',field:'#log-seconds',value:'75',key:'seconds',modern:{kg:0,reps:0,seconds:77.5,trackingMode:'duration'},expected:'77.5'},
+    {n:'Farmer’s Carry',field:'#log-meters',value:'42.25',key:'meters',modern:{kg:32.5,reps:0,meters:33.25,trackingMode:'load_distance'},expected:'33.25'},
+    {n:'Resistance Band Curl',field:'#log-band',value:'My typed band',key:'band',modern:{kg:0,reps:15,band:'red',trackingMode:'band_reps'},expected:'red'},
+   ];
+   const initial=(n,set)=>({...base(),workouts:[{...workout(n),id:1,d:'2026-09-19',ex:[{n,sets:[{t:'',...set}]}]}],cur:{...workout(n),id:2,d:'2026-09-20',ex:[{n,sets:[]}]}});
+   for(const test of cases){
+    await open(initial(test.n,{kg:20,reps:12}),undefined,'[data-a=log]');
+    assert.equal(await page.locator('[data-qol=repeatLast]').count(),0);assert((await page.locator('.qol-last').textContent()).includes('Repeat unavailable'));
+    await page.locator(test.field).fill(test.value);await page.locator('#qol-note').fill('Keep my note');await page.locator('#qol-rpe').fill('8');await saved();
+    const before=await page.evaluate(()=>({drafts:JSON.stringify(S.cur.drafts),history:JSON.stringify(S.workouts)}));
+    await page.evaluate(()=>{const stale=document.createElement('button');stale.dataset.qol='repeatLast';document.body.append(stale);stale.click();stale.remove();});
+    assert.equal(await page.locator(test.field).inputValue(),test.value);assert.equal(await page.evaluate(()=>JSON.stringify(S.cur.drafts)),before.drafts);
+    assert.equal(await page.locator('#qol-note').inputValue(),'Keep my note');assert.equal(await page.locator('#qol-rpe').inputValue(),'8');
+    await clickControl(page.locator('[data-a=log]'));let state=await saved();assert.equal(state.cur.ex[0].sets.length,1);assert.equal(state.cur.ex[0].sets[0][test.key],test.key==='band'?test.value:Number(test.value));assert.equal(JSON.stringify(state.workouts),before.history);
+    await open(initial(test.n,{...test.modern,protocolVersion:2}),undefined,'[data-a=log]');
+    const modernHistory=await page.evaluate(()=>JSON.stringify(S.workouts));await page.locator(test.field).fill(test.value);await clickControl(page.locator('[data-qol=repeatLast]'));
+    assert.equal(await page.locator(test.field).inputValue(),test.expected);await clickControl(page.locator('[data-a=log]'));state=await saved();
+    assert.equal(state.cur.ex[0].sets[0][test.key],test.modern[test.key]);assert.equal(JSON.stringify(state.workouts),modernHistory);
+   }
+  });
   await check(name+': open set editor cannot mutate a tab paused by another writer',async()=>{
    await open({...base(),cur:workout('Bench Press',60,8)},undefined,'[data-a=log]');
    const second=await context.newPage();await second.goto(url);await second.locator('[data-a=log]').waitFor();
