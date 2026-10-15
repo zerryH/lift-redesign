@@ -119,7 +119,7 @@ try{
    const before=await page.evaluate(()=>JSON.stringify(S));
    await second.evaluate(async()=>{S.set.rest=120;await save();});await page.locator('#storage-conflict').waitFor();await page.bringToFront();
    assert.equal(await page.locator('#storage-conflict').getAttribute('role'),'alertdialog');assert.equal(await page.locator('#storage-conflict').getAttribute('aria-modal'),'true');
-   assert.equal(await page.locator('.rank-list-card').getAttribute('aria-modal'),'false');
+   assert.equal(await page.locator('#rank-list-modal .sb').getAttribute('aria-modal'),'false');
    assert(await page.locator('#conflict-export').evaluate(el=>document.activeElement===el&&!el.closest('[inert]')));
    await page.evaluate(()=>{showStorageConflict();manageDialogs();});assert.equal(await page.locator('#storage-conflict').count(),1);
    await page.keyboard.press('Escape');await page.keyboard.press('Tab');assert(await page.locator('#conflict-reload').evaluate(el=>document.activeElement===el));
