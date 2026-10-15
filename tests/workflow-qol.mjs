@@ -54,7 +54,7 @@ assert.equal(setup.h.progressSeries('Bench Press','load','__all','',0,true)[0].v
 const retired=await boot({...base(),custom:[{id:'custom:retired',n:'Retired curl',t:'M',c:'Biceps',archived:true},{id:'custom:unused',n:'Unused retired',t:'M',c:'Biceps',archived:true}],workouts:[workout('Retired curl',25,8)]});
 assert(retired.h.progressNames().includes('Retired curl'));assert(!retired.h.progressNames().includes('Unused retired'));
 assert.equal(retired.h.progressWindowCut('90',new Date(2026,9,11,23,40)),new Date(2026,6,14).getTime());
-assert.equal(retired.h.progressWindowCut('all'),0);
+assert.equal(retired.h.progressWindowCut('all'),-Infinity,'All time has no epoch-based lower cutoff');
 const large=Array.from({length:200000},(_,i)=>({t:i,v:i%1000}));assert.equal(JSON.stringify(retired.h.chartRange(large)),JSON.stringify({t0:0,t1:199999,low:0,high:999}));
 assert.deepEqual([duplicate,restored,legacy,history,routine,setup,retired].flatMap(x=>x.errors),[]);
 console.log('Independent entry drafts, comparable last sets, routine progress/navigation, setup round trips and retired/large charts passed');
