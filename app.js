@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.41';
+const BUILD_VERSION='5.7.42';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 var LiftRankingEngine=globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -749,7 +749,17 @@ gr:d=>{refreshRanks();const name=canonicalExercise(String(d.v||'').trim()),k=S.c
 gx:()=>{gr=null;sheet()},gs:d=>{gr.f=d.v;gr.res=null;sheet()},
 gu:d=>{if(!gr||gr.u===d.v)return;const values={w:rankDraftValue('w'),b:rankDraftValue('b')};for(const field of ['w','b'])if(String(gr[field]??'')!==''&&Number.isFinite(values[field]))gr[field]=String(fm(cv(values[field],d.v)));gr.u=d.v;for(const field of ['w','b'])rememberRankDraft(field,values[field]);gr.res=null;setRankingControl({unit:d.v},{redraw:false});sheet()},
 calc:async()=>{if(!gr)return;const raw=String(gr.n||'').trim(),n=canonicalExercise(Object.keys(EX).find(n=>n.toLowerCase()===raw.toLowerCase())||raw),sex=gr.f==='F'?'F':'M',w=rankDraftValue('w'),r=strictNumber(gr.r),b=rankDraftValue('b'),h=String(gr.h??'').trim()===''?(num(S.set.heightCm)||null):strictNumber(gr.h);if(!EX[n]||!rankThresholds(n,sex))return toast('Choose a supported strength exercise');if(!Number.isInteger(r)||r<1||r>12)return toast('Use 1–12 reps for ranked sets');if(!Number.isFinite(b)||b<=0||b>500)return toast('Enter a valid bodyweight');if(h!=null&&(!Number.isFinite(h)||h<120||h>230))return toast('Height must be between 120 and 230 cm');if(gr.w===''||!Number.isFinite(w)||w<0||w>2000)return toast('Enter a valid weight');gr.res=calculateRank(n,w,r,b,h,sex);sheet()},
- saveCheck:async()=>{if(!gr?.res)return;const n=gr.res.n,previous=S.checks[n];S.checks[n]={...gr.res};if(!await save()){if(previous)S.checks[n]=previous;else delete S.checks[n];return toast('Check was not saved. Keep this tab open and export a backup.');}render();sheet();toast('Check saved · workout ranks unchanged')},
+ saveCheck:async()=>{
+  if(!gr?.res||!stateMutationAllowed())return;
+  const n=gr.res.n,previous=S.checks[n],modal=$('#sh'),button=modal?.querySelector('[data-a=saveCheck]'),controls=/** @type {(HTMLButtonElement|HTMLInputElement|HTMLSelectElement)[]} */([...(modal?.querySelectorAll('button,input,select')||[])]).map(control=>({control,disabled:control.disabled}));
+  let saved=false;
+  // Retain the calculator and pause competing mutations until storage acknowledges this check.
+  importing=true;controls.forEach(({control})=>control.disabled=true);if(button)button.textContent='Saving…';modal?.setAttribute('aria-busy','true');
+  try{S.checks[n]={...gr.res};saved=await save();}catch{setPersistenceStatus('failed');}
+  finally{if(!saved){if(previous)S.checks[n]=previous;else delete S.checks[n];}importing=false;controls.forEach(({control,disabled})=>control.disabled=disabled);if(button)button.textContent='Save check';modal?.setAttribute('aria-busy','false');manageDialogs();}
+  if(!saved)return toast('Check was not saved. Keep this tab open and export a backup.');
+  render();sheet();toast('Check saved · workout ranks unchanged');
+ },
 tab:d=>{view=d.v;if(view==='history'){historyVisible=50;historyDateFilter='';}nav();render();queueViewTop()},
 moreHistory:()=>{historyVisible+=50;render()},
 start:d=>{if(S.cur)return toast('Finish or discard the current workout first');ci=0;dr={};S.editingId=null;S.cur={id:newWorkoutId(),d:iso(),split:d.v,ex:[]};go()},

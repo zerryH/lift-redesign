@@ -4,12 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.41**
+**Build: 5.7.42**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
+
+New in 5.7.42: saved rank checks are protected against duplicate submissions and competing edits while storage is pending. The calculator shows Saving…, retains failed previews for retry and restores the original saved check on failure. Earned ranks and workout data remain separate. See [the rank-check save fix note](docs/fixes-5.7.42.md).
 
 New in 5.7.41: older band-exercise sets are visible through a separate Legacy recorded reps chart metric. Modern band repetitions stay separate, and original numeric loads remain in History without being treated as band resistance. See [the legacy band-chart fix note](docs/fixes-5.7.41.md).
 
