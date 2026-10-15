@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.44';
+const BUILD_VERSION='5.7.45';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 var LiftRankingEngine=globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -626,11 +626,20 @@ const repairState=()=>{
  const setIds=new Set(),entryIds=new Set();
  if(S.editingId!=null&&(!S.cur||Number(S.cur.id)!==Number(S.editingId)||(Array.isArray(S.workouts)?S.workouts:[]).filter(w=>Number(w?.id)===Number(S.editingId)).length!==1))S.editingId=null;
  const normSet=(z,record)=>{const raw=z&&typeof z==='object'?{...z}:{};const q=SlatPerformance.repair(raw,record,X.catalogueVersion);if(typeof q.id!=='string'||!q.id||setIds.has(q.id)){q.id=newRecordId('set');q.migrated=true;}setIds.add(q.id);q.kg=num(q.kg);q.reps=num(q.reps);q.t=typeof q.t==='string'?q.t:'';if(q.bw!=null)q.bw=num(q.bw);if(q.height!=null)q.height=num(q.height);return q};
- const normEx=x=>{const q=x&&typeof x==='object'?{...x}:{};q.n=S.custom.find(c=>c.id===q.exerciseId)?.n||canonicalExercise(safeName(q.n));if(typeof q.entryId!=='string'||!q.entryId||entryIds.has(q.entryId))q.entryId=newRecordId('exercise');entryIds.add(q.entryId);q.exerciseId=catalogueRecord(q.n)?.id||q.exerciseId||'custom:'+q.n;if(q.target&&typeof q.target==='object')q.target=SlatWorkout.targets(q.target);q.sets=Array.isArray(q.sets)?q.sets.filter(Boolean).map(z=>normSet(z,catalogueRecord(q.n)||{id:q.exerciseId,tracking:'load_reps'})):[];return q};
+ const normEx=(x,w)=>{
+  const q=x&&typeof x==='object'?{...x}:{},oldName=q.n;
+  q.n=S.custom.find(c=>c.id===q.exerciseId)?.n||canonicalExercise(safeName(q.n));
+  if(typeof q.entryId!=='string'||!q.entryId||entryIds.has(q.entryId))q.entryId=newRecordId('exercise');entryIds.add(q.entryId);
+  // Older drafts use exercise names. Retain their text when stable identity resolves a renamed/aliased entry.
+  if(q.n!==oldName&&typeof oldName==='string'&&Object.hasOwn(w.drafts||{},oldName)&&w.ex.find(e=>e?.n===oldName)===x){
+   w.drafts={...w.drafts,[q.entryId]:w.drafts[q.entryId]??w.drafts[oldName]};delete w.drafts[oldName];
+  }
+  q.exerciseId=catalogueRecord(q.n)?.id||q.exerciseId||'custom:'+q.n;if(q.target&&typeof q.target==='object')q.target=SlatWorkout.targets(q.target);q.sets=Array.isArray(q.sets)?q.sets.filter(Boolean).map(z=>normSet(z,catalogueRecord(q.n)||{id:q.exerciseId,tracking:'load_reps'})):[];return q;
+ };
  const used=new Set(),base=Date.now();
- S.workouts=(Array.isArray(S.workouts)?S.workouts:[]).filter(w=>w&&typeof w==='object').map((w,i)=>{const q={...w};let id=Number(q.id);if(!Number.isSafeInteger(id)||id<=0||used.has(id)){id=base+i;while(used.has(id))id++}used.add(id);q.id=id;q.d=safeDate(q.d);q.split=safeName(q.split)||'Workout';q.ex=Array.isArray(q.ex)?q.ex.map(normEx).filter(x=>x.n):[];return q});
+ S.workouts=(Array.isArray(S.workouts)?S.workouts:[]).filter(w=>w&&typeof w==='object').map((w,i)=>{const q={...w};let id=Number(q.id);if(!Number.isSafeInteger(id)||id<=0||used.has(id)){id=base+i;while(used.has(id))id++}used.add(id);q.id=id;q.d=safeDate(q.d);q.split=safeName(q.split)||'Workout';q.ex=Array.isArray(q.ex)?q.ex.map(x=>normEx(x,q)).filter(x=>x.n):[];return q});
  S.custom=S.custom.filter(c=>c&&typeof c==='object').map(c=>({...c,n:safeName(c.n)})).filter(c=>c.n);
- if(S.cur&&typeof S.cur==='object'){const eid=Number(S.editingId),editing=Number.isSafeInteger(eid)&&eid>0&&eid===Number(S.cur.id);if(editing){setIds.clear();entryIds.clear();}const q={...S.cur};let id=Number(q.id);if(!Number.isSafeInteger(id)||id<=0||(!editing&&used.has(id))){id=base+S.workouts.length;while(used.has(id)&&id<Number.MAX_SAFE_INTEGER)id++;if(used.has(id)){id=1;while(used.has(id))id++;}}q.id=id;q.d=safeDate(q.d);q.split=safeName(q.split)||'Workout';q.ex=Array.isArray(q.ex)?q.ex.map(normEx).filter(x=>x.n):[];S.cur=q;S.editingId=editing?eid:null}else{S.cur=null;S.editingId=null}
+ if(S.cur&&typeof S.cur==='object'){const eid=Number(S.editingId),editing=Number.isSafeInteger(eid)&&eid>0&&eid===Number(S.cur.id);if(editing){setIds.clear();entryIds.clear();}const q={...S.cur};let id=Number(q.id);if(!Number.isSafeInteger(id)||id<=0||(!editing&&used.has(id))){id=base+S.workouts.length;while(used.has(id)&&id<Number.MAX_SAFE_INTEGER)id++;if(used.has(id)){id=1;while(used.has(id))id++;}}q.id=id;q.d=safeDate(q.d);q.split=safeName(q.split)||'Workout';q.ex=Array.isArray(q.ex)?q.ex.map(x=>normEx(x,q)).filter(x=>x.n):[];S.cur=q;S.editingId=editing?eid:null}else{S.cur=null;S.editingId=null}
  if(S.undo)try{SlatData.validateBackup({workouts:[],bw:[],undo:S.undo});}catch{S.undo=null;}
  if(!Number.isFinite(Number(S.lastBackup)))S.lastBackup=0;
  const marker=Number(S.lastBackupRevision),revision=Number(S.revision||0);if(!Number.isSafeInteger(marker)||marker<0||(marker>revision&&!(backupMarkerPending&&marker===revision+1)))S.lastBackupRevision=0;else S.lastBackupRevision=marker;
@@ -1287,7 +1296,7 @@ A.undo=()=>{
  if(u.type==='workout'){if(!S.workouts.some(w=>w.id===u.record.id))S.workouts.splice(Math.min(u.index,S.workouts.length),0,u.record);}
  else if(u.type==='draft'){if(S.cur)return toast('Finish or discard your current workout before restoring this draft');S.cur=u.record;S.editingId=u.editingId??null;dr={};ci=0;qolRestoreRest();view='today';nav();}
  else {const w=S.cur?.id===u.workoutId?S.cur:S.workouts.find(w=>w.id===u.workoutId);if(!w)return toast('Restore the workout before restoring this removal');if(u.type==='exercise'){if(!w.ex.some(x=>x.entryId===u.record.entryId))w.ex.splice(Math.min(u.index,w.ex.length),0,u.record);}else if(u.type==='set'){const x=w.ex.find(x=>x.entryId===u.entryId);if(!x)return toast('The exercise is no longer in this workout');if(!x.sets.some(s=>s.id===u.record.id))x.sets.splice(Math.min(u.index,x.sets.length),0,u.record);}}
- S.undo=null;go();toast('Removal undone');
+ S.undo=null;repairState();go();toast('Removal undone');
 };
 A.manageCustom=d=>{
  const c=S.custom.find(c=>c.id===d.v);if(!c)return;
