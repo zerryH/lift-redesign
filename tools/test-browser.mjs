@@ -483,6 +483,28 @@ try{
    await clickControl(page.locator('[data-a=manageCustom]'));await clickControl(page.locator('#custom-retire'));await clickTab('today');await clickControl(page.locator('[data-a=openx]'));assert.equal(await page.locator('.exercise-option[data-v="My Consistent Curl"]').count(),0);await page.keyboard.press('Escape');assert.equal((await saved()).cur.ex[0].sets.length,1);
    await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();await clickTab('history');await clickControl(page.locator('[data-a=hd]'));await clickControl(page.locator('[data-action-confirm]'));await page.locator('[data-a=he]').waitFor({state:'detached'});assert.equal(await page.locator('[data-a=he]').count(),0);await clickControl(page.locator('[data-a=undo]'));await waitCondition(()=>S.workouts.length===1&&S.undo===null);assert.equal(await page.locator('[data-a=he]').count(),1);
   });
+  await check(name+': Undo preserves custom identity, ranks and legacy typed drafts',async()=>{
+   const custom={id:'custom:recovery-hold',n:'My recovery hold',t:'U',c:'Abs',g:'Core',equipment:'Bodyweight',protocol:{tracking:'duration',implementCount:1,loadMode:'bodyweight',bodyweightFactor:1,hasLoad:false}};
+   const current={...workout(custom.n),id:912,ex:[{n:custom.n,exerciseId:custom.id,entryId:'exercise:recovery-hold',sets:[{id:'set:recovery-hold',kg:0,reps:0,seconds:45.25,t:'',trackingMode:'duration',protocolVersion:2}]}],drafts:{[custom.n]:{seconds:'75.5',note:'Keep my recovery note',rpe:'8'}}};
+   await open({...base(),custom:[custom],cur:current},undefined,'[data-a=log]');
+   assert.equal(await page.locator('#log-seconds').inputValue(),'75.5');assert.equal(await page.locator('#qol-note').inputValue(),'Keep my recovery note');
+   const original=(await saved()).cur.ex[0].sets[0];
+   await clickControl(page.locator('[data-a=cancel]'));await clickControl(page.locator('[data-action-confirm]'));await page.locator('[data-a=start]').first().waitFor();
+   await clickTab('settings');await clickControl(page.locator('[data-a=manageCustom]'));await page.locator('#custom-rename').fill('My renamed recovery hold');await clickControl(page.locator('#save-custom-name'));await saved();
+   await page.reload();await page.locator('[data-a=start]').first().waitFor();await clickControl(page.locator('[data-a=undo]'));await page.locator('#log-seconds').waitFor();
+   assert.equal(await page.locator('#log-seconds').inputValue(),'75.5');assert.equal(await page.locator('#qol-note').inputValue(),'Keep my recovery note');assert.equal(await page.locator('#qol-reps').count(),0);
+   let state=await saved();assert.equal(state.cur.ex[0].n,'My renamed recovery hold');assert.equal(state.cur.ex[0].exerciseId,custom.id);assert.deepEqual(state.cur.ex[0].sets[0],original);
+   await page.reload();await page.locator('#log-seconds').waitFor();assert.equal(await page.locator('#log-seconds').inputValue(),'75.5');assert.equal(await page.locator('#qol-note').inputValue(),'Keep my recovery note');
+   await clickControl(page.locator('[data-a=log]'));state=await saved();assert.equal(state.cur.ex[0].sets[1].seconds,75.5);assert.equal(state.cur.ex[0].sets[1].trackingMode,'duration');assert.equal(state.cur.ex[0].sets[1].note,'Keep my recovery note');assert.deepEqual(state.cur.ex[0].sets[0],original);
+   const curl={id:'custom:ranked-recovery',n:'My recovery curl',t:'M',c:'Biceps',g:'Pull',rank:'Cable Curl'};
+   await open({...base(),custom:[curl],workouts:[{...workout(curl.n,40,8),ex:[{n:curl.n,exerciseId:curl.id,sets:[{kg:40,reps:8,t:'',bw:80,height:178}]}]}]});
+   const before=(await saved()).workouts[0].ex[0].sets[0];
+   await clickTab('history');await clickControl(page.locator('[data-a=hd]'));await clickControl(page.locator('[data-action-confirm]'));await page.locator('[data-a=he]').waitFor({state:'detached'});
+   await clickTab('settings');await clickControl(page.locator('[data-a=manageCustom]'));await page.locator('#custom-rename').fill('My renamed recovery curl');await clickControl(page.locator('#save-custom-name'));
+   await clickTab('history');await clickControl(page.locator('[data-a=undo]'));state=await saved();
+   assert.equal(state.workouts[0].ex[0].n,'My renamed recovery curl');assert.deepEqual(state.workouts[0].ex[0].sets[0],before);
+   assert.deepEqual(await page.evaluate(()=>Object.keys(S.rk)),['My renamed recovery curl']);
+  });
   await check(name+': custom duration and total-load protocols retain their details',async()=>{
    await open();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await clickControl(page.locator('[data-a=openx]'));await clickControl(page.locator('.exercise-custom summary'));await page.locator('#custom-ex-name').fill('My timed carry');await page.locator('#custom-ex-tracking').selectOption('duration');await page.locator('#custom-ex-equipment').selectOption('Dumbbell');await page.locator('#custom-ex-count').selectOption('1');await clickControl(page.locator('[data-a=addcustom]'));await page.locator('#log-seconds').fill('45');await clickControl(page.locator('[data-a=log]'));const state=await saved(),custom=state.custom[0],set=state.cur.ex[0].sets[0];assert.equal(custom.equipment,'Dumbbell');assert.equal(custom.protocol.implementCount,1);assert.equal(set.seconds,45);assert.equal(set.trackingMode,'duration');assert.equal(set.benchmarkId,null);await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal((await saved()).cur.ex[0].sets[0].seconds,45);
   });
