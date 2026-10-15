@@ -95,14 +95,38 @@ try{
    await clickControl(page.locator('[data-a=editSet]').first());await page.locator('#edit-note').fill('Unconfirmed edit');
    const before=await page.evaluate(()=>JSON.stringify(S));
    await second.evaluate(async()=>{S.cur.name='Saved by second tab';await save();});await page.locator('#storage-conflict').waitFor();
-   // The warning covers this button on mobile; the still-open editor is keyboard reachable.
-   await page.bringToFront();await page.locator('#edit-note').press('Tab');
-   assert(await page.locator('#save-set-edit').evaluate(el=>document.activeElement===el));
-   await page.keyboard.press('Enter');
+   await page.bringToFront();assert(await page.locator('#conflict-export').evaluate(el=>document.activeElement===el));
+   assert(await page.locator('#save-set-edit').evaluate(el=>!!el.closest('[inert]')),'paused editor is excluded from interaction');
+   await page.locator('#save-set-edit').dispatchEvent('click');
    assert.equal(await page.evaluate(()=>JSON.stringify(S)),before,'paused editor must not change its in-memory recovery copy');
    assert.equal((await saved()).cur.name,'Saved by second tab','latest stored copy remains untouched');
    assert.equal((await saved()).cur.ex[0].sets[0].note,undefined);
+   await page.keyboard.press('Tab');assert(await page.locator('#conflict-reload').evaluate(el=>document.activeElement===el));
+   await page.keyboard.press('Tab');assert(await page.locator('#conflict-export').evaluate(el=>document.activeElement===el));
+   await page.keyboard.press('Shift+Tab');assert(await page.locator('#conflict-reload').evaluate(el=>document.activeElement===el));
+   await page.keyboard.press('Escape');assert.equal(await page.locator('#storage-conflict').count(),1);
+   const downloadReady=page.waitForEvent('download');await clickControl(page.locator('#conflict-export'));const download=await downloadReady;
+   const recovery=JSON.parse(await fs.readFile(await download.path(),'utf8'));
+   assert.deepEqual(recovery.cur,JSON.parse(before).cur);assert.deepEqual(recovery.workouts,JSON.parse(before).workouts);assert.equal(download.suggestedFilename(),'slat-conflict-recovery.json');
+   assert.equal((await saved()).cur.name,'Saved by second tab');
+   await Promise.all([page.waitForEvent('load'),clickControl(page.locator('#conflict-reload'))]);await page.locator('[data-a=log]').waitFor();
+   assert.equal(await page.locator('#storage-conflict').count(),0);assert.equal(await page.evaluate(()=>S.cur.name),'Saved by second tab');
    await second.close();
+  });
+  await check(name+': conflict recovery stays above rank sheets and handles repeated signals',async()=>{
+   await open({...base(),workouts:[workout()]});const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();
+   await clickTab('ranks');await clickControl(page.locator('[data-a=rankList]'));await page.locator('#rank-list-modal').waitFor();
+   const before=await page.evaluate(()=>JSON.stringify(S));
+   await second.evaluate(async()=>{S.set.rest=120;await save();});await page.locator('#storage-conflict').waitFor();await page.bringToFront();
+   assert.equal(await page.locator('#storage-conflict').getAttribute('role'),'alertdialog');assert.equal(await page.locator('#storage-conflict').getAttribute('aria-modal'),'true');
+   assert.equal(await page.locator('#rank-list-modal .sb').getAttribute('aria-modal'),'false');
+   assert(await page.locator('#conflict-export').evaluate(el=>document.activeElement===el&&!el.closest('[inert]')));
+   await page.evaluate(()=>{showStorageConflict();manageDialogs();});assert.equal(await page.locator('#storage-conflict').count(),1);
+   await page.keyboard.press('Escape');await page.keyboard.press('Tab');assert(await page.locator('#conflict-reload').evaluate(el=>document.activeElement===el));
+   if(name==='chromium')assert(await page.locator('#conflict-reload').evaluate(el=>{const r=el.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===el;}),'recovery controls are above rank overlays');
+   assert.equal(await page.evaluate(()=>JSON.stringify(S)),before);assert.equal((await saved()).set.rest,120);
+   await Promise.all([page.waitForEvent('load'),clickControl(page.locator('#conflict-reload'))]);await page.locator('[data-a=start]').first().waitFor();assert.equal(await page.evaluate(()=>S.set.rest),120);
+   assert.equal(await page.locator('#storage-conflict').count(),0);assert.equal((await saved()).workouts.length,1);await second.close();
   });
   await check(name+': activity calendar counts completed sessions, dates, edits, deletion and undo',async()=>{
    const day='2024-07-01',one={...workout(),id:101,d:day},draft={...workout(),id:102,d:day},other={...workout(),id:103,d:'2024-07-03'};
@@ -408,7 +432,7 @@ try{
    await clickControl(page.locator('[data-a=saveCheck]'));assert.equal((await saved()).checks['Bench Press'].w,60.123456);await page.keyboard.press('Escape');await clickTab('settings');await clickControl(page.locator('[data-a=privacy]'));await page.locator('#legal-sheet').waitFor();await page.keyboard.press('Escape');await page.locator('#legal-sheet').waitFor({state:'detached'});
   });
   await check(name+': two real tabs block the stale writer',async()=>{
-   await open();const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await second.locator('#storage-conflict').waitFor();assert.equal(await second.locator('#storage-conflict').getAttribute('role'),'alert');await second.close();
+   await open();const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await second.locator('#storage-conflict').waitFor();assert.equal(await second.locator('#storage-conflict').getAttribute('role'),'alertdialog');await second.close();
   });
   await check(name+': narrow/light/dark/reduced-motion layouts and anatomy',async()=>{
    await open({...base(),workouts:[workout()]});await page.emulateMedia({reducedMotion:'reduce'});

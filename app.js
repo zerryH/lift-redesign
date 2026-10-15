@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.42';
+const BUILD_VERSION='5.7.43';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 var LiftRankingEngine=globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -1197,26 +1197,27 @@ document.addEventListener('keydown',/** @param {KeyboardEvent & {target: HTMLEle
 });
 stateChannel?.addEventListener('message',event=>{const m=event.data;if(S&&(m?.reset||Number(m?.savedAt)>storageRevision||Number(m?.revision)>durableRevision)){storageConflict=true;showStorageConflict();}});
 function showStorageConflict(){
- if(document.querySelector('#storage-conflict'))return;
- const panel=document.createElement('section');panel.id='storage-conflict';panel.className='storage-conflict';panel.setAttribute('role','alert');panel.innerHTML='<b>Another tab saved changes</b><p>This tab is paused to protect both copies. Export this tab’s draft, then reload the latest saved data.</p><button class="pill" id="conflict-export">Export this tab</button><button class="pill" id="conflict-reload">Reload latest</button>';
+ if(document.querySelector('#storage-conflict')){manageDialogs();return;}
+ const panel=document.createElement('section');panel.id='storage-conflict';panel.className='storage-conflict';panel.setAttribute('role','alertdialog');panel.setAttribute('aria-labelledby','storage-conflict-title');panel.setAttribute('aria-describedby','storage-conflict-help');panel.innerHTML='<b id="storage-conflict-title">Another tab saved changes</b><p id="storage-conflict-help">This tab is paused to protect both copies. Export this tab’s draft, then reload the latest saved data.</p><button class="pill" id="conflict-export">Export this tab</button><button class="pill" id="conflict-reload">Reload latest</button>';
  document.body.append(panel);document.querySelector('#conflict-export')?.addEventListener('click',()=>downloadRecovery(JSON.stringify({...S,settings:S.set,version:4}), 'slat-conflict-recovery.json'));document.querySelector('#conflict-reload')?.addEventListener('click',()=>location.reload());
+ manageDialogs();
 }
 window.addEventListener?.('storage',e=>{if(e.key==='liftlog-state'&&S){storageConflict=true;showStorageConflict();}});
 /*BEGIN:DIALOG_VIEW*/let dialogReturnFocus=null,activeDialog=null;
 const dialogFocus=new WeakMap(),inertBeforeDialog=new Map();
-const dialogSelector='.sheet .sb,.exercise-library-panel,.action-card,.reset-card,.tutorial-shell,.install-guide-card,.rank-list-card';
+const dialogSelector='.sheet .sb,.exercise-library-panel,.action-card,.reset-card,.tutorial-shell,.install-guide-card,.rank-list-card,#storage-conflict';
 const visibleDialog=el=>{
  if(el.hidden||el.checkVisibility?.()===false)return false;
  for(let parent=el.parentElement;parent;parent=parent.parentElement){if(parent.tagName==='DETAILS'&&!parent.open&&el!==parent.querySelector('summary'))return false;}
  return !el.getClientRects||el.getClientRects().length>0;
 };
 const focusableDialog=top=>[...top.querySelectorAll('button:not([disabled]),input:not([hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,a[href],[tabindex="0"]')].filter(visibleDialog);
-const topDialog=()=>[...document.querySelectorAll(dialogSelector)].filter(visibleDialog).at(-1);
+const topDialog=()=>{const dialogs=[.../** @type {NodeListOf<HTMLElement>} */(document.querySelectorAll(dialogSelector))].filter(visibleDialog);return dialogs.find(el=>el.id==='storage-conflict')||dialogs.at(-1);};
 function manageDialogs(){
  const all=[...document.querySelectorAll(dialogSelector)],top=topDialog();
  for(const el of [.../** @type {HTMLCollectionOf<HTMLElement>} */(document.body.children||[])]){if(['SCRIPT','STYLE'].includes(el.tagName))continue;if(top){if(!inertBeforeDialog.has(el))inertBeforeDialog.set(el,!!el.inert);el.inert=!el.contains(top)&&el!==top;}else if(inertBeforeDialog.has(el)){el.inert=inertBeforeDialog.get(el);inertBeforeDialog.delete(el);}}
  for(const id of ['v','n']){const el=document.getElementById?.(id);if(el)el.inert=!!top;}
- if(top){top.setAttribute('role','dialog');top.setAttribute('aria-modal','true');top.setAttribute('tabindex','-1');if(!top.getAttribute?.('aria-label')&&!top.getAttribute?.('aria-labelledby'))top.setAttribute('aria-label',top.querySelector('h2,b')?.textContent||'Slat dialog');
+ if(top){top.setAttribute('role',top.id==='storage-conflict'?'alertdialog':'dialog');top.setAttribute('aria-modal','true');top.setAttribute('tabindex','-1');if(!top.getAttribute?.('aria-label')&&!top.getAttribute?.('aria-labelledby'))top.setAttribute('aria-label',top.querySelector('h2,b')?.textContent||'Slat dialog');
   if(top!==activeDialog){if(!activeDialog)dialogReturnFocus=document.activeElement;if(!dialogFocus.has(top))dialogFocus.set(top,document.activeElement);const previous=activeDialog;activeDialog=top;const back=previous&&!previous.isConnected?dialogFocus.get(previous):null;const el=back&&top.contains(back)&&visibleDialog(back)?back:focusableDialog(top)[0]||top;el?.focus?.({preventScroll:true});}
  }else if(activeDialog){activeDialog=null;const target=dialogReturnFocus;if(target?.isConnected)target.focus?.({preventScroll:true});else document.querySelector('#n [aria-current="page"]')?.focus?.({preventScroll:true});dialogReturnFocus=null;}
  for(const dialog of all)if(dialog!==top)dialog.setAttribute('aria-modal','false');

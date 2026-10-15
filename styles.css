@@ -438,7 +438,7 @@ body::before,body::after{width:55vw;height:55vw;opacity:.1;}
 #v .logging-card .qol-last{padding:12px 0;border-bottom:1px solid var(--ln);}
 .exercise-facets{padding:0 20px;}
 .dialog-open #v,.dialog-open #n{pointer-events:none;}
-.storage-conflict{position:fixed;inset:auto 12px calc(env(safe-area-inset-bottom) + 12px);padding:20px;z-index:3000;background:var(--cd);color:var(--fg);border:2px solid var(--ac);border-radius:16px;box-shadow:0 12px 40px #0005;max-width:600px;margin:auto;}
+.storage-conflict{position:fixed;inset:auto 12px calc(env(safe-area-inset-bottom) + 12px);padding:20px;z-index:120000;background:var(--cd);color:var(--fg);border:2px solid var(--ac);border-radius:16px;box-shadow:0 12px 40px #0005;max-width:600px;max-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);overflow:auto;margin:auto;}
 button,input,select{scroll-margin:20px;}
 @media(max-width:380px){
 #v .logging-card{padding:14px;}
