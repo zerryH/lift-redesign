@@ -4,6 +4,7 @@ import path from 'node:path';
 import http from 'node:http';
 import assert from 'node:assert/strict';
 import {base,workout} from '../tests/support/runtime.mjs';
+import {seedFixture} from './browser-fixture.mjs';
 const playwright=await import(process.env.SLAT_PLAYWRIGHT_PATH||'playwright');
 let workerTag='',legacyHtml=false,stalePage=false;const legacyErrors=[];
 const root=process.cwd(),mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json'};
@@ -21,7 +22,7 @@ async function open(state=base(),viewport={width:390,height:844},ready='[data-a=
  page.on('pageerror',e=>(legacyHtml?legacyErrors:report.errors).push(e.message));
  await page.addInitScript(()=>{window.slatTestClicks=[];document.addEventListener('click',e=>{const b=e.target.closest?.('[data-a],[data-qol]');let flags;try{flags={finishing,importing,storageConflict};}catch{}window.slatTestClicks.push({id:e.target.id,a:b?.dataset?.a,qol:b?.dataset?.qol,x:e.clientX,y:e.clientY,flags});if(window.slatTestClicks.length>15)window.slatTestClicks.shift();},true);});
  // File URL reloads can recreate sessionStorage; seed once in the same durable store as the fixture.
- await page.addInitScript(s=>{if(!localStorage.getItem('slat-test-seeded')){localStorage.setItem('liftlog-state',typeof s==='string'?s:JSON.stringify(s));localStorage.setItem('slat-test-seeded','1');}},state);
+ await page.addInitScript(seedFixture,state);
  if(nativeBridge)await page.addInitScript(()=>{
   window.slatNativeMessages=[];
   window.webkit={messageHandlers:{slatRestTimer:{postMessage(message){window.slatNativeMessages.push(JSON.parse(JSON.stringify(message)));if(message.action==='status')setTimeout(()=>window.dispatchEvent(new CustomEvent('slat-native-rest-status',{detail:{allowed:true,error:''}})),0);}}}};
@@ -737,9 +738,11 @@ try{
   await check(name+': local-file distribution logs, reloads and keeps its draft',async()=>{
    await open({...base(),cur:workout('Cable Curl',25)},undefined,'[data-a=log]',new URL('file://'+path.join(root,'lift-local.html')).href);await page.locator('#qol-note').fill('Local file draft');await waitCondition(()=>{const state=JSON.parse(localStorage.getItem('liftlog-state')||'null');return Object.values(state?.cur?.drafts||{}).some(d=>d?.note==='Local file draft')});await page.evaluate(()=>saveTail);
    const draftBefore=await page.evaluate(()=>({entryId:S.cur.ex[0].entryId,drafts:S.cur.drafts,revision:S.revision}));
+   // Losing test metadata must not reseed over an app's independently saved draft.
+   await page.evaluate(()=>localStorage.removeItem('slat-test-seeded'));
    await page.reload();await page.locator('[data-a=log]').waitFor();
    try{await waitCondition(()=>document.querySelector('#qol-note')?.value==='Local file draft');}catch(error){report.localFileDraft={before:draftBefore,after:await page.evaluate(()=>({entryId:S.cur.ex[0].entryId,drafts:S.cur.drafts,dr,stored:JSON.parse(localStorage.getItem('liftlog-state')||'null')?.cur,seed:localStorage.getItem('slat-test-seeded')}))};console.error('Local-file draft diagnostics:',JSON.stringify(report.localFileDraft));throw error;}
-   assert.equal(await page.locator('#qol-note').inputValue(),'Local file draft');await page.locator('[data-a=log]').focus();await page.keyboard.press('Enter');await waitCondition(()=>S.cur?.ex[0]?.sets.length===2);await page.evaluate(()=>saveTail);assert.equal((await saved()).cur.ex[0].sets.length,2);await clickTab('settings');assert((await page.locator('[data-a=update]').textContent()).includes('Reload'));await page.locator('[data-a=update]').focus();await Promise.all([page.waitForNavigation({waitUntil:'load'}),page.keyboard.press('Enter')]);await page.locator('[data-a=log]').waitFor();assert.equal((await saved()).cur.ex[0].sets.length,2);
+   assert.equal(await page.locator('#qol-note').inputValue(),'Local file draft');assert.equal(await page.evaluate(()=>S.cur.ex[0].entryId),draftBefore.entryId);await page.locator('[data-a=log]').focus();await page.keyboard.press('Enter');await waitCondition(()=>S.cur?.ex[0]?.sets.length===2);await page.evaluate(()=>saveTail);assert.equal((await saved()).cur.ex[0].sets.length,2);await clickTab('settings');assert((await page.locator('[data-a=update]').textContent()).includes('Reload'));await page.locator('[data-a=update]').focus();await Promise.all([page.waitForNavigation({waitUntil:'load'}),page.keyboard.press('Enter')]);await page.locator('[data-a=log]').waitFor();assert.equal((await saved()).cur.ex[0].sets.length,2);
   });
   if(name==='chromium')await check(name+': every canonical exercise logs through its real rendered form',async()=>{
    const entries=Object.values(JSON.parse(await fs.readFile('exercises.json','utf8')).catalogue).filter(c=>!c.canonicalName);await open();await clickControl(page.locator('[data-a=start][data-v=Empty]'));
