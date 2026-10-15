@@ -518,6 +518,33 @@ try{
    await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal((await saved()).cur.ex[0].n,'Archive Press');
    assert.equal((await saved()).cur.ex[0].sets[0].kg,42.5);assert.equal((await saved()).routines[0].ex[0].n,'Bench Press');
   });
+  await check(name+': pending routine saves reject duplicate taps and keep failed drafts retryable',async()=>{
+   const routine={id:'routine:atomic',name:'Original plan',split:'Push',ex:[{n:'Bench Press',exerciseId:'ex001',sets:3,reps:8,seconds:30,meters:20,rest:90}]};
+   await open({...base(),routines:[routine],workouts:[workout('Bench Press',60,8)]});await saved();
+   const before=await page.evaluate(()=>localStorage.getItem('liftlog-state')),history=JSON.stringify((await saved()).workouts);
+   await clickControl(page.locator('[data-a=routineEdit][data-v="routine:atomic"]'));await page.locator('#routine-name').fill('Submitted plan');
+   await page.evaluate(()=>{
+    const request=navigator.locks.request.bind(navigator.locks);window.routineSaveRequests=0;
+    Object.defineProperty(navigator,'locks',{configurable:true,value:{request:(name,job)=>{
+     window.routineSaveRequests++;if(window.routineSaveRequests===1)return new Promise((_resolve,reject)=>window.rejectRoutineSave=()=>reject(new Error('Interrupted routine lock')));
+     return request(name,job);
+    }}});
+   });
+   await clickControl(page.locator('#routine-save'));await waitCondition(()=>window.routineSaveRequests===1);
+   assert.equal(await page.locator('#routine-save').textContent(),'Saving…');assert.equal(await page.locator('.qol-modal').getAttribute('aria-busy'),'true');
+   assert(await page.locator('.qol-modal').evaluate(el=>[...el.querySelectorAll('button,input,select')].every(c=>c.disabled)));
+   await page.locator('#routine-save').dispatchEvent('click');await page.keyboard.press('Escape');
+   assert.equal(await page.locator('.qol-modal').count(),1);assert.equal(await page.locator('#routine-name').inputValue(),'Submitted plan');
+   assert.equal(await page.evaluate(()=>window.routineSaveRequests),1);assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),before);
+   await page.evaluate(()=>window.rejectRoutineSave());await waitCondition(()=>document.querySelector('#routine-error')?.textContent.includes('Could not save'));
+   assert.equal(await page.locator('#routine-save').isEnabled(),true);assert.equal(await page.locator('#routine-name').inputValue(),'Submitted plan');
+   assert.equal(await page.locator('[data-routine-move="-1"]').isDisabled(),true);assert.equal(await page.locator('#routine-add').isEnabled(),true);
+   assert.equal(await page.evaluate(()=>S.routines[0].name),'Original plan');assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),before);
+   await page.locator('#routine-name').fill('Retried plan');await clickControl(page.locator('#routine-save'));await page.locator('.qol-modal').waitFor({state:'hidden'});
+   const after=await saved();assert.equal(after.routines.length,1);assert.equal(after.routines[0].name,'Retried plan');assert.equal(JSON.stringify(after.workouts),history);
+   assert.equal(await page.evaluate(()=>window.routineSaveRequests),2);await page.reload();await page.locator('[data-a=routineStart]').waitFor();
+   assert.equal((await saved()).routines[0].name,'Retried plan');assert.equal(JSON.stringify((await saved()).workouts),history);
+  });
   await check(name+': saved routines reorder, copy targets, disable timers and label new sets',async()=>{
    await open();await clickControl(page.locator('[data-a=routineEdit]'));await page.locator('#routine-name').fill('My full body');await page.locator('#routine-exercise').selectOption('Bench Press');await clickControl(page.locator('#routine-add'));await page.locator('#routine-exercise').selectOption('Plank');await clickControl(page.locator('#routine-add'));await clickControl(page.locator('[data-routine-move="-1"][data-i="1"]'));await page.locator('[data-target=seconds][data-i="0"]').fill('45');await page.locator('[data-target=rest][data-i="0"]').fill('0');await clickControl(page.locator('#routine-save'));await page.locator('[data-a=routineStart]').waitFor();await clickControl(page.locator('[data-a=routineStart]'));assert.equal((await saved()).cur.ex[0].n,'Plank');assert.equal((await saved()).cur.ex[0].sets.length,0);assert.equal((await saved()).cur.ex[0].target.seconds,45);await page.locator('#log-seconds').fill('45abc');await clickControl(page.locator('[data-a=log]'));assert.equal((await saved()).cur.ex[0].sets.length,0);await page.locator('#log-seconds').fill('45');await clickControl(page.locator('[data-a=log]'));assert(!(await saved()).cur.restEndAt);await clickTab('settings');await clickControl(page.locator('[data-a=timerToggle]'));await clickTab('today');await clickControl(page.locator('[data-a=selectExercise][data-i="1"]'));await clickControl(page.locator('[data-a=exerciseOptions]'));await page.locator('#exercise-rest').fill('120');await page.locator('#equipment-label').fill('Gym A bench');await clickControl(page.locator('#exercise-options-save'));await page.locator('#qol-weight').fill('65');await page.locator('#qol-reps').fill('8');await clickControl(page.locator('[data-a=log]'));assert(!(await saved()).cur.restEndAt);assert.equal((await saved()).cur.ex[1].sets[0].equipmentContext.label,'Gym A bench');await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();await stableScreenshot(name+'-routines.png');await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).routines[0].ex[0].n,'Plank');await clickTab('history');await clickControl(page.locator('[data-a=sessionView]'));await clickControl(page.locator('#session-repeat'));assert.equal((await saved()).cur.ex[1].sets.length,0);
   });

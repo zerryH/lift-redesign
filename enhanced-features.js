@@ -37,7 +37,22 @@ function openRoutineEditor(){const r=routineDraft,names=routineExerciseChoices()
  m.querySelector('#routine-add').addEventListener('click',()=>{if(!stateMutationAllowed())return;collectRoutine(m);const n=m.querySelector('#routine-exercise').value;r.ex.push({n,exerciseId:catalogueRecord(n)?.id||'custom:'+n,sets:3,reps:8,seconds:30,meters:20,rest:exercisePreference(n).rest??S.set.rest??90});openRoutineEditor();});
  for(const b of m.querySelectorAll('[data-routine-move]'))b.addEventListener('click',()=>{if(!stateMutationAllowed())return;collectRoutine(m);const i=+b.dataset.i,j=i+(+b.dataset.routineMove);[r.ex[i],r.ex[j]]=[r.ex[j],r.ex[i]];openRoutineEditor();});
  for(const b of m.querySelectorAll('[data-routine-remove]'))b.addEventListener('click',()=>{if(!stateMutationAllowed())return;collectRoutine(m);r.ex.splice(+b.dataset.routineRemove,1);openRoutineEditor();});
- m.querySelector('#routine-save').addEventListener('click',async()=>{if(!stateMutationAllowed())return;collectRoutine(m);try{if(!r.ex.length)throw new Error('Add at least one exercise');const unresolved=r.ex.find(x=>!routineExerciseResolved(x));if(unresolved)throw new Error('Resolve “'+displayExercise(unresolved.n)+'” with Replace exercise before saving');if(r.ex.some(x=>!Number.isInteger(x.sets)||x.sets<1||!Number.isInteger(x.reps)||x.reps<1||x.seconds<=0||x.meters<=0||!Number.isInteger(x.rest)))throw new Error('Use positive targets and a whole rest duration');SlatData.validateBackup({workouts:[],bw:[],routines:[r],custom:S.custom},X.catalogue);const before=JSON.parse(JSON.stringify(S.routines));const i=S.routines.findIndex(x=>x.id===r.id);if(i<0)S.routines.push(JSON.parse(JSON.stringify(r)));else S.routines[i]=JSON.parse(JSON.stringify(r));if(!await save()){S.routines=before;throw new Error('Could not save the routine. Try again.');}qolCloseModal();render();toast('Routine saved');}catch(e){m.querySelector('#routine-error').textContent=e.message;}});
+ let saving=false;const saveButton=m.querySelector('#routine-save');
+ saveButton.addEventListener('click',async()=>{
+  if(saving||!stateMutationAllowed())return;collectRoutine(m);
+  let before=null,saved=false;const controls=/** @type {(HTMLButtonElement|HTMLInputElement|HTMLSelectElement)[]} */([...m.querySelectorAll('button,input,select')]).map(control=>({control,disabled:control.disabled}));
+  try{
+   if(!r.ex.length)throw new Error('Add at least one exercise');if(!r.name)throw new Error('Enter a routine name');const unresolved=r.ex.find(x=>!routineExerciseResolved(x));if(unresolved)throw new Error('Resolve “'+displayExercise(unresolved.n)+'” with Replace exercise before saving');
+   if(r.ex.some(x=>!Number.isInteger(x.sets)||x.sets<1||!Number.isInteger(x.reps)||x.reps<1||x.seconds<=0||x.meters<=0||!Number.isInteger(x.rest)))throw new Error('Use positive targets and a whole rest duration');
+   SlatData.validateBackup({workouts:[],bw:[],routines:[r],custom:S.custom},X.catalogue);
+   // Use the existing protected-persistence gate to retain this editor and pause competing actions.
+   before=JSON.parse(JSON.stringify(S.routines));saving=true;importing=true;controls.forEach(({control})=>control.disabled=true);saveButton.textContent='Saving…';m.setAttribute('aria-busy','true');m.querySelector('#routine-error').textContent='';
+   const i=S.routines.findIndex(x=>x.id===r.id),candidate=JSON.parse(JSON.stringify(r));if(i<0)S.routines.push(candidate);else S.routines[i]=candidate;
+   if(!await save())throw new Error('Could not save the routine. Try again.');saved=true;
+  }catch(e){if(before&&!saved)S.routines=before;m.querySelector('#routine-error').textContent=e.message;}
+  finally{if(saving){importing=false;saving=false;controls.forEach(({control,disabled})=>control.disabled=disabled);saveButton.textContent='Save routine';m.setAttribute('aria-busy','false');manageDialogs();}}
+  if(saved){qolCloseModal();render();toast('Routine saved');}
+ });
  m.querySelector('#routine-delete')?.addEventListener('click',()=>{if(!stateMutationAllowed())return;confirmAction('Delete routine?','Completed workouts are retained.','Delete',()=>{S.routines=S.routines.filter(x=>x.id!==r.id);qolCloseModal();go();});});
 }
 function openRoutineReplacement(r,i){
