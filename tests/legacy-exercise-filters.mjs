@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {boot,base,workout} from './support/runtime.mjs';
+
+const name='Legacy rope curl';
+const z=await boot({...base(),workouts:[workout(name)]});
+const before=JSON.stringify(z.h.S.workouts);
+assert.equal(z.h.catalogueRecord(name),null,'legacy history need not have catalogue metadata');
+z.h.A.openx();
+assert.match(z.get('#exercise-library').innerHTML,/<option >Custom<\/option>/,'the retained Custom muscle group must be selectable');
+assert(z.get('#exercise-results').innerHTML.includes(name));
+const equipment=z.h.exerciseEquipmentLabel(name,z.h.EX[name].t);
+vm.runInContext('exercisePickerEquipment='+JSON.stringify(equipment),z.ctx);
+z.h.exercisePickerResults();
+assert(z.get('#exercise-results').innerHTML.includes(name),'selecting the displayed equipment must retain a legacy exercise');
+vm.runInContext("exercisePickerMuscle='Custom';exercisePickerCategory='Custom'",z.ctx);
+z.h.exercisePickerResults();
+assert(z.get('#exercise-results').innerHTML.includes(name),'legacy equipment, muscle and workout-group filters must combine');
+vm.runInContext("exercisePickerEquipment='Dumbbell'",z.ctx);
+z.h.exercisePickerResults();
+assert(!z.get('#exercise-results').innerHTML.includes(name),'unrelated equipment must not match');
+vm.runInContext("exercisePickerCategory='All';exercisePickerMuscle='All'",z.ctx);
+z.h.exercisePickerResults();
+assert(z.get('#exercise-results').innerHTML.includes('Dumbbell Curl'),'canonical equipment filtering remains available');
+assert.equal(JSON.stringify(z.h.S.workouts),before,'filtering never recategorizes or rewrites saved history');
+assert.deepEqual(z.errors,[]);
+console.log('Legacy equipment and Custom muscle filters agree with displayed choices without altering history');
