@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.42';
+const BUILD_VERSION='5.7.43';
 /*BEGIN:RANKING_ENGINE*/
 /*END:RANKING_ENGINE*/
 /*BEGIN:CATALOGUE_MODEL*/
@@ -870,9 +870,10 @@ document.addEventListener('keydown',/** @param {KeyboardEvent & {target: HTMLEle
 });
 stateChannel?.addEventListener('message',event=>{const m=event.data;if(S&&(m?.reset||Number(m?.savedAt)>storageRevision||Number(m?.revision)>durableRevision)){storageConflict=true;showStorageConflict();}});
 function showStorageConflict(){
- if(document.querySelector('#storage-conflict'))return;
- const panel=document.createElement('section');panel.id='storage-conflict';panel.className='storage-conflict';panel.setAttribute('role','alert');panel.innerHTML='<b>Another tab saved changes</b><p>This tab is paused to protect both copies. Export this tab’s draft, then reload the latest saved data.</p><button class="pill" id="conflict-export">Export this tab</button><button class="pill" id="conflict-reload">Reload latest</button>';
+ if(document.querySelector('#storage-conflict')){manageDialogs();return;}
+ const panel=document.createElement('section');panel.id='storage-conflict';panel.className='storage-conflict';panel.setAttribute('role','alertdialog');panel.setAttribute('aria-labelledby','storage-conflict-title');panel.setAttribute('aria-describedby','storage-conflict-help');panel.innerHTML='<b id="storage-conflict-title">Another tab saved changes</b><p id="storage-conflict-help">This tab is paused to protect both copies. Export this tab’s draft, then reload the latest saved data.</p><button class="pill" id="conflict-export">Export this tab</button><button class="pill" id="conflict-reload">Reload latest</button>';
  document.body.append(panel);document.querySelector('#conflict-export')?.addEventListener('click',()=>downloadRecovery(JSON.stringify({...S,settings:S.set,version:4}), 'slat-conflict-recovery.json'));document.querySelector('#conflict-reload')?.addEventListener('click',()=>location.reload());
+ manageDialogs();
 }
 window.addEventListener?.('storage',e=>{if(e.key==='liftlog-state'&&S){storageConflict=true;showStorageConflict();}});
 /*BEGIN:DIALOG_VIEW*/
