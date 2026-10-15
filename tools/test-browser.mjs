@@ -284,6 +284,34 @@ try{
    await page.locator('.exercise-custom summary').focus();await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.className),'exercise-library-close');await page.keyboard.press('Escape');assert.equal(await page.locator('.exercise-library').count(),0);
    assert.equal(await page.locator('#v').evaluate(el=>el.inert),false);
   });
+  await check(name+': pending rank-check saves reject duplicate taps and retain failed previews',async()=>{
+   await open({...base(),workouts:[workout()]});await clickTab('ranks');await clickControl(page.locator('[data-a=gr]').first());
+   for(const [key,value] of [['n','Bench Press'],['w','50'],['r','8'],['b','80'],['h','178']])await page.locator('[data-g='+key+']').fill(value);
+   await clickControl(page.locator('[data-a=calc]'));await clickControl(page.locator('[data-a=saveCheck]'));await saved();
+   await page.locator('[data-g=w]').fill('65');await clickControl(page.locator('[data-a=calc]'));
+   const before=await page.evaluate(()=>({checks:JSON.stringify(S.checks),workouts:JSON.stringify(S.workouts),stored:localStorage.getItem('liftlog-state')}));
+   await page.evaluate(()=>{
+    const request=navigator.locks.request.bind(navigator.locks);window.checkSaveRequests=0;
+    Object.defineProperty(navigator,'locks',{configurable:true,value:{request:(name,job)=>{
+     window.checkSaveRequests++;if(window.checkSaveRequests===1)return new Promise((_resolve,reject)=>window.rejectCheckSave=()=>reject(new Error('Interrupted check lock')));
+     return request(name,job);
+    }}});
+   });
+   await clickControl(page.locator('[data-a=saveCheck]'));await waitCondition(()=>window.checkSaveRequests===1);
+   assert.equal(await page.locator('[data-a=saveCheck]').textContent(),'Saving…');assert.equal(await page.locator('#sh').getAttribute('aria-busy'),'true');
+   assert(await page.locator('#sh').evaluate(el=>[...el.querySelectorAll('button,input,select')].every(c=>c.disabled)));
+   await page.locator('[data-a=saveCheck]').dispatchEvent('click');await page.locator('#sh .bd').dispatchEvent('click');await page.keyboard.press('Escape');
+   assert.equal(await page.locator('#sh').count(),1);assert.equal(await page.evaluate(()=>window.checkSaveRequests),1);
+   assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),before.stored);
+   await page.evaluate(()=>window.rejectCheckSave());await waitCondition(()=>!importing&&!document.querySelector('[data-a=saveCheck]')?.disabled);
+   assert.equal(await page.evaluate(()=>JSON.stringify(S.checks)),before.checks);assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),before.stored);
+   assert.equal(await page.locator('[data-g=w]').inputValue(),'65');assert.equal(await page.locator('[data-a=saveCheck]').textContent(),'Save check');
+   assert((await page.locator('.toast').allTextContents()).some(t=>t.includes('Check was not saved')));
+   await clickControl(page.locator('[data-a=saveCheck]'));await waitCondition(()=>!importing);const after=await saved();
+   assert.equal(after.checks['Bench Press'].w,65);assert.equal(await page.evaluate(()=>S.checks['Bench Press'].w),65);assert.equal(await page.evaluate(()=>window.checkSaveRequests),2);
+   assert.equal(JSON.stringify(after.workouts),before.workouts);await page.keyboard.press('Escape');await page.locator('#sh').waitFor({state:'detached'});
+   await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).checks['Bench Press'].w,65);assert.equal(JSON.stringify((await saved()).workouts),before.workouts);
+  });
   await check(name+': rank preview and saved check keep earned results separate',async()=>{
    await open({...base(),workouts:[workout()]});const before=await saved();await clickTab('ranks');await clickControl(page.locator('[data-a=gr]').first());await page.locator('[data-g=n]').fill('Bench Press');await page.locator('[data-g=w]').fill('180');await page.locator('[data-g=r]').fill('5');await page.locator('[data-g=b]').fill('80');await clickControl(page.locator('[data-a=calc]'));assert((await page.locator('.res').textContent()).includes('est. 1RM'));
    await clickControl(page.locator('[data-a=saveCheck]'));const after=await saved();assert.equal(after.checks['Bench Press'].w,180);assert.deepEqual(after.workouts,before.workouts);assert.equal(after.set.table,'M');await page.keyboard.press('Escape');
