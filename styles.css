@@ -1,6 +1,9 @@
 /* Slat 5.6 style contract: foundation defaults in one named layer;
    authoritative component rules follow without importance escalation.
    Only reduced-motion overrides use !important to suppress inline animation. */
+.diagnostics-form{grid-template-columns:minmax(0,1fr);overflow-wrap:anywhere;}
+.diagnostics-form textarea{-webkit-user-select:text;user-select:text;resize:vertical;line-height:1.5;}
+.diagnostics-form button{min-height:44px;max-width:100%;height:auto;white-space:normal;}
 .recovery-status{display:grid;gap:4px;margin:16px 0;overflow-wrap:anywhere;}
 .recovery-status dt{font-weight:600;}
 .recovery-status dd{margin:0 0 10px;color:var(--mu);}

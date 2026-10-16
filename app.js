@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.53';
+const BUILD_VERSION='5.7.54';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 var LiftRankingEngine=globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -299,6 +299,33 @@ var SlatRecovery=globalThis.SlatRecovery=(()=>{
  return {FORMAT,VERSION,MAX_BYTES,REASONS,create,verify,describe,planRetention,checksum};
 })();
 /*END:RECOVERY_CONTRACT*/
+/*BEGIN:DIAGNOSTICS_CONTRACT*//* Redacted device diagnostics. No state, workout, exception text, URL or stack input. */
+var SlatDiagnostics=globalThis.SlatDiagnostics=(()=>{
+ const KEY='slat-diagnostics-v1',LIMIT=32;
+ const STEPS={STORAGE_QUOTA:'storage/quota',IDB_WRITE_FAILED:'save/indexeddb',LOCAL_WRITE_FAILED:'save/local',SAVE_UNACKNOWLEDGED:'save/acknowledgement',SAVE_INTERRUPTED:'save/interrupted',STATE_STALE_TAB:'save/stale-tab',FINISH_INTERRUPTED:'finish/acknowledgement',UPDATE_OFFLINE:'update/connection',UPDATE_CHECK_FAILED:'update/check',UPDATE_INSTALL_PENDING:'update/download',UPDATE_INSTALL_FAILED:'update/install',UPDATE_ACTIVATION_FAILED:'update/activation',UPDATE_SAVE_FAILED:'update/save-before-reload',RENDER_FAILED:'view/render',RECOVERY_CAPTURE_FAILED:'recovery/capture'};
+ const CAUSES=['QuotaExceededError','SecurityError','AbortError','TimeoutError','InvalidStateError'];
+ let paused=false,storageAvailable=true;
+ const clean=item=>{if(!item||typeof item.code!=='string'||!Object.hasOwn(STEPS,item.code)||!Number.isSafeInteger(item.at)||item.at<0)return null;return {code:item.code,step:STEPS[item.code],at:item.at,count:Math.min(999,Math.max(1,Number.isSafeInteger(item.count)?item.count:1)),...(CAUSES.includes(item.cause)?{cause:item.cause}:{})};};
+ let events=[];try{const raw=globalThis.localStorage?.getItem(KEY);if(raw&&raw.length<32768){const parsed=JSON.parse(raw);if(Array.isArray(parsed))events=parsed.map(clean).filter(Boolean).slice(-LIMIT);}}catch{storageAvailable=false;}
+ function record(code,error){
+  if(paused||typeof code!=='string'||!Object.hasOwn(STEPS,code))return;
+  const cause=CAUSES.includes(error?.name)?error.name:undefined,previous=events.at(-1),at=Date.now();
+  if(previous?.code===code&&previous.cause===cause){previous.count=Math.min(999,previous.count+1);previous.at=at;}
+  else events.push({code,step:STEPS[code],at,count:1,...(cause?{cause}:{})});
+  events=events.slice(-LIMIT);
+  try{globalThis.localStorage?.setItem(KEY,JSON.stringify(events));}catch{storageAvailable=false;}
+ }
+ const pause=()=>{const before=paused;paused=true;return()=>{paused=before;};};
+ const resetMemory=()=>{events=[];paused=true;storageAvailable=true;};
+ const clear=()=>{try{globalThis.localStorage?.removeItem(KEY);events=[];storageAvailable=true;return true;}catch{storageAvailable=false;return false;}};
+ const browserInfo=ua=>{const s=String(ua||''),pick=(re,name)=>{const m=s.match(re);return m?name+' '+m[1]:null;};return {browser:pick(/(?:Edg|EdgiOS)\/(\d+)/,'Edge')||pick(/(?:Chrome|CriOS)\/(\d+)/,'Chrome')||pick(/(?:Firefox|FxiOS)\/(\d+)/,'Firefox')||pick(/Version\/(\d+).*Safari/,'Safari')||'Other',os:/iPhone|iPad|iPod/.test(s)?'iOS':/Android/.test(s)?'Android':/Windows/.test(s)?'Windows':/Macintosh|Mac OS/.test(s)?'macOS':/Linux/.test(s)?'Linux':'Other'};};
+ function report({build='',steps='',exerciseId='',catalogueVersion=0,saveStatus='unknown'}={}){
+  const nav=/** @type {Partial<Navigator>} */(globalThis.navigator||{}),env=browserInfo(nav.userAgent),media=typeof globalThis.matchMedia==='function'?globalThis.matchMedia('(display-mode: standalone)').matches:false;
+  return JSON.stringify({format:'slat-device-diagnostics',version:1,build:/^\d+\.\d+\.\d+$/.test(build)?build:'unknown',...env,installed:media||nav.standalone===true,online:nav.onLine!==false,features:{serviceWorker:'serviceWorker' in nav,indexedDB:typeof globalThis.indexedDB!=='undefined',webLocks:typeof nav.locks?.request==='function',clipboard:typeof nav.clipboard?.writeText==='function',integrity:!!globalThis.crypto?.subtle,persistentStorage:typeof nav.storage?.persist==='function'},saveStatus:['saving','saved','failed'].includes(saveStatus)?saveStatus:'unknown',localEventStorageAvailable:storageAvailable,events:events.map(clean).filter(Boolean),...(/^ex\d{3,5}$/.test(exerciseId)?{exercise:{id:exerciseId,catalogueVersion:Number.isSafeInteger(catalogueVersion)&&catalogueVersion>0?catalogueVersion:null}}:{}),reproductionSteps:typeof steps==='string'?steps.slice(0,2000):''},null,2);
+ }
+ return {key:KEY,record,report,pause,resetMemory,clear,limit:LIMIT};
+})();
+/*END:DIAGNOSTICS_CONTRACT*/
 const BUILD_LABEL='v'+BUILD_VERSION;
 /**
  * @template {string} K
@@ -330,11 +357,11 @@ const STORAGE_TIMEOUT_MS=5000;
 let dbPromise=null;const idb=()=>{if(location.protocol==='file:')return Promise.reject(new Error('Use localStorage for file URLs'));if(!dbPromise){const pending=new Promise((resolve,reject)=>{let settled=false;const finish=(error,db)=>{if(settled){db?.close?.();return;}settled=true;clearTimeout(timer);if(error)reject(error);else{db.onversionchange=()=>{db.close?.();dbPromise=null;};resolve(db);}};const timer=setTimeout(()=>finish(new Error('IndexedDB open timed out')),STORAGE_TIMEOUT_MS);try{const q=indexedDB.open('liftlog',1);q.onupgradeneeded=()=>{if(!settled)q.result.createObjectStore('kv');else q.transaction?.abort?.();};q.onsuccess=()=>finish(null,q.result);q.onerror=()=>finish(q.error||new Error('IndexedDB unavailable'));q.onblocked=()=>finish(new Error('IndexedDB upgrade blocked by another tab'));}catch(error){finish(error);}});dbPromise=pending;pending.catch(()=>{if(dbPromise===pending)dbPromise=null;});}return dbPromise;};
 const storageRequest=(db,mode,operation)=>new Promise((resolve,reject)=>{let settled=false;const tx=db.transaction('kv',mode);const finish=(error,value)=>{if(settled)return;settled=true;clearTimeout(timer);error?reject(error):resolve(value);};const timer=setTimeout(()=>{finish(new Error('IndexedDB transaction timed out'));try{tx.abort();}catch{}},STORAGE_TIMEOUT_MS);try{operation(tx,finish);}catch(error){finish(error);try{tx.abort();}catch{}}});
 let unreadableLocal=false;const localGet=()=>{try{const raw=localStorage.getItem('liftlog-state');const value=JSON.parse(raw||'null');unreadableLocal=raw!==null&&(!value||typeof value!=='object'||Array.isArray(value));return unreadableLocal?null:value}catch{unreadableLocal=true;return null}};
-const localSave=value=>{try{localStorage.setItem('liftlog-state',JSON.stringify(value));return true}catch{return false}};
+const localSave=value=>{try{localStorage.setItem('liftlog-state',JSON.stringify(value));return true}catch(error){if(typeof SlatDiagnostics!=='undefined')SlatDiagnostics.record('LOCAL_WRITE_FAILED',error);return false}};
 const dbReadKey=async(key)=>{const d=await idb();return storageRequest(d,'readonly',(tx,finish)=>{const q=tx.objectStore('kv').get(key);q.onsuccess=event=>finish(null,q.result??event?.target?.result??null);q.onerror=()=>finish(q.error||new Error('IndexedDB read failed'));tx.onabort=()=>finish(tx.error||new Error('IndexedDB read aborted'));});};
 const dbRead=()=>dbReadKey('s');
 const dbWriteKey=async(key,value)=>{const d=await idb();return storageRequest(d,'readwrite',(tx,finish)=>{const store=tx.objectStore('kv');if(value===null)store.delete(key);else store.put(value,key);tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>finish(tx.error||new Error('IndexedDB write aborted'));});};
-const dbWrite=async(value,expectedSavedAt,expectedRevision)=>{const d=await idb();return storageRequest(d,'readwrite',(tx,finish)=>{const store=tx.objectStore('kv');let failure=null;const q=store.get('s');q.onsuccess=event=>{const previous=q.result??event?.target?.result;if(Number(previous?.savedAt)>expectedSavedAt||Number(previous?.revision)>expectedRevision){failure=Object.assign(new Error('Another tab saved changes'),{code:'STATE_CONFLICT'});tx.abort();return;}store.put(value,'s');};q.onerror=()=>{failure=q.error||new Error('IndexedDB comparison failed');tx.abort();};tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(failure||tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>finish(failure||tx.error||new Error('IndexedDB write aborted'));});};
+const dbWrite=async(value,expectedSavedAt,expectedRevision)=>{const d=await idb();return storageRequest(d,'readwrite',(tx,finish)=>{const store=tx.objectStore('kv');let failure=null;const q=store.get('s');q.onsuccess=event=>{try{const previous=q.result??event?.target?.result;if(Number(previous?.savedAt)>expectedSavedAt||Number(previous?.revision)>expectedRevision){failure=Object.assign(new Error('Another tab saved changes'),{code:'STATE_CONFLICT'});tx.abort();return;}store.put(value,'s');}catch(error){failure=error;tx.abort();}};q.onerror=()=>{failure=q.error||new Error('IndexedDB comparison failed');tx.abort();};tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(failure||tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>finish(failure||tx.error||new Error('IndexedDB write aborted'));});};
 const dbClear=async(keys=['s'])=>{const d=await idb();await storageRequest(d,'readwrite',(tx,finish)=>{for(const key of keys)tx.objectStore('kv').delete(key);tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(tx.error||new Error('IndexedDB delete failed'));tx.onabort=()=>finish(tx.error||new Error('IndexedDB delete aborted'));});return (await dbRead())==null;};
 const dbGet=async()=>{const l=localGet();let d=null;if(location.protocol!=='file:')try{d=await dbRead()}catch{}const out=l&&(!d||Number(l.revision||0)>Number(d.revision||0)||(Number(l.revision||0)===Number(d.revision||0)&&(Number(l.savedAt)||0)>(Number(d.savedAt)||0)))?l:(d||l);if(!out&&unreadableLocal)throw new Error('Saved data could not be read. Export a recovery copy before retrying.');return out};
 /** @type {Promise<boolean|void>} */
@@ -348,27 +375,28 @@ const save=()=>{
  const snapshot=JSON.parse(JSON.stringify(S));snapshot.rk={};if(snapshot.set)delete snapshot.set.age;
  const epoch=saveEpoch;
  const job=async()=>{
-  if(epoch!==saveEpoch||storageConflict)return false;
+  if(epoch!==saveEpoch||storageConflict){if(typeof SlatDiagnostics!=='undefined')SlatDiagnostics.record('SAVE_INTERRUPTED');return false;}
   const current=localGet();
-  if(current&&Number(current.savedAt)>storageRevision){storageConflict=true;showStorageConflict();return false;}
+  if(current&&Number(current.savedAt)>storageRevision){if(typeof SlatDiagnostics!=='undefined')SlatDiagnostics.record('STATE_STALE_TAB');storageConflict=true;showStorageConflict();return false;}
   snapshot.revision=durableRevision+1;setPersistenceStatus('saving');let dbOk=false;
-  if(location.protocol!=='file:')try{await dbWrite(snapshot,storageRevision,durableRevision);dbOk=true}catch(error){if(error?.code==='STATE_CONFLICT'){storageConflict=true;setPersistenceStatus('failed');showStorageConflict();return false;}}
+  if(location.protocol!=='file:')try{await dbWrite(snapshot,storageRevision,durableRevision);dbOk=true}catch(error){if(typeof SlatDiagnostics!=='undefined')SlatDiagnostics.record('IDB_WRITE_FAILED',error);if(error?.code==='STATE_CONFLICT'){if(typeof SlatDiagnostics!=='undefined')SlatDiagnostics.record('STATE_STALE_TAB');storageConflict=true;setPersistenceStatus('failed');showStorageConflict();return false;}}
   if(!dbOk&&location.protocol!=='file:'&&!navigator.locks?.request){setPersistenceStatus('failed');toast('Storage is unavailable. Keep this tab open and export a backup. Retry in a browser with Web Locks.');return false;}
-  const latest=localGet();if(!dbOk&&latest&&(Number(latest.savedAt)>storageRevision||Number(latest.revision)>durableRevision)){storageConflict=true;setPersistenceStatus('failed');showStorageConflict();return false;}
+  const latest=localGet();if(!dbOk&&latest&&(Number(latest.savedAt)>storageRevision||Number(latest.revision)>durableRevision)){if(typeof SlatDiagnostics!=='undefined')SlatDiagnostics.record('STATE_STALE_TAB');storageConflict=true;setPersistenceStatus('failed');showStorageConflict();return false;}
   const localOk=localSave(snapshot);
   if(localOk||dbOk){storageRevision=Number(snapshot.savedAt);durableRevision=snapshot.revision;S.revision=durableRevision;setPersistenceStatus('saved');broadcastState({savedAt:storageRevision,revision:durableRevision});}
-  else {setPersistenceStatus('failed');toast('Could not save. Keep this tab open and export a backup.');}
+  else {if(typeof SlatDiagnostics!=='undefined')SlatDiagnostics.record('SAVE_UNACKNOWLEDGED');setPersistenceStatus('failed');toast('Could not save. Keep this tab open and export a backup.');}
   return localOk||dbOk;
  };
- const run=async()=>{try{return await (navigator.locks?.request?navigator.locks.request('slat-state-write',job):job());}catch{setPersistenceStatus('failed');toast('Could not save. Keep this tab open and export a backup.');return false;}};
+ const run=async()=>{try{return await (navigator.locks?.request?navigator.locks.request('slat-state-write',job):job());}catch(error){if(typeof SlatDiagnostics!=='undefined')SlatDiagnostics.record('SAVE_INTERRUPTED',error);setPersistenceStatus('failed');toast('Could not save. Keep this tab open and export a backup.');return false;}};
  const result=saveTail.then(run,run);saveTail=result.catch(()=>false);return result;
 };
 const RECOVERY_KEYS=['liftlog-recovery-v1','liftlog-recovery-pending-v1'];
-const PERSONAL_STORAGE_KEYS=['liftlog-state','liftlog-import-recovery','liftlog-ranking-migration-backup','liftlog-startup-recovery',...RECOVERY_KEYS];
+const PERSONAL_STORAGE_KEYS=['liftlog-state','liftlog-import-recovery','liftlog-ranking-migration-backup','liftlog-startup-recovery','slat-diagnostics-v1',...RECOVERY_KEYS];
 const storageCopies=storage=>PERSONAL_STORAGE_KEYS.map(key=>[key,storage.getItem(key)]);
 const restoreCopies=(storage,copies)=>{for(const [key,value] of copies)try{if(value===null)storage.removeItem(key);else storage.setItem(key,value);}catch{}};
 const clearCopies=(storage,copies,label)=>{for(const [key] of copies){storage.removeItem(key);if(storage.getItem(key)!==null)throw new Error(label+' reset verification failed');}};
 const clearStoredState=async()=>{
+ const resumeDiagnostics=typeof SlatDiagnostics!=='undefined'?SlatDiagnostics.pause():()=>{};
  saveEpoch++;await saveTail.catch(()=>false);if(typeof recoveryEpoch!=='undefined')recoveryEpoch++;if(typeof recoveryTail!=='undefined')await recoveryTail.catch(()=>false);
  const clear=async()=>{
  let localCopies,sessionCopies=null,dbCopy=null,recoveryCopies=[];const web=location.protocol!=='file:',session=typeof sessionStorage!=='undefined'?sessionStorage:null;
@@ -378,7 +406,7 @@ const clearStoredState=async()=>{
  catch{await restore();return false;}
  return true;
  };
- try{return await (navigator.locks?.request?navigator.locks.request('slat-state-write',clear):clear());}catch{return false;}
+ try{const cleared=await (navigator.locks?.request?navigator.locks.request('slat-state-write',clear):clear());if(cleared&&typeof SlatDiagnostics!=='undefined')SlatDiagnostics.resetMemory();else resumeDiagnostics();return cleared;}catch{resumeDiagnostics();return false;}
 };
 /*END:PERSISTENCE*/
 /*BEGIN:RECOVERY_STORE*//* Same-browser recovery copies. Never replace the active workout record here. */
@@ -814,6 +842,7 @@ const nav=()=>{$('#n').setAttribute('aria-label','Main navigation');$('#n').inne
 /* actions */
 const addN=n=>{if(!S.cur)return toast('Start a workout first');n=canonicalExercise(String(n||'').trim());if(!n)return;if(!EX[n]){const t='B',c='Custom';S.custom.push({n,t,c});EX[n]={g:'Custom',t,c}}ci=S.cur.ex.push({n,entryId:newRecordId('exercise'),exerciseId:catalogueRecord(n)?.id||'custom:'+n,sets:[]})-1;exercisePickerClose();go()};
 const SW_SCRIPT='sw.js',SW_SCOPE='./',SW_TIMEOUT=30000,REMOTE_VERSION_PATH='version.json';
+const updateDiagnostic=(code,error=undefined)=>{if(typeof SlatDiagnostics!=='undefined')SlatDiagnostics.record(code,error);};
 const swPrompted=new WeakSet(),swPromptActive=new WeakSet(),swWatched=new WeakSet();
 const swWorkerUrl=()=>new URL(SW_SCRIPT,location.href).href;
 const withSWTimeout=p=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Update timed out')),SW_TIMEOUT);Promise.resolve(p).then(resolve,reject).finally(()=>clearTimeout(timer))});
@@ -825,7 +854,7 @@ const swInstall=async(reconcile=false)=>{
  if(reconcile&&navigator.onLine!==false)await reg.update();return reg;
 };
 const reloadForUpdate=async()=>{
- if(!await save()){toast('Update is ready, but your changes could not be saved. Retry save before reloading.');return false;}
+ if(!await save()){updateDiagnostic('UPDATE_SAVE_FAILED');toast('Update is ready, but your changes could not be saved. Retry save before reloading.');return false;}
  location.reload();return true;
 };
 const activateSW=async w=>{
@@ -845,7 +874,7 @@ const promptSWUpdate=w=>{
  if(!navigator.serviceWorker?.controller||!w||w.state==='redundant'||swPrompted.has(w))return;
  swPrompted.add(w);toast('Update available — tap to reload',async()=>{
   if(swPromptActive.has(w))return;swPromptActive.add(w);const ok=await activateSW(w);
-  if(!ok){swPromptActive.delete(w);toast('Update could not be activated — current version is still running');}
+  if(!ok){updateDiagnostic('UPDATE_ACTIVATION_FAILED');swPromptActive.delete(w);toast('Update could not be activated — current version is still running');}
  },'Reload');
 };
 const watchSW=reg=>{
@@ -891,17 +920,18 @@ const updateApp=async b=>{
  try{
   if(location.protocol==='file:'){await reloadForUpdate();return;}
   if(!('serviceWorker' in navigator)){toast('Updates require the installed web app or HTTPS');return;}
-  if(navigator.onLine===false){toast('Offline — update check skipped; your current app is still available');return;}
+  if(navigator.onLine===false){updateDiagnostic('UPDATE_OFFLINE');toast('Offline — update check skipped; your current app is still available');return;}
   const published=await publishedBuild(),newer=isNewerBuild(published,BUILD_VERSION),reg=watchSW(await withSWTimeout(swInstall(true)));if(!reg)return;
-  if(reg.waiting){const ok=await activateSW(reg.waiting);if(!ok)toast('Update could not be activated — current version is still running');return;}
+  if(reg.waiting){const ok=await activateSW(reg.waiting);if(!ok){updateDiagnostic('UPDATE_ACTIVATION_FAILED');toast('Update could not be activated — current version is still running');}return;}
   await withSWTimeout(reg.update());const waiting=reg.waiting||await waitForSWInstall(reg);
-  if(waiting){const ok=await activateSW(waiting);if(!ok)toast('Update could not be activated — current version is still running');}
+  if(waiting){const ok=await activateSW(waiting);if(!ok){updateDiagnostic('UPDATE_ACTIVATION_FAILED');toast('Update could not be activated — current version is still running');}}
   else if(newer){
    const ready=await activeSWBuild(reg)||await servedBuild();
    if(ready===published||isNewerBuild(ready,published)){await reloadForUpdate();return;}
+   updateDiagnostic(reg.installing?.state==='installing'?'UPDATE_INSTALL_PENDING':'UPDATE_INSTALL_FAILED');
    toast(reg.installing?.state==='installing'?'Newer build v'+published+' is still downloading. Retry when it finishes.':'Newer build v'+published+' could not finish installing. Tap Check for updates to retry; your saved data is safe.');
   }else toast('Already up to date · v'+BUILD_VERSION);
- }catch(e){console.warn('Slat update check unavailable',e);toast(navigator.onLine===false?'Offline — current version is still running':'Could not check for an update — current version is still running');}
+ }catch(e){updateDiagnostic(navigator.onLine===false?'UPDATE_OFFLINE':'UPDATE_CHECK_FAILED',e);console.warn('Slat update check unavailable',e);toast(navigator.onLine===false?'Offline — current version is still running':'Could not check for an update — current version is still running');}
  finally{if(b){b.disabled=false;b.textContent='Check for updates';}}
 };
 const A={
@@ -943,7 +973,7 @@ fin:async()=>{
  for(const x of done.ex)for(const z of x.sets){if(!(num(z.bw)>0)&&body>0)z.bw=body;if(!(num(z.height)>0)&&height>0)z.height=height;}
  try{S.workouts=SlatWorkout.replace(S.workouts,done,S.editingId);}catch(error){finishing=false;return toast(error.message);}
  S.cur=null;S.editingId=null;refreshRanks();
- try{if(!await save()){S=previous;rebuildRegistry();refreshRanks();toast('Workout could not be saved. Your draft is still open.');return;}await captureRecovery('finish');qolStopRest();dr={};const b=tiers(),up=Object.keys(b).find(n=>b[n]>=0&&b[n]>(a[n]??-1));toast(up?TN[b[up]]+' · '+displayExercise(up):'Workout saved');}finally{finishing=false;render();}
+ try{if(!await save()){SlatDiagnostics.record('FINISH_INTERRUPTED');S=previous;rebuildRegistry();refreshRanks();toast('Workout could not be saved. Your draft is still open.');return;}await captureRecovery('finish');qolStopRest();dr={};const b=tiers(),up=Object.keys(b).find(n=>b[n]>=0&&b[n]>(a[n]??-1));toast(up?TN[b[up]]+' · '+displayExercise(up):'Workout saved');}finally{finishing=false;render();}
 },
 he:d=>{const w=S.workouts[+d.i];if(!w)return;const open=()=>{qolStopRest();dr={};ci=0;S.editingId=w.id;S.cur=JSON.parse(JSON.stringify(w));view='today';nav();go()};if(S.cur)confirmAction('Replace workout in progress?','Your current unsaved changes will be discarded. The saved workout stays in History until you finish editing.','Replace',open);else open()},
 hd:d=>{const i=+d.i;confirmAction('Delete workout?','Remove this workout from History? You can undo the last removal.','Delete',()=>{retainRemoval('workout',S.workouts[i],{index:i});S.workouts.splice(i,1);go()})},
@@ -992,7 +1022,7 @@ const rankListOpen=()=>{
 const legalSheetOpen=(kind)=>{
  if($('#legal-sheet'))$('#legal-sheet').remove();
  const content={
-  privacy:`<small class=legal-kicker>PRIVACY &amp; DATA</small><h2>Privacy &amp; data</h2><p><b>Local · Offline · No account.</b> Slat stores workout history, exercise choices, bodyweight history, profile/ranking settings, custom exercises and calculated rank results on this device. Slat does not operate a workout database, analytics service, advertising system or account service.</p><p><b>Why data is processed:</b> local data is processed only to provide the logging, backup, ranking, progress and settings features you choose to use. Ranking calculations are automated product heuristics and do not make legal or similarly significant decisions about you.</p><p><b>Hosted site:</b> the public build is delivered by GitHub Pages. GitHub may process technical request data such as visitor IP addresses for security and service operation. That hosting-provider processing is separate from Slat's local workout database and is governed by GitHub's own policies.</p><p><b>Recovery copies:</b> Profile → Recovery centre keeps bounded, checksummed same-browser copies after acknowledged Finish and before replacement or migrations. These copies stay on this device and do not protect against device loss or clearing browser data. Verification never imports or uploads a file. You can explicitly export a selected copy; it contains private workout data.</p><p><b>Retention:</b> local Slat data remains on the device until you delete it or clear the app/site storage. Reset in this build also clears recovery copies. Exported backup files remain wherever you save or share them. GitHub hosting logs are retained according to GitHub's policies, not Slat's local retention settings.</p><p><b>Your choices:</b> use <i>Profile → Export backup</i> to obtain a copy, <i>Profile → Import backup</i> to replace the current local data with one, and <i>Profile → Reset all data</i> to delete Slat's stored app data on this device. You can also use your browser's site/app storage controls.</p><p><b>Privacy requests:</b> for questions or requests concerning Slat's own processing, contact the creator via Discord <b>ejaculator2000</b>. If your request concerns GitHub Pages hosting logs, it should be directed to GitHub because Slat does not control that provider-side data.</p><p class=legal-note>This is a plain-language product notice, not legal advice. If the app's data flows change, this notice should be updated before that release.</p>`,
+  privacy:`<small class=legal-kicker>PRIVACY &amp; DATA</small><h2>Privacy &amp; data</h2><p><b>Local · Offline · No account.</b> Slat stores workout history, exercise choices, bodyweight history, profile/ranking settings, custom exercises and calculated rank results on this device. Slat does not operate a workout database, analytics service, advertising system or account service.</p><p><b>Why data is processed:</b> local data is processed only to provide the logging, backup, ranking, progress and settings features you choose to use. Ranking calculations are automated product heuristics and do not make legal or similarly significant decisions about you.</p><p><b>Hosted site:</b> the public build is delivered by GitHub Pages. GitHub may process technical request data such as visitor IP addresses for security and service operation. That hosting-provider processing is separate from Slat's local workout database and is governed by GitHub's own policies.</p><p><b>Recovery copies:</b> Profile → Recovery centre keeps bounded, checksummed same-browser copies after acknowledged Finish and before replacement or migrations. These copies stay on this device and do not protect against device loss or clearing browser data. Verification never imports or uploads a file. You can explicitly export a selected copy; it contains private workout data.</p><p><b>Private diagnostics:</b> Slat retains up to 32 redacted local event codes, without exception messages, stacks or workout contents. Profile shows the exact device report and optional reproduction text before explicit Copy. Nothing is automatically sent or attached. Device events are excluded from backups and cleared by Reset all data.</p><p><b>Retention:</b> local Slat data remains on the device until you delete it or clear the app/site storage. Reset in this build also clears recovery copies. Exported backup files remain wherever you save or share them. GitHub hosting logs are retained according to GitHub's policies, not Slat's local retention settings.</p><p><b>Your choices:</b> use <i>Profile → Export backup</i> to obtain a copy, <i>Profile → Import backup</i> to replace the current local data with one, and <i>Profile → Reset all data</i> to delete Slat's stored app data on this device. You can also use your browser's site/app storage controls.</p><p><b>Privacy requests:</b> for questions or requests concerning Slat's own processing, contact the creator via Discord <b>ejaculator2000</b>. If your request concerns GitHub Pages hosting logs, it should be directed to GitHub because Slat does not control that provider-side data.</p><p class=legal-note>This is a plain-language product notice, not legal advice. If the app's data flows change, this notice should be updated before that release.</p>`,
   terms:`<small class=legal-kicker>TERMS &amp; RANKING DISCLAIMER</small><h2>Terms &amp; use</h2><p>Slat's original source code, UI, documentation, ranking configuration and original creative work are copyright © 2026 @o.r146 / Slat and are <b>all rights reserved</b>, except for third-party material identified in the notices.</p><p>No additional permission is granted to copy, republish, sell, redistribute, train a model on, or create derivative implementations from proprietary Slat material unless the copyright holder gives permission or applicable law provides that right. Because the project is hosted in a public GitHub repository, GitHub's own Terms of Service and repository permissions still apply and this notice does not override them.</p><p><b>Fitness and safety:</b> Slat is a logging and comparison tool, not medical, rehabilitation or coaching advice. Do not use a rank as a safety limit, diagnosis, treatment recommendation or guarantee of performance. Stop an exercise and seek appropriate professional help if you experience pain, injury symptoms or another medical concern.</p><p><b>Ranking disclaimer:</b> Slat ranks are proprietary exercise-specific heuristics. They can use logged performance, bodyweight, age and height/ROM settings. They are not a scientific population percentile, biomechanical law, official federation classification or validated medical measurement. Equipment, technique, range of motion, execution, fatigue, rep quality and estimated-1RM error can materially change results.</p><p><b>Availability and data:</b> the app is designed to work offline, but browser storage, device failure, browser updates and platform behavior can affect availability. Export backups before major device/browser changes. You are responsible for keeping copies of any backup you want to retain.</p><p><b>Third-party materials:</b> third-party code, assets and licenses remain subject to their own terms and attribution requirements. See <i>THIRD_PARTY_NOTICES.md</i>.</p>`,
   credits:`<small class=legal-kicker>CREDITS &amp; OWNERSHIP</small><h2>Credits</h2><p><b>Made by @o.r146</b><br>Creator of Slat</p><p><b>TikTok:</b> @o.r146<br><b>Discord:</b> ejaculator2000</p><p><b>Copyright:</b> © 2026 Slat / @o.r146. All rights reserved, except for identified third-party material.</p><p><b>Anatomy attribution:</b> the repository currently retains attribution for bundled advanced anatomy material attributed to Ryan Graves under CC BY 4.0; see the full notice for source and license details.</p><p class=legal-note>Third-party licenses and attribution are listed in THIRD_PARTY_NOTICES.md. The current anatomy attribution is retained until the bundled anatomy assets are independently replaced and verified.</p>`
  }[kind]||'';
@@ -1436,14 +1466,15 @@ document.addEventListener('keydown',/** @param {KeyboardEvent & {target: HTMLEle
  const delta=({ArrowLeft:activityMode==='year'?-7:-1,ArrowRight:activityMode==='year'?7:1,ArrowUp:activityMode==='year'?-1:-7,ArrowDown:activityMode==='year'?1:7})[e.key];if(delta===undefined)return;e.preventDefault();
  const date=new Date(button.dataset.v+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+delta);const target=$('.activity-day[data-v="'+date.toISOString().slice(0,10)+'"]');if(!target)return;button.tabIndex=-1;target.tabIndex=0;target.focus({preventScroll:true});target.scrollIntoView?.({block:'nearest',inline:'nearest'});
 });
-stateChannel?.addEventListener('message',event=>{const m=event.data;if(S&&(m?.reset||Number(m?.savedAt)>storageRevision||Number(m?.revision)>durableRevision)){storageConflict=true;showStorageConflict();}});
+stateChannel?.addEventListener('message',event=>{const m=event.data;if(S&&(m?.reset||Number(m?.savedAt)>storageRevision||Number(m?.revision)>durableRevision)){SlatDiagnostics.record('STATE_STALE_TAB');storageConflict=true;showStorageConflict();}});
 function showStorageConflict(){
  if(document.querySelector('#storage-conflict')){manageDialogs();return;}
  const panel=document.createElement('section');panel.id='storage-conflict';panel.className='storage-conflict';panel.setAttribute('role','alertdialog');panel.setAttribute('aria-labelledby','storage-conflict-title');panel.setAttribute('aria-describedby','storage-conflict-help');panel.innerHTML='<b id="storage-conflict-title">Another tab saved changes</b><p id="storage-conflict-help">This tab is paused to protect both copies. Export this tab’s draft, then reload the latest saved data.</p><button class="pill" id="conflict-export">Export this tab</button><button class="pill" id="conflict-reload">Reload latest</button>';
  document.body.append(panel);document.querySelector('#conflict-export')?.addEventListener('click',()=>downloadRecovery(JSON.stringify({...S,settings:S.set,version:4}), 'slat-conflict-recovery.json'));document.querySelector('#conflict-reload')?.addEventListener('click',()=>location.reload());
+ const report=document.createElement('button');report.type='button';report.className='pill';report.id='conflict-diagnostics';report.textContent='Preview diagnostic report';report.addEventListener('click',()=>openDiagnosticsReport());panel.append(report);
  manageDialogs();
 }
-window.addEventListener?.('storage',e=>{if(e.key==='liftlog-state'&&S){storageConflict=true;showStorageConflict();}});
+window.addEventListener?.('storage',e=>{if(e.key==='liftlog-state'&&S){SlatDiagnostics.record('STATE_STALE_TAB');storageConflict=true;showStorageConflict();}});
 /*BEGIN:DIALOG_VIEW*/let dialogReturnFocus=null,activeDialog=null;
 const dialogFocus=new WeakMap(),inertBeforeDialog=new Map();
 const dialogSelector='.sheet .sb,.exercise-library-panel,.action-card,.reset-card,.tutorial-shell,.install-guide-card,.rank-list-card,#storage-conflict';
@@ -1453,7 +1484,7 @@ const visibleDialog=el=>{
  return !el.getClientRects||el.getClientRects().length>0;
 };
 const focusableDialog=top=>[...top.querySelectorAll('button:not([disabled]),input:not([hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,a[href],[tabindex="0"]')].filter(visibleDialog);
-const topDialog=()=>{const dialogs=[.../** @type {NodeListOf<HTMLElement>} */(document.querySelectorAll(dialogSelector))].filter(visibleDialog);return dialogs.find(el=>el.id==='storage-conflict')||dialogs.at(-1);};
+const topDialog=()=>{const dialogs=[.../** @type {NodeListOf<HTMLElement>} */(document.querySelectorAll(dialogSelector))].filter(visibleDialog);return dialogs.find(el=>el.id==='diagnostics-card')||dialogs.find(el=>el.id==='storage-conflict')||dialogs.at(-1);};
 function manageDialogs(){
  const all=[...document.querySelectorAll(dialogSelector)],top=topDialog();
  for(const el of [.../** @type {HTMLCollectionOf<HTMLElement>} */(document.body.children||[])]){if(['SCRIPT','STYLE'].includes(el.tagName))continue;if(top){if(!inertBeforeDialog.has(el))inertBeforeDialog.set(el,!!el.inert);el.inert=!el.contains(top)&&el!==top;}else if(inertBeforeDialog.has(el)){el.inert=inertBeforeDialog.get(el);inertBeforeDialog.delete(el);}}
@@ -1471,6 +1502,30 @@ document.addEventListener('keydown',/** @param {KeyboardEvent & {target: HTMLEle
 });
 document.addEventListener('click',()=>queueMicrotask(()=>manageDialogs()));
 /*END:DIALOG_VIEW*/
+/*BEGIN:DIAGNOSTICS_VIEW*//* Explicit preview/copy only. Reports are never sent automatically. */
+const openDiagnosticsReport=(exerciseId='')=>{
+ const m=qolOpenModal('Private diagnostics',`<div class="qol-form diagnostics-form"><p class=support-copy>Review the exact report below before copying. It includes device support and fixed error codes, without reading workouts, names, notes, age, bodyweight or backups. Nothing is uploaded. Custom exercise names and identifiers are omitted.</p><label>Reproduction steps (optional)<textarea id=diagnostic-steps maxlength=2000 rows=3 placeholder="What did you tap, what happened, and what did you expect?"></textarea></label><small>Your own text can contain personal information. Check it before copying. No attachment is included.</small><label>Exact report preview<textarea id=diagnostic-preview rows=12 readonly spellcheck=false></textarea></label><div class=chips><button class=pill id=diagnostic-copy>Copy diagnostic report</button><button class=pill id=diagnostic-clear>Clear local events</button></div><p id=diagnostic-status role=status aria-live=polite></p></div>`);
+ m.querySelector('.action-card').id='diagnostics-card';
+ m.querySelectorAll('[data-qol=closeModal]').forEach(control=>control.addEventListener('click',()=>{qolCloseModal();manageDialogs();}));
+ const steps=m.querySelector('#diagnostic-steps'),preview=m.querySelector('#diagnostic-preview'),copy=m.querySelector('#diagnostic-copy'),clear=m.querySelector('#diagnostic-clear'),status=m.querySelector('#diagnostic-status');
+ const refresh=()=>{preview.value=SlatDiagnostics.report({build:BUILD_VERSION,steps:steps.value,exerciseId,catalogueVersion:X?.catalogueVersion,saveStatus:persistenceStatus});};
+ refresh();steps.addEventListener('input',refresh);
+ copy.addEventListener('click',async()=>{
+  if(copy.disabled)return;const exact=preview.value;copy.disabled=true;steps.disabled=true;clear.disabled=true;
+  try{if(!navigator.clipboard?.writeText)throw new Error('Clipboard unavailable');await navigator.clipboard.writeText(exact);status.textContent='Report copied. Share it only with someone you choose.';}
+  catch{preview.focus();preview.select();status.textContent='Automatic copy is unavailable. Select and copy the preview manually.';}
+  finally{copy.disabled=false;steps.disabled=false;clear.disabled=false;}
+ });
+ clear.addEventListener('click',()=>{if(clear.disabled)return;status.textContent=SlatDiagnostics.clear()?'Local events cleared. Workout data was not changed.':'Local events could not be cleared. Current records were not changed.';refresh();});
+ manageDialogs();return m;
+};
+A.diagnostics=()=>openDiagnosticsReport();
+const diagnosticsSettings=V.settings;V.settings=()=>diagnosticsSettings()+`<section class=note><b>Private device diagnostics</b><p class=support-copy>Preview device support and redacted error codes before you explicitly copy a report.</p><button class=pill data-a=diagnostics>Diagnostics</button></section>`;
+const diagnosticExerciseOptions=A.exerciseOptions;A.exerciseOptions=()=>{
+ if(!S.cur?.ex?.[ci])return;const id=catalogueRecord(S.cur.ex[ci].n)?.id||'';diagnosticExerciseOptions();
+ const button=document.createElement('button');button.type='button';button.className='pill';button.id='diagnostic-exercise';button.textContent='Report an exercise problem';button.addEventListener('click',()=>openDiagnosticsReport(id));qolState.modal?.querySelector('.action-card')?.append(button);
+};
+/*END:DIAGNOSTICS_VIEW*/
 document.addEventListener('input',/** @param {InputEvent & {target: HTMLInputElement}} e */ e=>{
  if(finishing||importing||storageConflict)return;const t=e.target,id=t.id;
  if(id==='custom-ex-split')t.dataset.manual='1';

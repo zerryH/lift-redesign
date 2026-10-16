@@ -7,7 +7,7 @@ const visibleDialog=el=>{
  return !el.getClientRects||el.getClientRects().length>0;
 };
 const focusableDialog=top=>[...top.querySelectorAll('button:not([disabled]),input:not([hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,a[href],[tabindex="0"]')].filter(visibleDialog);
-const topDialog=()=>{const dialogs=[.../** @type {NodeListOf<HTMLElement>} */(document.querySelectorAll(dialogSelector))].filter(visibleDialog);return dialogs.find(el=>el.id==='storage-conflict')||dialogs.at(-1);};
+const topDialog=()=>{const dialogs=[.../** @type {NodeListOf<HTMLElement>} */(document.querySelectorAll(dialogSelector))].filter(visibleDialog);return dialogs.find(el=>el.id==='diagnostics-card')||dialogs.find(el=>el.id==='storage-conflict')||dialogs.at(-1);};
 function manageDialogs(){
  const all=[...document.querySelectorAll(dialogSelector)],top=topDialog();
  for(const el of [.../** @type {HTMLCollectionOf<HTMLElement>} */(document.body.children||[])]){if(['SCRIPT','STYLE'].includes(el.tagName))continue;if(top){if(!inertBeforeDialog.has(el))inertBeforeDialog.set(el,!!el.inert);el.inert=!el.contains(top)&&el!==top;}else if(inertBeforeDialog.has(el)){el.inert=inertBeforeDialog.get(el);inertBeforeDialog.delete(el);}}

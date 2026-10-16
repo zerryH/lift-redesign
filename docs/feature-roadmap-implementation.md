@@ -5,7 +5,7 @@ Source: the user-approved five-page feature roadmap dated 15 October 2026. This 
 | Feature | Release | Tracking | Current state |
 | --- | --- | --- | --- |
 | F01 Recovery centre | R0 | [#157](https://github.com/zerryH/lift-redesign/issues/157) | Contract in 5.7.51; external verification in 5.7.52; durable capture/retention, Profile status/list/export and explicit restore implemented in 5.7.53. Exact-head gates/release evidence belong to its PR. Physical-device sign-off and observation remain outstanding; see [the recovery note](recovery-centre.md). |
-| F02 Private diagnostics | R0 | [#156](https://github.com/zerryH/lift-redesign/issues/156) | Specified; not implemented. |
+| F02 Private diagnostics | R0 | [#156](https://github.com/zerryH/lift-redesign/issues/156) | Implemented in the 5.7.54 candidate: bounded redacted events, exact preview/explicit Copy, catalogue-ID shortcut, stale-tab access and reset cleanup. Release gates/publication and physical-device sign-off must be recorded separately; see [the diagnostics note](private-diagnostics.md). |
 | F03 Quick logging/favourites | R1 | [#155](https://github.com/zerryH/lift-redesign/issues/155) | Specified; existing previous-set/repeat controls are not the complete feature. |
 | F08 Rank/setup inspector | R1 | [#160](https://github.com/zerryH/lift-redesign/issues/160) | Specified; existing provenance and muscle information are inputs, not completion. |
 | F04 Programme planner | R2 | [#158](https://github.com/zerryH/lift-redesign/issues/158) | Specified; depends on R0/F03. |

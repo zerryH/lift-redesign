@@ -1,5 +1,10 @@
 /** Browser hooks and exact selectors used by the shipped HTML program. */
 interface SlatDOMSelectors {
+  "#diagnostic-steps": HTMLTextAreaElement;
+  "#diagnostic-preview": HTMLTextAreaElement;
+  "#diagnostic-copy": HTMLButtonElement;
+  "#diagnostic-clear": HTMLButtonElement;
+  "#diagnostic-status": HTMLParagraphElement;
   "#ws": HTMLInputElement;
   "#rs": HTMLInputElement;
   "#rp": HTMLInputElement;
