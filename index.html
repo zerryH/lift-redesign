@@ -2736,7 +2736,7 @@ function quickLogAttempt(event,action){
 }
 document.addEventListener('input',e=>{if(['qol-weight','qol-reps','log-seconds','log-meters','log-band','qol-note','qol-rpe','ws','rs','rp'].includes(/** @type {HTMLElement} */(e.target).id))quickInputRevision++;});
 // An intervening control action starts a new intent (for example Stop rest, then Log).
-document.addEventListener('click',e=>{const control=/** @type {HTMLElement} */(e.target).closest?.('[data-a],[data-qol]');if(control&&control.dataset.a!=='log')quickInputRevision++;});
+document.addEventListener('click',e=>{const control=/** @type {HTMLElement} */(/** @type {Element} */(e.target).closest?.('[data-a],[data-qol]'));if(control&&control.dataset.a!=='log')quickInputRevision++;});
 function loggedUndoTarget(){const u=S.logUndo;if(!u||S.cur?.id!==u.workoutId)return null;const x=S.cur.ex.find(x=>x.entryId===u.entryId),index=x?.sets.findIndex(z=>z.id===u.setId);return x&&index>=0?{u,x,index}:null;}
 function loggedUndoMarkup(){const target=loggedUndoTarget();return target?`<section class="note logged-undo" role=status><span>Set logged · ${esc(displayExercise(target.x.n))}</span><button class=pill data-a=undoLog>Undo log</button></section>`:'';}
 A.undoLog=async()=>{
