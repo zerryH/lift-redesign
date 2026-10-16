@@ -18,6 +18,7 @@
     "workout-model.js",
     "performance-contract.js",
     "data-integrity.js",
+    "recovery-contract.js",
     "persistence.js",
     "dialog-view.js",
     "enhanced-features.js",

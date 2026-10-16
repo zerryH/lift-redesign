@@ -4,12 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.50**
+**Build: 5.7.51**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
+
+New in 5.7.51: Recovery groundwork adds a full-field, versioned snapshot/manifest contract with SHA-256 integrity verification and bounded retention planning. It does not yet capture or restore device snapshots or add a recovery screen. See [the implementation register](docs/feature-roadmap-implementation.md) for the eight-feature roadmap and remaining work.
 
 New in 5.7.50: Switching kg/lb in Get your rank immediately refreshes the saved-check and earned-rank displays behind the calculator, so closing without Save check cannot leave old units on screen. Exact measurements and workout drafts are retained. See [the calculator-unit refresh fix note](docs/fixes-5.7.50.md).
 

@@ -577,6 +577,18 @@ try{
    await clickControl(page.locator('[data-a=log]'));await page.evaluate(()=>saveTail);const logged=(await saved()).cur.ex[0].sets[0];assert.equal(logged.kg,67.25);assert.equal(logged.reps,9);assert.equal(logged.note,'Keep my unit-switch draft');assert.equal(logged.rpe,8.5);
    await page.reload();await page.locator('[data-a=log]').waitFor();const restored=await saved();assert.deepEqual(restored.cur.ex[0].sets[0],logged);assert.deepEqual(restored.workouts,before.workouts);assert.deepEqual(restored.checks,before.checks);assert.equal(restored.set.unit,'kg');
   });
+  await check(name+': recovery envelopes verify all fields and reject tampering without replacing data',async()=>{
+   await open({...base(),workouts:[workout()]});await page.evaluate(()=>saveTail);
+   const result=await page.evaluate(async()=>{
+    const before=JSON.stringify(S),data={...S,version:4,settings:S.set,futureField:{keep:['all',1,{text:'unaltered'}]}},options={id:'snapshot:browser',reason:'manual',appVersion:BUILD_VERSION,revision:S.revision||0,savedAt:S.savedAt||0,createdAt:Date.now()};
+    const envelope=await SlatRecovery.create(data,options,X.catalogue),verified=await SlatRecovery.verify(JSON.parse(JSON.stringify(envelope)),X.catalogue);
+    const matches=JSON.stringify(verified.data)===JSON.stringify(data),manifest=verified.manifest;envelope.data.workouts[0].ex[0].sets[0].kg=777;
+    let rejected='';try{await SlatRecovery.verify(envelope,X.catalogue);}catch(error){rejected=error.code;}
+    const plan=SlatRecovery.planRetention([] ,manifest,{maxCount:3,maxBytes:8*1024*1024});
+    return {matches,rejected,unchanged:JSON.stringify(S)===before,manifest,plan};
+   });
+   assert(result.matches&&result.unchanged);assert.equal(result.rejected,'RECOVERY_INTEGRITY');assert.equal(result.manifest.counts.workouts,1);assert.equal(result.plan.persistFirst,'snapshot:browser');assert.equal(result.plan.keep.length,1);assert.deepEqual(result.plan.remove,[]);
+  });
   await check(name+': two real tabs block the stale writer',async()=>{
    await open();const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await second.locator('#storage-conflict').waitFor();assert.equal(await second.locator('#storage-conflict').getAttribute('role'),'alertdialog');await second.close();
   });
