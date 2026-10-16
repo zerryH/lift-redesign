@@ -8,7 +8,7 @@ var SlatWorkout=globalThis.SlatWorkout=(()=>{
  }
  function complete(current){
   if(!current?.ex?.some(x=>x.sets?.length))throw new Error('Log at least one set before finishing');
-  const done=JSON.parse(JSON.stringify(current));delete done.drafts;delete done.restEndAt;delete done.restStartedAt;return done;
+  const done=JSON.parse(JSON.stringify(current));delete done.drafts;delete done.restEndAt;delete done.restStartedAt;for(const x of done.ex)delete x.warmupQueue;return done;
  }
  function replace(workouts,done,editingId){
   const next=workouts.slice();

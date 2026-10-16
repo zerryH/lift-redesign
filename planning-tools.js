@@ -47,7 +47,7 @@ A.programmePause=async d=>{const p=programmeList().find(p=>p.id===d.v);if(p)awai
 A.planStart=d=>{
  const slot=plannedSlots().find(s=>s.id===d.v),p=slot&&programmeList().find(p=>p.id===slot.programmeId),routine=slot&&S.routines.find(r=>r.id===slot.routineId);
  if(S.cur)return toast('Finish or discard your current workout first');if(!slot||!p||p.paused||slot.status!=='planned'||SlatPlanning.completed(slot,S.workouts).length)return;if(!routine)return toast('This routine is unavailable. Repair the programme sequence first.');
- let session;try{session=routineSession(routine);}catch(error){return toast(error.message);}session.planLink={programmeId:p.id,slotId:slot.id,scheduledDate:slot.scheduledDate,routineId:slot.routineId,rotationIndex:slot.rotationIndex};S.cur=session;S.editingId=null;ci=0;dr={};view='today';qolCloseModal();nav();go();
+ let session;try{session=routineSession(routine);}catch(error){return toast(error.message);}S.cur={...session,planLink:{programmeId:p.id,slotId:slot.id,scheduledDate:slot.scheduledDate,routineId:slot.routineId,rotationIndex:slot.rotationIndex}};S.editingId=null;ci=0;dr={};view='today';qolCloseModal();nav();go();
 };
 A.planSkip=d=>{
  const slot=plannedSlots().find(s=>s.id===d.v),p=slot&&programmeList().find(p=>p.id===slot.programmeId);if(!slot||!p||slot.status!=='planned'||SlatPlanning.completed(slot,S.workouts).length)return;
@@ -61,7 +61,8 @@ A.planMove=d=>{
 };
 function planDayMarkup(day,tabDate,html){
  if(!day)return html;const slots=plannedSlots().filter(s=>s.scheduledDate===day.date),pending=slots.filter(s=>s.status==='planned'&&!SlatPlanning.completed(s,S.workouts).length),skipped=slots.filter(s=>s.status==='skipped'),label=(pending.length?pending.length+' planned':'')+(pending.length&&skipped.length?' · ':'')+(skipped.length?skipped.length+' skipped':'');
- if(!label)return html;return html.replace('class="activity-day ','class="activity-day '+(pending.length?'planned-day ':'')+(skipped.length?'skipped-day ':'')).replace('aria-label="','aria-label="'+esc(label)+' · ').replace('title="','title="'+esc(label)+' · ');
+ if(label)html=html.replace('class="activity-day ','class="activity-day '+(pending.length?'planned-day ':'')+(skipped.length?'skipped-day ':'')).replace('aria-label="','aria-label="'+esc(label)+' · ').replace('title="','title="'+esc(label)+' · ');
+ return typeof goalCalendarCell==='function'?goalCalendarCell(day,html,pending,skipped):html;
 }
 const planningToday=V.today;V.today=function(){const html=planningToday();return S.cur?html+progressionMarkup():html+programmeMarkup();};
 const planningHistory=V.history;V.history=function(){return planningHistory()+`<section class="note planned-list"><b>Planned sessions</b><small>An outline is a plan; filled activity always comes from completed history. Only the next slot per programme is scheduled. Finish creates the following slot.</small>${plannedSlots().filter(s=>!SlatPlanning.completed(s,S.workouts).length).sort((a,b)=>b.scheduledDate.localeCompare(a.scheduledDate)).slice(0,100).map(s=>`<div class="row programme-row"><span>${esc(s.scheduledDate)} · ${esc(s.routineName)} · ${s.status==='skipped'?'Skipped':s.scheduledDate<iso()?'Missed planned date':'Planned'}</span><div class=chips>${s.status==='planned'?`<button class=pill data-a=planStart data-v="${esc(s.id)}">Start</button><button class=pill data-a=planMove data-v="${esc(s.id)}">Move</button>`:''}</div></div>`).join('')||'<p>No uncompleted plan slots.</p>'}</section>`;};

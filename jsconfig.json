@@ -24,6 +24,8 @@
     "diagnostics-view.js",
     "training-tools.js",
     "planning-tools.js",
+    "session-tools.js",
+    "goals-tools.js",
     "persistence.js",
     "dialog-view.js",
     "enhanced-features.js",

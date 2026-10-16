@@ -969,5 +969,8 @@ body.has-rest nav{grid-row:3;}
 .programme-row{flex-wrap:wrap;gap:12px}.programme-row>div,.programme-row>span,.programme-row>b{min-width:0;overflow-wrap:anywhere}.programme-card .enhanced-heading,.progression-card .enhanced-heading{flex-wrap:wrap;gap:10px}
 .planned-list>small{display:block;margin-block:10px}.activity-day.planned-day{outline:2px solid var(--ac);outline-offset:1px}.activity-day.skipped-day{box-shadow:inset 0 0 0 1px var(--mu)}
 .programme-card button,.progression-card button,.programme-row button{min-height:44px;white-space:normal}
+.session-tools .chips,.calendar-layer-filter{flex-wrap:wrap;gap:8px}.session-tools p,.adherence-card,.goals-card{overflow-wrap:anywhere}.goals-card .enhanced-heading{flex-wrap:wrap;gap:10px}.goal-result{display:grid;gap:8px;margin-block:18px}.goal-result p{margin:0}.goal-result progress{width:100%;accent-color:var(--ac)}
+.activity-day.filtered-day{opacity:.15}.calendar-layer-filter{margin-block:14px}.calendar-layer-filter [aria-pressed=true]{background:var(--ac);color:#fff}
+.qol-form fieldset{min-width:0;grid-column:1/-1;border:1px solid var(--ln);border-radius:14px;padding:12px}.qol-form fieldset label,.qol-form label:has(input[type=checkbox]){display:flex;flex-direction:row;align-items:center;gap:10px;min-height:44px;overflow-wrap:anywhere}.qol-form input[type=checkbox]{width:24px;max-width:24px;min-height:24px;flex:0 0 24px;accent-color:var(--ac)}
 .inspector-row dt,.inspector-row dd{min-width:0;overflow-wrap:anywhere;margin:0}.inspector-row dt{color:var(--mu)}
 @media(max-width:380px){.inspector-row{grid-template-columns:minmax(0,1fr);gap:4px}.quick-exercise-row{flex-wrap:wrap}.quick-exercise-row .exercise-option{flex-basis:75%}}
