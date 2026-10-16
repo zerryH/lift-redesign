@@ -1,6 +1,11 @@
 /* Slat 5.6 style contract: foundation defaults in one named layer;
    authoritative component rules follow without importance escalation.
    Only reduced-motion overrides use !important to suppress inline animation. */
+.recovery-status{display:grid;gap:4px;margin:16px 0;overflow-wrap:anywhere;}
+.recovery-status dt{font-weight:600;}
+.recovery-status dd{margin:0 0 10px;color:var(--mu);}
+#recovery-content .pill{min-height:44px;max-width:100%;height:auto;white-space:normal;margin-bottom:8px;}
+#recovery-content section{overflow-wrap:anywhere;}
 @layer slat-foundation {
 :root{--bg:#0d0915;--cd:#171121;--fg:#f7f3ff;--mu:#857b91;--ln:#2a2035;--ac:#756bff;--ac2:#52a7ff;}
 [data-d="0"]{--bg:#f6f4fa;--cd:#fff;--fg:#17131f;--mu:#7d778a;--ln:#e4e0ec;--ac:#6758f5;--ac2:#2787ee;}

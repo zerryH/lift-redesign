@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {boot,base,workout} from './support/runtime.mjs';
+const data={version:4,workouts:[workout()],bw:base().bw,settings:base().set};
+Object.defineProperty(data,'__proto__',{value:{inheritedRecoveryMarker:'must stay ordinary JSON'},enumerable:true});
+data.constructor={ordinary:'retained JSON'};
+const z=await boot({...base(),rankingVersion:11});await z.h.importBackup(data);
+assert(Object.hasOwn(z.h.S,'__proto__'));assert.equal(z.h.S.inheritedRecoveryMarker,undefined);
+const saved=z.store.get('liftlog-state'),again=await boot(JSON.parse(saved));
+assert(Object.hasOwn(again.h.S,'__proto__'),'reload must preserve prototype-like fields as own JSON properties');
+assert.equal(again.h.S.inheritedRecoveryMarker,undefined,'restored JSON must not alter the live state prototype');
+assert.equal(Object.getPrototypeOf(again.h.S).inheritedRecoveryMarker,undefined);
+assert.equal(again.h.S.__proto__.inheritedRecoveryMarker,'must stay ordinary JSON');
+assert.equal(again.h.S.constructor.ordinary,'retained JSON');assert.deepEqual([...z.errors,...again.errors],[]);
+console.log('Prototype-like backup fields remain ordinary own JSON data through import, save and reload');

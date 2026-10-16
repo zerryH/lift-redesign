@@ -19,6 +19,7 @@
     "performance-contract.js",
     "data-integrity.js",
     "recovery-contract.js",
+    "recovery-store.js",
     "persistence.js",
     "dialog-view.js",
     "enhanced-features.js",
