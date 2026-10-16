@@ -198,6 +198,36 @@ try{
    await clickControl(page.locator('[data-a=sessionView]'));assert.equal(await page.getByRole('dialog',{name:'Free workout',exact:true}).count(),1);await clickControl(page.locator('#session-routine'));assert.equal(await page.locator('#routine-name').inputValue(),'Free workout');await clickControl(page.locator('button[data-qol=closeModal]'));
    assert.equal(await page.locator('#n').getAttribute('inert'),null);assert.equal(await page.locator('#v').getAttribute('inert'),null);await clickTab('settings');assert.equal(await page.getByRole('heading',{name:'Your profile',exact:true}).count(),1);
   });
+  await check(name+': dialog keyboard undo cannot remove or restore hidden workout sets',async()=>{
+   const cur={...workout(),ex:[{n:'Bench Press',sets:[{id:'set:dialog-first',kg:60,reps:8,t:''},{id:'set:dialog-second',kg:65,reps:7,t:''}]}]};
+   await open({...base(),cur},undefined,'[data-a=log]');
+   await page.locator('#qol-note').fill('Keep this unlogged note');await saved();
+   const observeUndo=()=>{window.slatDialogKeys=[];window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='z')window.slatDialogKeys.push({tag:e.target.tagName,prevented:e.defaultPrevented});});};
+   await page.addInitScript(observeUndo);await page.evaluate(observeUndo);
+   const original=await page.evaluate(()=>JSON.stringify(S.cur.ex[0].sets));
+   for(const priorRemoval of [false,true]){
+    if(priorRemoval){await page.keyboard.press('Control+z');await saved();assert.equal(await page.locator('.srow').count(),1);}
+    await clickControl(page.locator('[data-a=ds]').first());await page.locator('.action-card').waitFor();
+    const before=await page.evaluate(async()=>{await saveTail;return {state:JSON.stringify(S),stored:localStorage.getItem('liftlog-state')};});
+    for(const modifier of ['Control','Meta']){
+     await page.keyboard.press(modifier+'+z');
+     assert.equal(await page.evaluate(()=>window.slatDialogKeys.at(-1).prevented),true,'non-editor dialog focus must block browser fallback undo');
+     assert.deepEqual(await page.evaluate(async()=>{await saveTail;return {state:JSON.stringify(S),stored:localStorage.getItem('liftlog-state')};}),before,'a dialog shortcut must not change memory or durable data');
+    }
+    await clickControl(page.locator('[data-action-cancel]'));await page.locator('#action-modal').waitFor({state:'hidden'});
+    if(priorRemoval){await page.keyboard.press('Control+z');await saved();assert.equal(await page.evaluate(()=>JSON.stringify(S.cur.ex[0].sets)),original);}
+   }
+   await clickControl(page.locator('[data-a=ds]').first());await page.locator('.action-card').waitFor();
+   await page.keyboard.press('Control+z');await clickControl(page.locator('[data-action-confirm]'));await page.locator('#action-modal').waitFor({state:'hidden'});
+   assert.deepEqual((await saved()).cur.ex[0].sets.map(s=>s.id),['set:dialog-second']);
+   await page.keyboard.press('Control+z');await saved();assert.equal(await page.evaluate(()=>JSON.stringify(S.cur.ex[0].sets)),original);
+   assert.equal(await page.locator('#qol-note').inputValue(),'Keep this unlogged note');
+   await page.reload();await page.locator('[data-a=log]').waitFor();
+   assert.equal(JSON.stringify((await saved()).cur.ex[0].sets),original);assert.equal(await page.locator('#qol-note').inputValue(),'Keep this unlogged note');
+   await clickControl(page.locator('[data-a=editSet]').first());await page.locator('#edit-note').fill('Unconfirmed text edit');await page.locator('#edit-note').press('Control+z');
+   assert.equal(await page.evaluate(()=>window.slatDialogKeys.at(-1).prevented),false,'native text-field undo remains available');
+   assert.equal(JSON.stringify((await saved()).cur.ex[0].sets),original);await page.keyboard.press('Escape');await page.locator('.qol-modal').waitFor({state:'hidden'});
+  });
   await check(name+': closing feature dialogs leaves the next control ready immediately',async()=>{
    await open({...base(),workouts:[workout()]});await clickTab('history');
    for(const action of ['progress','plate']){

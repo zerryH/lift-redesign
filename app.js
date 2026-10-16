@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.46';
+const BUILD_VERSION='5.7.47';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 var LiftRankingEngine=globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -896,9 +896,10 @@ document.addEventListener('change',async e=>{
   const d=SlatData.validateBackup(JSON.parse(raw),{}, {importText:true});showBackupPreview(d,file.name||'Backup file');
  }catch(err){if(revision===backupReadRevision&&stateMutationAllowed())toast(err?.message||'Not a valid backup file');}
 });
-document.addEventListener('keydown',/** @param {KeyboardEvent & {target: HTMLElement}} e */ e=>{if(finishing||importing||storageConflict)return;const t=e.target,inp=t.tagName=='INPUT';
+document.addEventListener('keydown',/** @param {KeyboardEvent & {target: HTMLElement}} e */ e=>{if(finishing||importing||storageConflict)return;const t=e.target,inp=t.tagName=='INPUT',editor=['INPUT','TEXTAREA','SELECT'].includes(t.tagName);
+ if(topDialog()){if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!editor)e.preventDefault();return;}
  if(e.key=='/'&&!inp){const q=$('#q');if(q){e.preventDefault();q.focus()}}
- if((e.ctrlKey||e.metaKey)&&e.key=='z'&&!['INPUT','TEXTAREA','SELECT'].includes(t.tagName)){if(S?.undo){e.preventDefault();A.undo();}else if(S?.cur?.ex?.[ci]?.sets.length){e.preventDefault();const x=S.cur.ex[ci],index=x.sets.length-1;retainRemoval('set',x.sets[index],{workoutId:S.cur.id,entryId:x.entryId,index});x.sets.pop();go();}}
+ if((e.ctrlKey||e.metaKey)&&e.key=='z'&&!editor){if(S?.undo){e.preventDefault();A.undo();}else if(S?.cur?.ex?.[ci]?.sets.length){e.preventDefault();const x=S.cur.ex[ci],index=x.sets.length-1;retainRemoval('set',x.sets[index],{workoutId:S.cur.id,entryId:x.entryId,index});x.sets.pop();go();}}
  if(e.key=='Enter'&&t.id=='q')A.addx();});
 async function sw(){if(location.protocol==='file:'||!('serviceWorker' in navigator))return;try{const r=watchSW(await swInstall());if(!r)return;if(navigator.onLine!==false&&r.waiting)promptSWUpdate(r.waiting)}catch{console.warn('Slat service worker unavailable; app will continue without it')}}
 
