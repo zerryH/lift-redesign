@@ -4,14 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.46**
+**Build: 5.7.47**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
 
-New in 5.7.46: A delayed notification-permission result cannot enable reminders in a paused tab or a replacement backup. A fresh gesture can still use the device permission. Web reminders remain static. See [the permission-race fix note](docs/fixes-5.7.46.md).
+New in 5.7.47: App-level keyboard shortcuts pause while a dialog is open. Ctrl/Cmd+Z can no longer remove or restore workout sets behind a confirmation, and normal workout undo resumes on close. Text-field undo remains native. See [the dialog shortcut fix note](docs/fixes-5.7.47.md).
 
 New in 5.7.41: older band-exercise sets are visible through a separate Legacy recorded reps chart metric. Modern band repetitions stay separate, and original numeric loads remain in History without being treated as band resistance. See [the legacy band-chart fix note](docs/fixes-5.7.41.md).
 

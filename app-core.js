@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.46';
+const BUILD_VERSION='5.7.47';
 /*BEGIN:RANKING_ENGINE*/
 /*END:RANKING_ENGINE*/
 /*BEGIN:CATALOGUE_MODEL*/
@@ -632,7 +632,7 @@ document.addEventListener('change',async e=>{
   const d=SlatData.validateBackup(JSON.parse(raw),{}, {importText:true});showBackupPreview(d,file.name||'Backup file');
  }catch(err){if(revision===backupReadRevision&&stateMutationAllowed())toast(err?.message||'Not a valid backup file');}
 });
-document.addEventListener('keydown',/** @param {KeyboardEvent & {target: HTMLElement}} e */ e=>{if(finishing||importing||storageConflict)return;const t=e.target,inp=t.tagName=='INPUT';
+document.addEventListener('keydown',/** @param {KeyboardEvent & {target: HTMLElement}} e */ e=>{if(finishing||importing||storageConflict||topDialog())return;const t=e.target,inp=t.tagName=='INPUT';
  if(e.key=='/'&&!inp){const q=$('#q');if(q){e.preventDefault();q.focus()}}
  if((e.ctrlKey||e.metaKey)&&e.key=='z'&&!['INPUT','TEXTAREA','SELECT'].includes(t.tagName)){if(S?.undo){e.preventDefault();A.undo();}else if(S?.cur?.ex?.[ci]?.sets.length){e.preventDefault();const x=S.cur.ex[ci],index=x.sets.length-1;retainRemoval('set',x.sets[index],{workoutId:S.cur.id,entryId:x.entryId,index});x.sets.pop();go();}}
  if(e.key=='Enter'&&t.id=='q')A.addx();});
