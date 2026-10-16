@@ -553,6 +553,30 @@ try{
    for(const unit of ['lb','kg','lb']){await clickControl(page.locator('[data-a=gu][data-v='+unit+']'));await clickControl(page.locator('[data-a=calc]'));assert.deepEqual(await page.evaluate(()=>({w:gr.res.w,b:gr.res.b,x:gr.res.x})),original);}
    await clickControl(page.locator('[data-a=saveCheck]'));assert.equal((await saved()).checks['Bench Press'].w,60.123456);await page.keyboard.press('Escape');await clickTab('settings');await clickControl(page.locator('[data-a=privacy]'));await page.locator('#legal-sheet').waitFor();await page.keyboard.press('Escape');await page.locator('#legal-sheet').waitFor({state:'detached'});
   });
+  await check(name+': calculator unit changes refresh rank cards without saving and keep workout drafts exact',async()=>{
+   const entryId='exercise:unit-refresh-draft',initial={...base(),set:{...base().set,restEnabled:false},workouts:[workout('Bench Press',60.123456,8)],cur:{...workout(),id:2,ex:[{n:'Bench Press',entryId,sets:[]}],drafts:{[entryId]:{kg:67.25,reps:9,weightText:'67,25',weightUnit:'kg',note:'Keep my unit-switch draft',rpe:'8.5'}}}};
+   await open(initial,undefined,'[data-a=log]');await clickTab('ranks');
+   for(const [lift,load] of [['Bench Press','60.123456'],['Assisted Dip','20.123456']]){
+    await clickControl(page.locator('#v [data-a=gr]:not([data-v])'));
+    for(const [key,value] of [['n',lift],['w',load],['r','8'],['b','80.234567'],['h','178']])await page.locator('[data-g='+key+']').fill(value);
+    await clickControl(page.locator('[data-a=calc]'));await clickControl(page.locator('[data-a=saveCheck]'));await waitCondition(()=>!importing);await page.keyboard.press('Escape');await page.locator('#sh').waitFor({state:'detached'});
+   }
+   const before=await page.evaluate(()=>({workouts:S.workouts,drafts:S.cur.drafts,checks:S.checks}));
+   for(const [lift,unit,escape] of [['Bench Press','lb',false],['Assisted Dip','kg',true]]){
+    const card=page.locator('#v .row').filter({has:page.locator('[data-a=gr][data-v="'+lift+'"]')});
+    await clickControl(card.locator('[data-a=gr]'));await clickControl(page.locator('[data-a=calc]'));const original=await page.evaluate(()=>({w:gr.res.w,b:gr.res.b,x:gr.res.x}));
+    await clickControl(page.locator('[data-a=gu][data-v='+unit+']'));assert.equal(await page.evaluate(()=>gr.res),null);
+    const expected=await page.evaluate(({lift,unit})=>{const r=S.checks[lift],f=v=>fm(cv(v,unit));return exerciseMeta(lift).loadMode==='assisted'?'Assistance '+f(Math.abs(r.w))+' '+unit+' · effective '+f(Math.max(0,num(r.b)-Math.abs(num(r.w))))+' '+unit:f(r.w)+' '+unit+' × '+r.r+' at '+f(r.b)+' '+unit+' BW';},{lift,unit});
+    assert((await card.innerText()).includes(expected),'rank card must refresh as soon as the shared unit changes');
+    await clickControl(page.locator('[data-a=calc]'));assert.deepEqual(await page.evaluate(()=>({w:gr.res.w,b:gr.res.b,x:gr.res.x})),original);
+    if(escape)await page.keyboard.press('Escape');else await clickControl(page.getByRole('dialog',{name:'Rank calculator',exact:true}).getByRole('button',{name:'Close',exact:true}));
+    await page.locator('#sh').waitFor({state:'detached'});assert((await card.innerText()).includes(expected),'closing without Save check cannot restore stale units');
+    assert.deepEqual(await page.evaluate(()=>({workouts:S.workouts,drafts:S.cur.drafts,checks:S.checks})),before);
+   }
+   await clickTab('today');assert.equal(await page.locator('#qol-weight').inputValue(),'67,25');assert.equal(await page.locator('#qol-reps').inputValue(),'9');assert.equal(await page.locator('#qol-note').inputValue(),'Keep my unit-switch draft');
+   await clickControl(page.locator('[data-a=log]'));await page.evaluate(()=>saveTail);const logged=(await saved()).cur.ex[0].sets[0];assert.equal(logged.kg,67.25);assert.equal(logged.reps,9);assert.equal(logged.note,'Keep my unit-switch draft');assert.equal(logged.rpe,8.5);
+   await page.reload();await page.locator('[data-a=log]').waitFor();const restored=await saved();assert.deepEqual(restored.cur.ex[0].sets[0],logged);assert.deepEqual(restored.workouts,before.workouts);assert.deepEqual(restored.checks,before.checks);assert.equal(restored.set.unit,'kg');
+  });
   await check(name+': two real tabs block the stale writer',async()=>{
    await open();const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await second.locator('#storage-conflict').waitFor();assert.equal(await second.locator('#storage-conflict').getAttribute('role'),'alertdialog');await second.close();
   });
