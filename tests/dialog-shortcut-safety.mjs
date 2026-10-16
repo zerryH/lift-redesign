@@ -24,7 +24,7 @@ for(const modifier of ['ctrlKey','metaKey'])for(const recovery of [false,true]){
  const prevented=await key(z,modifier);
  assert.equal(JSON.stringify(z.h.S),before,'an open confirmation must prevent hidden workout undo');
  assert.equal(z.store.get('liftlog-state'),stored,'a dialog shortcut cannot write hidden changes');
- assert.equal(prevented,false,'dialog-local keyboard behavior is not cancelled');
+ assert.equal(prevented,true,'non-editor dialog controls cannot invoke browser-native undo behind the dialog');
  assert.equal(await key(z,modifier,'INPUT'),false,'text fields keep their native undo');
  assert.equal(JSON.stringify(z.h.S),before);
  open=false;

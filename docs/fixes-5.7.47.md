@@ -8,7 +8,9 @@ If an Undo record already exists, the same shortcut can instead restore it behin
 
 ## Focused fix
 
-The global quick-action keyboard handler now defers to the existing visible-dialog lifecycle. It does not call `preventDefault`, so dialog controls and native text-input undo remain available. Normal Ctrl/Cmd+Z recovery resumes after closing the dialog; Escape, Tab and keyboard activation retain their own handlers.
+The global quick-action keyboard handler now defers to the existing visible-dialog lifecycle. On non-editor dialog controls it consumes Ctrl/Cmd+Z, preventing both app undo and the browser's fallback undo from reaching behind the dialog. Input, textarea and select controls retain native undo. Normal workout recovery resumes after closing the dialog; Escape, Tab and keyboard activation retain their own handlers.
+
+The first PR browser attempt caught a remaining issue in an earlier candidate: simply returning from the handler preserved the sets but still allowed a save timestamp/revision change during the real shortcut. The completed log is retained on the PR. The corrected candidate also blocks default undo on non-editor dialog controls, while explicitly testing that text-field undo is not cancelled. The exact memory/storage assertions remain unchanged.
 
 The isolated regression covers Ctrl and Cmd with and without a prior removal, unchanged memory/storage while a dialog is open, native text-field handling, exactly one confirmed deletion, subsequent Undo and reload. The Chromium/WebKit journey uses real keyboard input in the delete confirmation and checks exact saved set identities and data, dismissal, confirmation, normal undo and reload.
 
