@@ -817,10 +817,12 @@ try{
     const evidence={name,round,phase:'empty startup'};report.localFileReloads.push(evidence);
     try{
      await open(null,undefined,'[data-a=start]',new URL('file://'+path.join(root,'lift-local.html')).href);
+     // Exercise visible onboarding deterministically once per engine, including both skip-action buttons.
+     if(round===1){await page.getByRole('dialog',{name:'Slat tutorial',exact:true}).waitFor();assert.equal(await page.locator('#tutorial-layer').getByRole('button',{name:'Skip',exact:true}).count(),1);}
      const state={...base(),cur:workout('Cable Curl',25)};
      await page.evaluate(async initial=>{await importBackup(initial);await saveTail;},{...state,version:4,settings:state.set});
      // The fresh page may have opened onboarding before the imported preferences arrived.
-     const skip=page.locator('#tutorial-layer [data-tut=skip]');if(await skip.isVisible())await clickControl(skip);
+     const skip=page.locator('#tutorial-layer').getByRole('button',{name:'Skip',exact:true});if(await skip.isVisible())await clickControl(skip);await page.locator('#tutorial-layer').waitFor({state:'hidden'});
      await page.locator('[data-a=log]').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('slat-test-seeded')),null);
      const note='Local file draft '+round;await page.locator('#qol-note').fill(note);
      await waitCondition(expected=>{const state=JSON.parse(localStorage.getItem('liftlog-state')||'null');return Object.values(state?.cur?.drafts||{}).some(d=>d?.note===expected)},note);await page.evaluate(()=>saveTail);
