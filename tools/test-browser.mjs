@@ -170,8 +170,9 @@ try{
    assert.equal((await saved()).cur.name,'Saved by second tab','latest stored copy remains untouched');
    assert.equal((await saved()).cur.ex[0].sets[0].note,undefined);
    await page.keyboard.press('Tab');assert(await page.locator('#conflict-reload').evaluate(el=>document.activeElement===el));
+   await page.keyboard.press('Tab');assert(await page.locator('#conflict-diagnostics').evaluate(el=>document.activeElement===el));
    await page.keyboard.press('Tab');assert(await page.locator('#conflict-export').evaluate(el=>document.activeElement===el));
-   await page.keyboard.press('Shift+Tab');assert(await page.locator('#conflict-reload').evaluate(el=>document.activeElement===el));
+   await page.keyboard.press('Shift+Tab');assert(await page.locator('#conflict-diagnostics').evaluate(el=>document.activeElement===el));
    await page.keyboard.press('Escape');assert.equal(await page.locator('#storage-conflict').count(),1);
    const downloadReady=page.waitForEvent('download');await clickControl(page.locator('#conflict-export'));const download=await downloadReady;
    const recovery=JSON.parse(await fs.readFile(await download.path(),'utf8'));
