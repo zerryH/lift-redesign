@@ -1,0 +1,38 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {base,workout} from './support/runtime.mjs';
+import {recoveryBoot,copy} from './support/recovery.mjs';
+
+// One real recovery envelope must carry every roadmap feature, including an active queue.
+const z=await recoveryBoot({...base(),rankingVersion:11,cur:{...workout(),id:700,ex:[{n:'Bench Press',exerciseId:'ex001',entryId:'exercise:portable',sets:[]}]}}),h=z.h;
+h.V.today();h.dr={...h.dr,kg:60.123456789,reps:8,note:'Keep this exact note',rpe:'8'};
+const protocol=copy(vm.runInContext("progressionProtocol('Bench Press')",z.ctx)),date=h.iso();
+const group={id:'group:portable',version:1,label:'A',restMode:'round',restSeconds:90};
+h.S.cur.trainingGroups=[group];h.S.cur.ex[0].trainingGroupId=group.id;
+h.S.favourites=['ex001','ex037'];
+h.S.routines=[h.routineFromWorkout(h.S.cur)];
+const routine=h.S.routines[0];
+h.S.programmesV1=[{id:'programme:portable',name:'Portable plan',mode:'weekdays',routineIds:[routine.id],weekdays:[0,2,4],cursor:0,paused:true}];
+h.S.planSlots=[{id:'slot:portable',programmeId:'programme:portable',routineId:routine.id,routineName:routine.name,scheduledDate:date,rotationIndex:0,status:'planned'}];
+h.S.cur.planLink={programmeId:'programme:portable',slotId:'slot:portable',routineId:routine.id,scheduledDate:date,rotationIndex:0};
+const rule={id:'rule:portable',version:1,exerciseId:'ex001',setupLabel:'',protocol,minReps:8,maxReps:12,targetSets:2,incrementKg:2.5,incrementReps:1,sourceUnit:'kg',enabled:true,band:''};
+h.S.progressionRules=[rule];
+h.S.progressionDecisions=[{id:'decision:portable',ruleId:rule.id,ruleVersion:1,ruleSnapshot:copy(rule),workoutId:699,sourceSetIds:['set:prior'],action:'ignored',at:Date.now(),target:{kg:62.623456789,reps:8,band:''},why:'Explicit review; no history rewrite'}];
+h.S.warmupPresets=[{id:'warmup:portable',version:1,name:'Portable warm-up',exerciseId:'ex001',setupLabel:'',protocol,steps:[{kg:20.123456789,reps:8,seconds:30,meters:20,band:''},{kg:40.987654321,reps:5,seconds:30,meters:20,band:''}]}];
+h.S.goalsV1=[{id:'goal:portable',version:1,kind:'sessions',name:'Portable goal',targetSessions:3,paused:true}];
+h.S.additionalFeatureData={precise:0.123456789,ids:['unknown:future']};
+await h.A.warmupApply({v:'warmup:portable'});assert.equal(h.S.cur.ex[0].sets.length,0);h.A.log();await h.flush();
+const before=copy(h.S),portableKeys=['favourites','routines','programmesV1','planSlots','progressionRules','progressionDecisions','warmupPresets','goalsV1','cur','logUndo','additionalFeatureData'];
+assert.equal(await z.recovery.captureRecovery('manual'),true);
+const item=(await z.recovery.recoveryContents(h.X.catalogue)).items.find(x=>x.manifest.reason==='manual');assert(item.valid);
+for(const key of portableKeys)assert.deepEqual(copy(item.data[key]),before[key],'recovery preserves '+key);
+const summary=h.SlatData.restoreSummary(item.data,h.X.catalogue);
+assert.equal(summary.favourites,2);assert.equal(summary.programmes,1);assert.equal(summary.progressionRules,1);assert.equal(summary.progressionDecisions,1);assert.equal(summary.warmupPresets,1);assert.equal(summary.goals,1);assert.equal(summary.groups,2);
+const invalid=copy(item.data);invalid.cur.drafts['exercise:portable'].warmup='false';assert.throws(()=>h.SlatData.validateBackup(invalid,h.X.catalogue),/draft.warmup/);
+await h.importBackup({version:4,workouts:[],bw:[],settings:{unit:'kg'}});for(const key of ['favourites','programmesV1','planSlots','progressionRules','progressionDecisions','warmupPresets','goalsV1'])assert.deepEqual(copy(h.S[key]),[],'old backups default '+key);
+await h.importBackup((await z.recovery.verifyBackupContents(item.envelope)).data);
+for(const key of portableKeys)assert.deepEqual(copy(h.S[key]),before[key],'restore preserves '+key);
+const reloaded=await recoveryBoot(copy(JSON.parse(z.store.get('liftlog-state'))));reloaded.h.V.today();assert.equal(reloaded.h.dr.kg,40.987654321);assert(reloaded.h.dr.warmup);await reloaded.h.A.undoLog();assert.equal(reloaded.h.S.cur.ex[0].warmupQueue.index,0);assert.equal(reloaded.h.dr.note,'Keep this exact note');
+const defaults=vm.runInContext('resetDefaults()',z.ctx);for(const key of ['favourites','programmesV1','planSlots','progressionRules','progressionDecisions','warmupPresets','goalsV1'])assert.deepEqual(copy(defaults[key]),[]);
+assert.deepEqual([...z.errors,...reloaded.errors],[]);
+console.log('All roadmap state survives a checksummed recovery/restore/reload, with exact inputs, active warm-up Undo, groups, planned slots and unknown JSON retained; old backups/reset use empty optional features.');

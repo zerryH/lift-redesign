@@ -24,7 +24,8 @@ A.pinOrder=()=>showPinOrder();
 A.pinMove=async d=>{const ids=[...favouriteIds()],i=ids.indexOf(d.v),j=i+Number(d.step);if(i<0||![-1,1].includes(Number(d.step))||j<0||j>=ids.length)return;[ids[i],ids[j]]=[ids[j],ids[i]];if(await saveFavourites(ids))showPinOrder();};
 A.pinRemove=async d=>{if(await saveFavourites(favouriteIds().filter(id=>id!==d.v)))showPinOrder();};
 function quickLogAttempt(event,action){
- const x=S.cur?.ex?.[ci],key=JSON.stringify([S.cur?.id,x?.entryId,dr.kg,dr.reps,dr.seconds,dr.meters,dr.band,quickInputRevision]),at=Number(event.timeStamp);
+ // Automatic preset preparation is not a new user intent. Only input/control events are.
+ const x=S.cur?.ex?.[ci],key=JSON.stringify([S.cur?.id,x?.entryId,quickInputRevision]),at=Number(event.timeStamp);
  if(Number.isFinite(at)&&quickLastAction?.key===key&&at>=quickLastAction.at&&at-quickLastAction.at<350)return false;
  const logged=action();if(logged&&Number.isFinite(at))quickLastAction={key,at};return logged;
 }
@@ -34,9 +35,9 @@ document.addEventListener('click',e=>{const control=/** @type {HTMLElement} */(/
 function loggedUndoTarget(){const u=S.logUndo;if(!u||S.cur?.id!==u.workoutId)return null;const x=S.cur.ex.find(x=>x.entryId===u.entryId),index=x?.sets.findIndex(z=>z.id===u.setId);return x&&index>=0?{u,x,index}:null;}
 function loggedUndoMarkup(){const target=loggedUndoTarget();return target?`<section class="note logged-undo" role=status><span>Set logged · ${esc(displayExercise(target.x.n))}</span><button class=pill data-a=undoLog>Undo log</button></section>`:'';}
 A.undoLog=async()=>{
- if(!stateMutationAllowed())return;const target=loggedUndoTarget();if(!target)return;const previous=JSON.parse(JSON.stringify(S));finishing=true;
- target.x.sets.splice(target.index,1);S.logUndo=null;
- try{if(!await save()){S=previous;rebuildRegistry();toast('Undo was not saved. The set is still present.');return;}qolStopRest();toast('Logged set undone');}finally{finishing=false;render();}
+ if(!stateMutationAllowed())return;const target=loggedUndoTarget();if(!target)return;const previous=JSON.parse(JSON.stringify(S)),previousDraft={...dr};finishing=true;
+ const [removed]=target.x.sets.splice(target.index,1);if(typeof restoreWarmupUndo==='function')restoreWarmupUndo(target.u,target.x,removed);S.logUndo=null;
+ try{if(!await save()){S=previous;dr=previousDraft;rebuildRegistry();toast('Undo was not saved. The set is still present.');return;}qolStopRest();toast('Logged set undone');}finally{finishing=false;render();}
 };
 const trainingToday=V.today;V.today=function(){return trainingToday()+loggedUndoMarkup();};
 const trainingSettings=V.settings;V.settings=function(){return trainingSettings()+`<section class=note><b>Comparison settings</b><p class=support-copy>Changing reference table, age, height or adjustment settings recalculates comparisons using current standards. It never rewrites your original set loads or recorded context. Tiers are product heuristics, not population percentiles.</p></section>`;};
