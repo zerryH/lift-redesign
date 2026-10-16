@@ -22,6 +22,7 @@
     "recovery-store.js",
     "diagnostics-contract.js",
     "diagnostics-view.js",
+    "training-tools.js",
     "persistence.js",
     "dialog-view.js",
     "enhanced-features.js",

@@ -955,3 +955,15 @@ body.has-rest nav{grid-row:3;}
 .qol-last>div>small,.qol-last>div>b{display:block;overflow-wrap:anywhere;}
 .qol-last>div>b{margin:4px 0;line-height:1.35;}
 .qol-last>button{flex-shrink:0;}
+/* Optional training tools retain the shared glass surfaces and large controls. */
+.quick-picker-tabs{flex-wrap:wrap;margin-block:10px}
+.quick-picker-tabs [aria-pressed=true]{background:var(--ac);color:#fff}
+.quick-exercise-row{display:flex;gap:6px;align-items:stretch;min-width:0}
+.quick-exercise-row .exercise-option{flex:1;min-width:0;width:auto}
+.pin-exercise{flex:0 0 auto;min-width:44px;min-height:44px;align-self:center}
+.pin-order-row,.logged-undo{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.pin-order-row b{overflow-wrap:anywhere}
+.rank-inspect{cursor:pointer;min-width:44px;min-height:44px;white-space:normal}
+.rank-source dl{margin:10px 0 0}.inspector-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--ln)}
+.inspector-row dt,.inspector-row dd{min-width:0;overflow-wrap:anywhere;margin:0}.inspector-row dt{color:var(--mu)}
+@media(max-width:380px){.inspector-row{grid-template-columns:minmax(0,1fr);gap:4px}.quick-exercise-row{flex-wrap:wrap}.quick-exercise-row .exercise-option{flex-basis:75%}}
