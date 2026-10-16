@@ -31,7 +31,7 @@ for(const n of ['Bench Press','Assisted Pull-Up Machine','Resistance Band Curl']
  h.S.workouts[0].ex[0].sets[1].reps=12;h.S.workouts[0].ex[0].target.sets=3;assert(!get().increase,'partial routine target cannot increase');h.S.workouts[0].ex[0].target.sets=2;
  for(const set of h.S.workouts[0].ex[0].sets)set.equipmentContext.label='Gym B';assert.equal(get(),null,'different setup is not comparable');for(const set of h.S.workouts[0].ex[0].sets)set.equipmentContext.label='Gym A';
  if(band){for(const set of h.S.workouts[0].ex[0].sets)set.band='Blue';assert.equal(get(),null,'different bands are not comparable');for(const set of h.S.workouts[0].ex[0].sets)set.band='Red';}
- if(assisted){const invalid={...copy(h.S),version:4,settings:copy(h.S.set),progressionDecisions:[{id:'decision:invalid',ruleId:rule.id,ruleVersion:1,ruleSnapshot:copy(rule),workoutId:10,sourceSetIds:['set:one'],action:'edited',at:1,target:{kg:100,reps:8,band:''},why:'User edit'}]};assert.throws(()=>h.SlatData.validateBackup(invalid,h.X.catalogue),/progression decision/);}
+ if(assisted){const invalid={...copy(h.S),version:4,settings:copy(h.S.set),progressionDecisions:[{id:'decision:invalid',ruleId:rule.id,ruleVersion:1,ruleSnapshot:copy(rule),workoutId:10,sourceSetIds:['set:one'],action:'edited',at:1,target:{kg:100,reps:8,band:''},why:'User edit'}]};assert.doesNotThrow(()=>h.SlatData.validateBackup(invalid,h.X.catalogue),'new assistance uses the same positive load range as the logger');invalid.progressionDecisions[0].target.kg=2001;assert.throws(()=>h.SlatData.validateBackup(invalid,h.X.catalogue),/progression decision/);}
  h.SlatData.validateBackup({...copy(h.S),version:4,settings:copy(h.S.set)},h.X.catalogue);h.S.progressionRules[0].enabled=false;assert.equal(get(),null);
 }
 {

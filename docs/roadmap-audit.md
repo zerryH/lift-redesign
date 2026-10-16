@@ -11,7 +11,7 @@ The five-page roadmap's functional scope is F01–F08, delivered through recover
 - New programme creation compared two absent IDs and incorrectly rejected the action. An actual linked programme ID is now required for that guard.
 - A presentation callback throwing after an acknowledged optional-feature save reverted only memory. Durable state remains authoritative after acknowledgement.
 - Successful optional-feature saves tried to close their editor while the import/mutation lock was still held. Protection now releases after acknowledgement and before the success callback.
-- Edited assistance targets could exceed the logger's supported range. Targets and decision validation now use the same 60kg maximum.
+- Applying a working progression target could leave a warm-up queue/flag active. Explicit acceptance now switches to a working set and stops that preparation without rewriting logs. New assistance values retain the logger's existing positive 0–2000kg supported range across targets and warm-ups.
 - The calendar's year bounds ignored future plan dates. A year with plans is now reachable before it has completed history.
 - Filtered calendar re-renders could remove every enabled date's keyboard entry point. The selected tab stop now comes from visible enabled dates; empty filters remain readable.
 - Warm-up Undo restored the prepared step but lost the removed set's note/RPE. Both are retained.
