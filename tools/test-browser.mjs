@@ -52,7 +52,13 @@ async function stableScreenshot(filename){
 }
 // WebKit can stop animation-frame polling while timers and DOM updates keep running.
 // Keep the predicate and deadline; poll it independently of animation frames.
-const waitCondition=(predicate,arg,options={})=>page.waitForFunction(predicate,arg,{polling:engineName==='webkit'?100:'raf',...options});
+const waitCondition=async(predicate,arg,options={})=>{
+ if(predicate.constructor.name!=='AsyncFunction')return page.waitForFunction(predicate,arg,{polling:engineName==='webkit'?100:'raf',...options});
+ // Playwright treats an async predicate's Promise as truthy before its result.
+ // Poll the awaited result under the same existing 12-second condition deadline.
+ const deadline=Date.now()+(options.timeout??12000);
+ while(true){const result=await page.evaluate(predicate,arg);if(result)return result;if(Date.now()>=deadline)throw new Error('Async condition did not become true within '+(options.timeout??12000)+'ms');await page.waitForTimeout(100);}
+};
 const clickTab=name=>clickControl(page.locator('[data-a=tab][data-v="'+name+'"]'));
 const saved=()=>page.evaluate(async()=>{await saveTail;return JSON.parse(localStorage.getItem('liftlog-state'));});
 try{

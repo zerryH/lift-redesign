@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const source=fs.readFileSync('tools/test-browser.mjs','utf8'),helper=source.slice(source.indexOf('const waitCondition=async'),source.indexOf('\nconst clickTab='));
+let time=0,calls=0,sync=0,pauses=0;
+const page={evaluate:fn=>fn(),waitForTimeout:async ms=>{time+=ms;pauses++;},waitForFunction:async()=>{sync++;return true;}};
+const ctx=vm.createContext({page,engineName:'webkit',Date:{now:()=>time},Error});vm.runInContext(helper+'\nglobalThis.waitCondition=waitCondition;',ctx);
+await ctx.waitCondition(async()=>++calls>=3);assert.equal(calls,3);assert.equal(pauses,2,'a false awaited result must be polled again');
+await ctx.waitCondition(()=>true);assert.equal(sync,1,'synchronous browser polling retains its existing engine behavior');
+await assert.rejects(ctx.waitCondition(async()=>false,undefined,{timeout:200}),/within 200ms/);assert.equal(time,400,'timeout remains bounded');
+await assert.rejects(ctx.waitCondition(async()=>{throw Error('actual fixture failure');}),/actual fixture failure/);
+console.log('Async browser conditions await and repoll false results under the unchanged deadline; rejections remain failures');
