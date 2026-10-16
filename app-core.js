@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.50';
+const BUILD_VERSION='5.7.51';
 /*BEGIN:RANKING_ENGINE*/
 /*END:RANKING_ENGINE*/
 /*BEGIN:CATALOGUE_MODEL*/
@@ -18,6 +18,8 @@ const BUILD_VERSION='5.7.50';
 /*END:PERFORMANCE_CONTRACT*/
 /*BEGIN:DATA_INTEGRITY*/
 /*END:DATA_INTEGRITY*/
+/*BEGIN:RECOVERY_CONTRACT*/
+/*END:RECOVERY_CONTRACT*/
 const BUILD_LABEL='v'+BUILD_VERSION;
 /**
  * @template {string} K
