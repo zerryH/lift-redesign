@@ -702,6 +702,32 @@ try{
    const paused=await page.evaluate(()=>JSON.stringify(S));await clickControl(page.locator('#conflict-diagnostics'));await page.locator('#diagnostic-preview').waitFor();report=JSON.parse(await page.locator('#diagnostic-preview').inputValue());assert(report.events.some(x=>x.code==='STATE_STALE_TAB'));assert(await page.locator('#v').evaluate(el=>el.inert));assert.equal(await page.locator('#diagnostics-card').getAttribute('aria-modal'),'true');
    await page.keyboard.press('Escape');await page.locator('#diagnostic-preview').waitFor({state:'detached'});assert.equal(await page.locator('#storage-conflict').getAttribute('aria-modal'),'true');assert.equal(await page.evaluate(()=>JSON.stringify(S)),paused);await second.close();
   });
+  await check(name+': ordered pins and Recent survive real picker activation and backup replacement',async()=>{
+   await open({...base(),rankingVersion:11,workouts:[workout()],cur:{...workout(),id:998,ex:[]}},undefined,'[data-a=openx]');
+   await clickControl(page.locator('[data-a=openx]'));await page.locator('#ex-search').fill('Bench Press');await clickControl(page.locator('[data-a=pinExercise][data-v=ex001]'));await saved();
+   await page.locator('#ex-search').fill('Squat');await clickControl(page.locator('[data-a=pinExercise][data-v=ex037]'));await saved();
+   await clickControl(page.locator('[data-a=pinOrder]'));await clickControl(page.locator('[data-a=pinMove][data-v=ex037][data-step="-1"]'));await waitCondition(()=>!importing&&S.favourites[0]==='ex037');assert.deepEqual((await saved()).favourites,['ex037','ex001']);await page.keyboard.press('Escape');await page.keyboard.press('Escape');
+   await page.reload();await page.locator('[data-a=openx]').waitFor();await clickControl(page.locator('[data-a=openx]'));await clickControl(page.locator('[data-a=pickerMode][data-v=Pinned]'));
+   assert.deepEqual(await page.locator('.exercise-option').evaluateAll(els=>els.map(el=>el.dataset.v)),['Squat','Bench Press']);
+   await clickControl(page.locator('[data-a=pickerMode][data-v=Recent]'));assert.deepEqual(await page.locator('.exercise-option').evaluateAll(els=>els.map(el=>el.dataset.v)),['Bench Press']);await page.keyboard.press('Escape');
+   await clickTab('settings');const ready=page.waitForEvent('download');await clickControl(page.locator('[data-a=exp]'));const download=await ready,portable=JSON.parse(await fs.readFile(await download.path(),'utf8'));assert.deepEqual(portable.favourites,['ex037','ex001']);
+   await page.locator('#imp').setInputFiles({name:'pins.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(portable))});assert((await page.locator('.backup-summary').textContent()).includes('Pinned exercises'));await clickControl(page.locator('#confirm-import'));await waitCondition(()=>!importing&&!qolState.modal);assert.deepEqual((await saved()).favourites,portable.favourites);
+  });
+  await check(name+': rapid log activation accepts once and Undo survives reload without rewriting history',async()=>{
+   await open({...base(),rankingVersion:11,workouts:[workout()],cur:{...workout(),id:999,ex:[{n:'Bench Press',entryId:'exercise:quick-browser',sets:[]}]}},undefined,'[data-a=log]');
+   await page.locator('#qol-weight').fill('65.123456789');await page.locator('#qol-reps').fill('8');const history=JSON.stringify((await saved()).workouts);
+   await page.evaluate(()=>{document.querySelector('[data-a=log]').click();document.querySelector('[data-a=log]').click();});assert.equal((await saved()).cur.ex[0].sets.length,1);assert.equal((await saved()).cur.ex[0].sets[0].kg,65.123456789);
+   await page.reload();await page.locator('[data-a=undoLog]').waitFor();await clickControl(page.locator('[data-a=undoLog]'));await waitCondition(()=>!finishing&&S.cur.ex[0].sets.length===0);assert.equal(JSON.stringify((await saved()).workouts),history);
+   await page.locator('#qol-weight').fill('bad load');await clickControl(page.locator('[data-a=log]'));assert.equal(await page.locator('#qol-weight').inputValue(),'bad load');assert.equal((await saved()).cur.ex[0].sets.length,0);
+  });
+  await check(name+': earned rank inspector separates setups and retains exact source provenance in both themes',async()=>{
+   const w=workout('Bench Press',61.123456789,8);w.ex[0].sets[0].equipmentContext={label:'Rack A'};w.ex[0].sets.push({...w.ex[0].sets[0],kg:65,equipmentContext:{label:'Rack B'}});
+   await open({...base(),rankingVersion:11,workouts:[w]});const before=JSON.stringify((await saved()).workouts);await clickTab('ranks');await clickControl(page.locator('[data-a=inspectRank][data-v="Bench Press"]').first());
+   assert.equal(await page.locator('.rank-source').count(),2);assert((await page.locator('.action-card').textContent()).includes('61.123456789'));assert((await page.locator('.action-card').textContent()).includes('population percentiles'));
+   const large=await page.addStyleTag({content:'.rank-source,.rank-source dt,.rank-source dd,.action-card .support-copy{font-size:30px}'});
+   for(const dark of [0,1]){await page.evaluate(d=>document.documentElement.dataset.d=String(d),dark);await page.setViewportSize({width:320,height:720});assert(await page.locator('.action-card').evaluate(el=>el.scrollWidth<=el.clientWidth+1));const clip=await page.locator('.action-card').evaluate(el=>{el.scrollTop=0;const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};});await page.screenshot({path:path.join(out,name+'-rank-inspector-'+(dark?'dark':'light')+'.png'),clip});}
+   await large.evaluate(el=>el.remove());await page.keyboard.press('Escape');assert.equal(JSON.stringify((await saved()).workouts),before);
+  });
   await check(name+': two real tabs block the stale writer',async()=>{
    await open();const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await second.locator('#storage-conflict').waitFor();assert.equal(await second.locator('#storage-conflict').getAttribute('role'),'alertdialog');await second.close();
   });

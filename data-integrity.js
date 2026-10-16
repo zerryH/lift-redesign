@@ -19,6 +19,8 @@ var SlatData=globalThis.SlatData= (() => {
       visiting.add(value);for(const [key,child] of Object.entries(value))serializable(child,path+'.'+key,depth+1);visiting.delete(value);
     };
     serializable(data,'backup');
+    if(data.favourites!=null&&(!Array.isArray(data.favourites)||data.favourites.length>500||data.favourites.some(id=>typeof id!=='string'||!id||id.length>160)||new Set(data.favourites).size!==data.favourites.length))fail('favourites');
+    if(data.logUndo!=null&&(!object(data.logUndo)||!Number.isSafeInteger(data.logUndo.workoutId)||data.logUndo.workoutId<=0||['entryId','setId'].some(k=>typeof data.logUndo[k]!=='string'||!data.logUndo[k]||data.logUndo[k].length>160)))fail('logged set Undo');
     if (data.version != null && (!finite(data.version) || !Number.isInteger(Number(data.version)) || Number(data.version)<1 || Number(data.version)>4)) fail('unsupported backup version');
     for (const k of ['workouts','bw']) if (!Array.isArray(data[k])) fail(k+' must be a list');
     for (const k of ['settings','set','rk','checks','profile']) if (data[k]!=null && !object(data[k])) fail(k+' must be an object');
@@ -92,7 +94,7 @@ var SlatData=globalThis.SlatData= (() => {
   // Review counts follow restore's legacy/manual merge, not the frozen snapshot wire counts.
   function restoreSummary(data,catalogue={}) {
     const checks={...Object.fromEntries(Object.entries(data.rk||{}).filter(([,r])=>r&&r.auto!==1)),...(data.checks||{})};
-    return {...backupSummary(data),checks:new Set(Object.keys(checks).map(n=>canonicalName(n,catalogue))).size};
+    return {...backupSummary(data),checks:new Set(Object.keys(checks).map(n=>canonicalName(n,catalogue))).size,favourites:(data.favourites||[]).length};
   }
   return {validateBackup,canonicalName,date,backupSummary,restoreSummary,number,IMPORT_TEXT_BUDGETS};
 })();
