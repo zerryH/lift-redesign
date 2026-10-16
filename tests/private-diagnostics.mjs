@@ -1,0 +1,32 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {base,workout,boot} from './support/runtime.mjs';
+const source=fs.readFileSync('diagnostics-contract.js','utf8');
+const create=(raw=null,denied=false)=>{
+ const store=new Map(raw?[['slat-diagnostics-v1',raw]]:[]),context={Date,JSON,Number,Object,Array,String,globalThis:null,navigator:{userAgent:'Mozilla iPhone private-bait Version/26.0 Safari/604.1',standalone:true,onLine:false,clipboard:{writeText(){}}},localStorage:{getItem:k=>store.get(k)??null,setItem(k,v){if(denied)throw new DOMException('PRIVATE ERROR MESSAGE','QuotaExceededError');store.set(k,v);},removeItem:k=>store.delete(k)}};
+ context.globalThis=context;vm.createContext(context);vm.runInContext(source,context);return {d:context.SlatDiagnostics,store};
+};
+const z=create(JSON.stringify([{code:{toString:null},at:2},{code:'STATE_STALE_TAB',at:3,note:'private-bait',step:'private-bait',count:80000,cause:'private-bait'}]));
+let report=JSON.parse(z.d.report({build:'5.7.54',exerciseId:'ex001',catalogueVersion:3}));
+assert.equal(report.events.length,1);assert.equal(report.events[0].count,999);assert.equal(report.events[0].step,'save/stale-tab');assert(!JSON.stringify(report).includes('private-bait'));
+assert.equal(report.exercise.id,'ex001');assert.equal(report.installed,true);assert.equal(report.browser,'Safari 26');assert.equal(report.os,'iOS');assert.equal(report.online,false);
+assert(!JSON.parse(z.d.report({exerciseId:'custom:private-bait'})).exercise,'custom identifiers cannot leak arbitrary names');
+for(let i=0;i<100;i++)z.d.record(i%2?'UPDATE_OFFLINE':'FINISH_INTERRUPTED',new Error('private-bait'));
+z.d.record('__proto__');z.d.record({toString:null});z.d.record('UNKNOWN private-bait');
+report=JSON.parse(z.d.report({build:'5.7.54'}));assert.equal(report.events.length,32);assert(!JSON.stringify(report).includes('private-bait'));assert(z.store.get(z.d.key).length<32768);
+const denied=create(null,true);denied.d.record('LOCAL_WRITE_FAILED',new DOMException('private-bait','QuotaExceededError'));report=JSON.parse(denied.d.report());assert.equal(report.events[0].cause,'QuotaExceededError');assert.equal(report.localEventStorageAvailable,false);assert(!JSON.stringify(report).includes('private-bait'));
+const resume=z.d.pause();const before=z.d.report();z.d.record('UPDATE_CHECK_FAILED');assert.equal(z.d.report(),before);resume();z.d.record('UPDATE_CHECK_FAILED');assert.notEqual(z.d.report(),before);z.d.clear();assert.equal(JSON.parse(z.d.report()).events.length,0);
+z.d.resetMemory();z.d.record('UPDATE_OFFLINE');assert.equal(JSON.parse(z.d.report()).events.length,0,'late asynchronous diagnostics stay suspended after reset');
+
+const secret={...base(),cur:workout('My private workout exercise',61.1234567,8),additionalFeatureData:{keep:true}};
+const app=await boot(secret);const stateBefore=JSON.stringify(app.h.S),savedBefore=app.store.get('liftlog-state');
+app.ctx.SlatDiagnostics.record('UPDATE_OFFLINE');const exact=app.ctx.SlatDiagnostics.report({build:'5.7.54',saveStatus:'saved'});
+assert(!exact.includes('My private workout exercise'));assert(!exact.includes('61.1234567'));assert(!exact.includes('height'));assert(!exact.includes('birthYear'));
+assert.equal(JSON.stringify(app.h.S),stateBefore);assert.equal(app.store.get('liftlog-state'),savedBefore,'diagnostic collection never saves or changes workout records');
+const failed=await boot({...base(),rankingVersion:11,cur:workout()});failed.ctx.localStorage.setItem=(key,value)=>{if(key==='liftlog-state')throw new DOMException('Private failure text','QuotaExceededError');failed.store.set(key,String(value));};
+await failed.h.A.fin();report=JSON.parse(failed.ctx.SlatDiagnostics.report({build:'5.7.54'}));assert(report.events.some(x=>x.code==='LOCAL_WRITE_FAILED'&&x.cause==='QuotaExceededError'));assert(report.events.some(x=>x.code==='FINISH_INTERRUPTED'));assert(failed.h.S.cur);assert.equal(failed.h.S.workouts.length,0);assert(!JSON.stringify(report).includes('Private failure text'));
+const offline=await boot({...base(),rankingVersion:11},{navigator:{onLine:false,serviceWorker:{}}});offline.ctx.location.protocol='https:';await offline.h.A.update();assert(JSON.parse(offline.ctx.SlatDiagnostics.report()).events.some(x=>x.code==='UPDATE_OFFLINE'));
+for(const listener of offline.listeners.storage||[])listener({key:'liftlog-state'});assert(JSON.parse(offline.ctx.SlatDiagnostics.report()).events.some(x=>x.code==='STATE_STALE_TAB'));
+vm.runInContext('globalThis.resetForDiagnostics=clearStoredState',failed.ctx);assert(await failed.ctx.resetForDiagnostics());failed.ctx.SlatDiagnostics.record('UPDATE_OFFLINE');assert(!failed.store.has('slat-diagnostics-v1'));assert.equal(JSON.parse(failed.ctx.SlatDiagnostics.report()).events.length,0);
+console.log('Diagnostics are bounded, redacted, independent of workouts and failure-specific; quota/Finish/offline/stale-tab fixtures and late-reset suppression pass');

@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {boot,base,workout} from './support/runtime.mjs';
+const copied=[];let release;
+const z=await boot({...base(),rankingVersion:11,cur:workout()},{navigator:{clipboard:{writeText:text=>{copied.push(text);return new Promise(resolve=>release=resolve);}}}});
+const created=[],create=z.ctx.document.createElement;z.ctx.document.createElement=()=>{const el=create();el.querySelector=z.get;created.push(el);return el;};
+z.h.A.exerciseOptions();const shortcut=created.find(el=>el.id==='diagnostic-exercise');assert(shortcut,'the final registered exercise-settings action includes the diagnostic shortcut');shortcut.listeners.click[0]();assert.equal(JSON.parse(z.get('#diagnostic-preview').value).exercise.id,'ex001');
+const before=JSON.stringify(z.h.S),stored=z.store.get('liftlog-state');z.h.A.diagnostics();
+const preview=z.get('#diagnostic-preview'),steps=z.get('#diagnostic-steps'),copy=z.get('#diagnostic-copy'),status=z.get('#diagnostic-status');
+assert.equal(copied.length,0,'opening a report never shares or copies automatically');
+assert(preview.value.includes('slat-device-diagnostics'));steps.value='Tap Finish, then see an unsaved message';steps.listeners.input[0]();const exact=preview.value;
+const copying=copy.listeners.click[0]();assert(copy.disabled&&steps.disabled&&z.get('#diagnostic-clear').disabled);await copy.listeners.click[0]();assert.deepEqual(copied,[exact],'a repeated click cannot start a second clipboard write');release();await copying;assert(!copy.disabled&&!steps.disabled);assert(status.textContent.includes('copied'));
+let selected=0;preview.select=()=>selected++;z.ctx.navigator.clipboard.writeText=async()=>{throw Error('Permission denied');};await copy.listeners.click[0]();assert.equal(selected,1);assert(status.textContent.includes('manually'));assert(!copy.disabled);
+assert.equal(JSON.stringify(z.h.S),before);assert.equal(z.store.get('liftlog-state'),stored);assert.deepEqual(z.errors,[]);
+console.log('Diagnostics preview is read-only, copy is explicit/exact and guarded, clipboard denial permits manual copy without changing workouts');

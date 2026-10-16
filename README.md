@@ -4,7 +4,9 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.53**
+**Build: 5.7.54**
+
+Profile → Diagnostics previews a private device report before explicit Copy. The bounded local event log contains fixed failure codes and safe exception categories, without workout contents or automatic sending. See [private diagnostics](docs/private-diagnostics.md).
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps

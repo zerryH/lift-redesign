@@ -20,6 +20,8 @@
     "data-integrity.js",
     "recovery-contract.js",
     "recovery-store.js",
+    "diagnostics-contract.js",
+    "diagnostics-view.js",
     "persistence.js",
     "dialog-view.js",
     "enhanced-features.js",

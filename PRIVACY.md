@@ -1,6 +1,6 @@
 # Slat Privacy Notice
 
-**Last updated: 16 October 2026 · Build 5.7.53**
+**Last updated: 16 October 2026 · Build 5.7.54**
 
 ## Controller and contact
 
@@ -16,6 +16,7 @@ Slat processes and stores the information needed for the features you use, inclu
 - locally calculated ranking results and progress information; and
 - settings such as theme, motion, tutorial and rest-timer preferences; and
 - bounded same-browser recovery copies of those records, including unfinished drafts, routines and equipment preferences.
+- a separate local log of up to 32 fixed diagnostic event codes, safe exception categories, timestamps and repetition counts. It never records exception messages, stacks, URLs or workout contents.
 
 The app does not require an account and does not operate a Slat-owned workout database, analytics service, advertising system or telemetry service.
 
@@ -38,6 +39,8 @@ The recovery centre retains up to three indexed snapshots within an 8 MiB envelo
 Export is user-initiated. An exported JSON backup can contain workout, bodyweight, profile, custom-exercise and rank information. Anyone who receives a copy of that file may be able to read it, so store and share backups carefully.
 
 Ordinary backup export contains the current records and feature data, not the historical recovery library. Individual snapshots or raw recovery storage can be exported separately through explicit controls. Verification reads a selected file without replacing data; recovery capture and verification never upload or automatically share copies.
+
+**Private diagnostics:** Profile previews a report containing the build, coarse browser/OS family, installed status, feature availability and redacted event codes. It does not read names, notes, age, bodyweight, workouts or backups into the report. An exercise shortcut can include a public catalogue ID and catalogue version; custom identifiers are omitted. Optional reproduction text is the user's own input and can contain personal information, so the exact preview must be reviewed before explicit Copy. There is no automatic sending or attachment. Device diagnostics are excluded from ordinary backups/import replacement, have a separate Clear local events action, and are cleared by Reset all data. Failed event storage leaves the active workout usable and the report labels that limit.
 
 ## Automated ranking
 

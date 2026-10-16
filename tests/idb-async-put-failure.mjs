@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+let comparison,aborted=false;
+const tx={objectStore:()=>({get(){comparison={};return comparison;},put(){throw new DOMException('Synthetic quota','QuotaExceededError');}}),abort(){aborted=true;queueMicrotask(()=>tx.onabort());}};
+const database={transaction:()=>tx},ctx={navigator:{},location:{protocol:'https:'},indexedDB:{open(){const request={result:database};queueMicrotask(()=>request.onsuccess());return request;}},setTimeout,clearTimeout,queueMicrotask,Date,Promise,Error,Number,JSON,Object};
+vm.createContext(ctx);vm.runInContext(fs.readFileSync('persistence.js','utf8')+'\nglobalThis.writeForTest=dbWrite;',ctx);
+const saving=ctx.writeForTest({savedAt:2,revision:2},1,1);saving.catch(()=>{});await new Promise(resolve=>setImmediate(resolve));
+assert(comparison,'the asynchronous comparison callback was registered');
+assert.doesNotThrow(()=>comparison.onsuccess(),'a quota exception inside the asynchronous get callback must reject the save, not escape as a page error');
+assert(aborted,'failed put must explicitly abort the transaction');await assert.rejects(saving,error=>error.name==='QuotaExceededError');
+console.log('Asynchronous IndexedDB put exceptions abort and reject through the save path without an uncaught page error');
