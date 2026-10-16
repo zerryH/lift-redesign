@@ -21,6 +21,16 @@ var SlatData=globalThis.SlatData= (() => {
     serializable(data,'backup');
     if(data.favourites!=null&&(!Array.isArray(data.favourites)||data.favourites.length>500||data.favourites.some(id=>typeof id!=='string'||!id||id.length>160)||new Set(data.favourites).size!==data.favourites.length))fail('favourites');
     if(data.logUndo!=null&&(!object(data.logUndo)||!Number.isSafeInteger(data.logUndo.workoutId)||data.logUndo.workoutId<=0||['entryId','setId'].some(k=>typeof data.logUndo[k]!=='string'||!data.logUndo[k]||data.logUndo[k].length>160)))fail('logged set Undo');
+    const stable=v=>typeof v==='string'&&!!v&&v.length<=160;
+    const lists=['programmesV1','planSlots','progressionRules','progressionDecisions'];
+    for(const key of lists)if(data[key]!=null&&(!Array.isArray(data[key])||data[key].length>100000))fail(key);
+    const unique=(values,path)=>{const ids=new Set();for(const value of values||[]){if(!object(value)||!stable(value.id)||ids.has(value.id))fail(path+' identity');ids.add(value.id);}};
+    for(const key of lists)unique(data[key],key);
+    for(const p of data.programmesV1||[])if(!name(p.name)||!['rotation','weekdays'].includes(p.mode)||!Array.isArray(p.routineIds)||!p.routineIds.length||p.routineIds.length>100||p.routineIds.some(id=>!stable(id))||!Array.isArray(p.weekdays)||new Set(p.weekdays).size!==p.weekdays.length||p.weekdays.some(n=>!Number.isInteger(n)||n<0||n>6)||(p.mode==='weekdays'&&!p.weekdays.length)||!Number.isSafeInteger(p.cursor)||p.cursor<0||typeof p.paused!=='boolean')fail('programme');
+    for(const s of data.planSlots||[])if(!stable(s.programmeId)||!stable(s.routineId)||!date(s.scheduledDate)||!Number.isSafeInteger(s.rotationIndex)||s.rotationIndex<0||!['planned','skipped','advanced'].includes(s.status)||!name(s.routineName))fail('plan slot');
+    const rule=r=>object(r)&&stable(r.id)&&r.version===1&&stable(r.exerciseId)&&typeof r.setupLabel==='string'&&r.setupLabel.length<=80&&!/[\u0000-\u001f]/.test(r.setupLabel)&&object(r.protocol)&&['load_reps','reps','band_reps'].includes(r.protocol.trackingMode)&&['normal','bodyweight','assisted'].includes(r.protocol.mode)&&[1,2].includes(r.protocol.multiplier)&&typeof r.protocol.unilateral==='boolean'&&Number.isFinite(r.protocol.bodyweightFactor)&&r.protocol.bodyweightFactor>=0&&r.protocol.bodyweightFactor<=1&&Number.isInteger(r.minReps)&&r.minReps>0&&Number.isInteger(r.maxReps)&&r.maxReps>=r.minReps&&r.maxReps<=10000&&Number.isInteger(r.targetSets)&&r.targetSets>0&&r.targetSets<=100&&Number.isFinite(r.incrementKg)&&r.incrementKg>=0&&r.incrementKg<=200&&(r.protocol.trackingMode==='load_reps'||r.incrementKg===0)&&Number.isInteger(r.incrementReps)&&r.incrementReps>0&&r.incrementReps<=100&&['kg','lb'].includes(r.sourceUnit)&&typeof r.enabled==='boolean'&&typeof r.band==='string'&&r.band.length<=80&&!/[\u0000-\u001f]/.test(r.band);
+    for(const r of data.progressionRules||[])if(!rule(r))fail('progression rule');
+    for(const d of data.progressionDecisions||[])if(!stable(d.ruleId)||d.ruleVersion!==1||!rule(d.ruleSnapshot)||d.ruleSnapshot.id!==d.ruleId||!Number.isSafeInteger(d.workoutId)||d.workoutId<=0||!Array.isArray(d.sourceSetIds)||!d.sourceSetIds.length||d.sourceSetIds.some(id=>!stable(id))||!['accepted','edited','ignored'].includes(d.action)||!Number.isFinite(d.at)||d.at<0||!object(d.target)||!Number.isFinite(d.target.kg)||d.target.kg<0||d.target.kg>2000||!Number.isInteger(d.target.reps)||d.target.reps<1||d.target.reps>10000||typeof d.target.band!=='string'||d.target.band.length>80||typeof d.why!=='string'||d.why.length>2000)fail('progression decision');
     if (data.version != null && (!finite(data.version) || !Number.isInteger(Number(data.version)) || Number(data.version)<1 || Number(data.version)>4)) fail('unsupported backup version');
     for (const k of ['workouts','bw']) if (!Array.isArray(data[k])) fail(k+' must be a list');
     for (const k of ['settings','set','rk','checks','profile']) if (data[k]!=null && !object(data[k])) fail(k+' must be an object');
@@ -37,6 +47,7 @@ var SlatData=globalThis.SlatData= (() => {
     const workout = (w, path) => {
       if (!object(w) || !Array.isArray(w.ex) || !date(w.d)) fail(path);
       if(w.name!=null&&w.name!==''&&!name(w.name))fail(path+'.name');
+      if(w.planLink!=null&&(!object(w.planLink)||!stable(w.planLink.programmeId)||!stable(w.planLink.slotId)||!stable(w.planLink.routineId)||!date(w.planLink.scheduledDate)||!Number.isSafeInteger(w.planLink.rotationIndex)||w.planLink.rotationIndex<0))fail(path+'.planLink');
       if(w.corrections!=null&&(!Array.isArray(w.corrections)||w.corrections.some(c=>!object(c)||!date(c.date)||(c.name!=null&&c.name!==''&&!name(c.name))||(c.correctedAt!=null&&(!finite(c.correctedAt)||Number(c.correctedAt)<0)))))fail(path+'.corrections');
       if(w.drafts!=null){if(!object(w.drafts))fail(path+'.drafts');for(const draft of Object.values(w.drafts)){if(!object(draft))fail(path+'.draft');for(const key of ['kg','reps','seconds','meters','note','rpe','band'])if(draft[key]!=null&&!['number','string'].includes(typeof draft[key]))fail(path+'.draft.'+key);for(const field of ['weightText','repsText'])if(draft[field]!=null&&typeof draft[field]!=='string')fail(path+'.draft.'+field);if(draft.weightUnit!=null&&!['kg','lb'].includes(draft.weightUnit))fail(path+'.draft.weightUnit');if(options.importText===true)for(const field of ['note','band'])if(draft[field]!=null&&!importText(draft[field],field))fail(path+'.draft.'+field+' exceeds the restore text budget');}}
       for (const [i,x] of w.ex.entries()) {
@@ -66,7 +77,7 @@ var SlatData=globalThis.SlatData= (() => {
         }
       }
     };
-    const workoutIds=new Set();data.workouts.forEach((w,i)=>{workout(w,'workouts['+i+']');if(w.id!=null){if(!Number.isSafeInteger(w.id)||w.id<=0||workoutIds.has(w.id))fail('duplicate or invalid workout identity');workoutIds.add(w.id);}});
+    const workoutIds=new Set(),completedSlots=new Set();data.workouts.forEach((w,i)=>{workout(w,'workouts['+i+']');if(w.id!=null){if(!Number.isSafeInteger(w.id)||w.id<=0||workoutIds.has(w.id))fail('duplicate or invalid workout identity');workoutIds.add(w.id);}if(w.planLink){if(completedSlots.has(w.planLink.slotId))fail('duplicate completed plan slot');completedSlots.add(w.planLink.slotId);}});
     if (data.cur!=null) workout(data.cur,'cur');
     if(data.editingId!=null&&(!data.cur||!Number.isSafeInteger(data.editingId)||!workoutIds.has(data.editingId)||data.cur.id!==data.editingId))fail('ambiguous editing identity');
     if (data.undo!=null) {
@@ -94,7 +105,7 @@ var SlatData=globalThis.SlatData= (() => {
   // Review counts follow restore's legacy/manual merge, not the frozen snapshot wire counts.
   function restoreSummary(data,catalogue={}) {
     const checks={...Object.fromEntries(Object.entries(data.rk||{}).filter(([,r])=>r&&r.auto!==1)),...(data.checks||{})};
-    return {...backupSummary(data),checks:new Set(Object.keys(checks).map(n=>canonicalName(n,catalogue))).size,favourites:(data.favourites||[]).length};
+    return {...backupSummary(data),checks:new Set(Object.keys(checks).map(n=>canonicalName(n,catalogue))).size,favourites:(data.favourites||[]).length,programmes:(data.programmesV1||[]).length,planSlots:(data.planSlots||[]).length,progressionRules:(data.progressionRules||[]).length,progressionDecisions:(data.progressionDecisions||[]).length};
   }
   return {validateBackup,canonicalName,date,backupSummary,restoreSummary,number,IMPORT_TEXT_BUDGETS};
 })();

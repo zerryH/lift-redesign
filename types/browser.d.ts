@@ -1,5 +1,31 @@
 /** Browser hooks and exact selectors used by the shipped HTML program. */
 interface SlatDOMSelectors {
+  "#programme-name": HTMLInputElement;
+  "#programme-mode": HTMLSelectElement;
+  "#programme-routine": HTMLSelectElement;
+  "#programme-date": HTMLInputElement;
+  "#programme-add": HTMLButtonElement;
+  "#programme-save": HTMLButtonElement;
+  "#programme-error": HTMLParagraphElement;
+  "[data-plan-weekday]": HTMLInputElement;
+  "[data-plan-order]": HTMLButtonElement;
+  "[data-plan-remove]": HTMLButtonElement;
+  "#plan-move-date": HTMLInputElement;
+  "#plan-move-save": HTMLButtonElement;
+  "#plan-move-error": HTMLParagraphElement;
+  "#progression-enabled": HTMLInputElement;
+  "#progression-min": HTMLInputElement;
+  "#progression-max": HTMLInputElement;
+  "#progression-sets": HTMLInputElement;
+  "#progression-increment": HTMLInputElement;
+  "#progression-band": HTMLInputElement;
+  "#progression-rule-save": HTMLButtonElement;
+  "#progression-error": HTMLParagraphElement;
+  "#progression-target-load": HTMLInputElement;
+  "#progression-target-reps": HTMLInputElement;
+  "#progression-accept": HTMLButtonElement;
+  "#progression-edit": HTMLButtonElement;
+  "#progression-ignore": HTMLButtonElement;
   "#diagnostic-steps": HTMLTextAreaElement;
   "#diagnostic-preview": HTMLTextAreaElement;
   "#diagnostic-copy": HTMLButtonElement;
