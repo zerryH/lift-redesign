@@ -7,10 +7,11 @@ The five-page roadmap's functional scope is F01–F08, delivered through recover
 - An IndexedDB `put` throwing inside the asynchronous comparison callback escaped transaction error handling. It now rejects with the original failure and leaves Finish recoverable.
 - Later action registration replaced the exercise diagnostics shortcut. Diagnostics now extends the final registered action.
 - Rapid-activation protection also blocked an intentional Log → Stop rest → Log sequence. Intervening control/input actions establish new intent; duplicate activations still log once. Automatically prepared warm-up measurements do not count as new intent.
-- The picker CSS reset shrank new tabs/pins; scoped shared-token styles retain usable 44px targets.
+- The picker CSS reset shrank new tabs/pins; scoped shared-token styles retain usable 44px targets. Selected-mode styling now has matching specificity, so the active tab remains visibly distinct; the browser journey checks its computed color.
 - New programme creation compared two absent IDs and incorrectly rejected the action. An actual linked programme ID is now required for that guard.
 - A presentation callback throwing after an acknowledged optional-feature save reverted only memory. Durable state remains authoritative after acknowledgement.
 - Successful optional-feature saves tried to close their editor while the import/mutation lock was still held. Protection now releases after acknowledgement and before the success callback.
+- After a failed Move or progression save, retained editors referenced rolled-back objects. Retry now resolves the current slot/exercise by stable identity and is tested through failure followed by a successful acknowledged retry.
 - Applying a working progression target could leave a warm-up queue/flag active. Explicit acceptance now switches to a working set and stops that preparation without rewriting logs. New assistance values retain the logger's existing positive 0–2000kg supported range across targets and warm-ups.
 - The calendar's year bounds ignored future plan dates. A year with plans is now reachable before it has completed history.
 - Filtered calendar re-renders could remove every enabled date's keyboard entry point. The selected tab stop now comes from visible enabled dates; empty filters remain readable.
