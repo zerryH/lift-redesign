@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.49';
+const BUILD_VERSION='5.7.50';
 /*BEGIN:RANKING_ENGINE*/
 /*END:RANKING_ENGINE*/
 /*BEGIN:CATALOGUE_MODEL*/
@@ -496,7 +496,7 @@ cp:()=>{ci=Math.max(0,ci-1);render()},cn:()=>{ci++;render()},
 rm:()=>{dr.reps=Math.max(1,dr.reps-1);syncPickers()},rpl:()=>{dr.reps=Math.min(30,dr.reps+1);syncPickers()},
 gr:d=>{refreshRanks();const name=canonicalExercise(String(d.v||'').trim()),k=S.checks?.[name]||S.rk?.[name],u=S.set.unit||'kg',c=v=>fm(cv(v,u));gr={n:name,w:k?c(exerciseMeta(name).loadMode==='assisted'?Math.abs(k.w):k.w):'',r:k?String(k.r):'',b:k?c(k.b):bw()>0?c(bw()):'',h:String(k?.h||S.set.heightCm||''),u,f:k?.f||S.set.table,res:null};rememberRankDraft('w',k?(exerciseMeta(name).loadMode==='assisted'?Math.abs(num(k.w)):num(k.w)):NaN);rememberRankDraft('b',k?num(k.b):bw());sheet()},
 gx:()=>{gr=null;sheet()},gs:d=>{gr.f=d.v;gr.res=null;sheet()},
-gu:d=>{if(!gr||gr.u===d.v)return;const values={w:rankDraftValue('w'),b:rankDraftValue('b')};for(const field of ['w','b'])if(String(gr[field]??'')!==''&&Number.isFinite(values[field]))gr[field]=String(fm(cv(values[field],d.v)));gr.u=d.v;for(const field of ['w','b'])rememberRankDraft(field,values[field]);gr.res=null;setRankingControl({unit:d.v},{redraw:false});sheet()},
+gu:d=>{if(!gr||gr.u===d.v)return;const values={w:rankDraftValue('w'),b:rankDraftValue('b')};for(const field of ['w','b'])if(String(gr[field]??'')!==''&&Number.isFinite(values[field]))gr[field]=String(fm(cv(values[field],d.v)));gr.u=d.v;for(const field of ['w','b'])rememberRankDraft(field,values[field]);gr.res=null;setRankingControl({unit:d.v});sheet()},
 calc:async()=>{if(!gr)return;const raw=String(gr.n||'').trim(),n=canonicalExercise(Object.keys(EX).find(n=>n.toLowerCase()===raw.toLowerCase())||raw),sex=gr.f==='F'?'F':'M',w=rankDraftValue('w'),r=strictNumber(gr.r),b=rankDraftValue('b'),h=String(gr.h??'').trim()===''?(num(S.set.heightCm)||null):strictNumber(gr.h);if(!EX[n]||!rankThresholds(n,sex))return toast('Choose a supported strength exercise');if(!Number.isInteger(r)||r<1||r>12)return toast('Use 1–12 reps for ranked sets');if(!Number.isFinite(b)||b<=0||b>500)return toast('Enter a valid bodyweight');if(h!=null&&(!Number.isFinite(h)||h<120||h>230))return toast('Height must be between 120 and 230 cm');if(gr.w===''||!Number.isFinite(w)||w<0||w>2000)return toast('Enter a valid weight');gr.res=calculateRank(n,w,r,b,h,sex);sheet()},
  saveCheck:async()=>{
   if(!gr?.res||!stateMutationAllowed())return;
