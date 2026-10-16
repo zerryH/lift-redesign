@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.47';
+const BUILD_VERSION='5.7.48';
 /*BEGIN:RANKING_ENGINE*/
 /*END:RANKING_ENGINE*/
 /*BEGIN:CATALOGUE_MODEL*/
@@ -823,8 +823,8 @@ const draftWeightText=(draft=dr)=>{const unit=S.set.unit||'kg';if(typeof draft.w
 const draftForEntry=(w,x)=>{const raw=w.drafts?.[x.entryId]||(w.ex.find(e=>e.n===x.n)===x?w.drafts?.[x.n]:null);if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;const draft=Object.fromEntries(['kg','reps','weightText','weightUnit','repsText','seconds','meters','note','rpe','band','invalidWeight','invalidReps'].filter(key=>Object.hasOwn(raw,key)).map(key=>[key,raw[key]]));if(typeof draft.weightText==='string'){draft.kg=strictNumber(draft.weightText)/(draft.weightUnit==='lb'?2.20462:1);draft.invalidWeight=!Number.isFinite(draft.kg)||draft.kg<0||draft.kg>2000;}if(typeof draft.repsText==='string'){draft.reps=strictNumber(draft.repsText);draft.invalidReps=!Number.isInteger(draft.reps)||draft.reps<1||draft.reps>10000;}return draft;};
 const persistDraft=()=>{const x=S?.cur?.ex?.[ci];if(!x||!dr.n||x.n!==dr.n)return;x.entryId||=newRecordId('exercise');dr.entryId=x.entryId;if(S.cur.ex.find(e=>e.n===x.n)===x)delete S.cur.drafts?.[x.n];(S.cur.drafts??={})[x.entryId]={kg:dr.kg,reps:dr.reps,...(typeof dr.weightText==='string'?{weightText:dr.weightText,weightUnit:dr.weightUnit}:{}),...(typeof dr.repsText==='string'?{repsText:dr.repsText}:{}),seconds:dr.seconds,meters:dr.meters,note:dr.note||'',rpe:dr.rpe||'',band:dr.band||'',invalidWeight:!!dr.invalidWeight,invalidReps:!!dr.invalidReps};save();};
 const makeDraftSet=()=>{
- const n=S.cur?.ex?.[ci]?.n,mode=trackingMode(n),z={id:newRecordId('set'),protocolVersion:2,kg:mode==='reps'||mode==='band_reps'||(mode==='duration'&&!catalogueRecord(n)?.hasLoad)?0:strictNumber(dr.kg),reps:mode==='duration'||mode==='load_distance'?0:strictNumber(dr.reps),t:'',loggedAt:Date.now()};
- if(dr.invalidWeight||!Number.isFinite(z.kg)||z.kg<0||z.kg>2000){toast('Enter a weight from 0 to 2000 kg');return null;}
+ const n=S.cur?.ex?.[ci]?.n,mode=trackingMode(n),loaded=mode==='load_reps'||mode==='load_distance'||(mode==='duration'&&catalogueRecord(n)?.hasLoad),z={id:newRecordId('set'),protocolVersion:2,kg:loaded?strictNumber(dr.kg):0,reps:mode==='duration'||mode==='load_distance'?0:strictNumber(dr.reps),t:'',loggedAt:Date.now()};
+ if((loaded&&dr.invalidWeight)||!Number.isFinite(z.kg)||z.kg<0||z.kg>2000){toast('Enter a weight from 0 to 2000 kg');return null;}
  if(mode==='duration'){z.seconds=strictNumber(dr.seconds);if(!Number.isFinite(z.seconds)||z.seconds<=0||z.seconds>86400){toast('Enter a duration in seconds');return null;}}
  else if(mode==='load_distance'){z.meters=strictNumber(dr.meters);if(!Number.isFinite(z.meters)||z.meters<=0||z.meters>100000){toast('Enter a distance in metres');return null;}}
  else if(dr.invalidReps||!Number.isInteger(z.reps)||z.reps<1||z.reps>10000){toast('Enter a whole number of reps');return null;}

@@ -112,6 +112,29 @@ try{
     assert.equal(state.cur.ex[0].sets[0][test.key],test.modern[test.key]);assert.equal(JSON.stringify(state.workouts),modernHistory);
    }
   });
+  await check(name+': hidden obsolete weight errors cannot block unloaded exercise logging',async()=>{
+   const stale=(n,unit='kg')=>{const state=base();state.set={...state.set,unit,restEnabled:false};state.workouts=[{...workout('Bench Press',60,8),id:10,d:'2026-09-19'}];state.cur={...workout(n),id:11,ex:[{n,entryId:'exercise:older-draft',sets:[]}],drafts:{'exercise:older-draft':{kg:60,weightText:'not a weight',weightUnit:unit,invalidWeight:true,reps:9,seconds:45.5,meters:32.25,band:'red',note:'Keep this typed note',rpe:'8.5'}}};return state;};
+   for(const test of [{n:'Push-Up',mode:'reps',field:'#qol-reps',key:'reps',value:9,unit:'kg'},{n:'Resistance Band Curl',mode:'band_reps',field:'#qol-reps',key:'reps',value:9,unit:'lb'},{n:'Plank',mode:'duration',field:'#log-seconds',key:'seconds',value:45.5,unit:'kg'}]){
+    await open(stale(test.n,test.unit),undefined,'[data-a=log]');assert.equal(await page.locator('#qol-weight').count(),0);
+    await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-weight').count(),0);
+    const history=await page.evaluate(()=>JSON.stringify(S.workouts));assert.equal(await page.locator('#qol-note').inputValue(),'Keep this typed note');
+    await page.locator(test.field).fill('invalid');await clickControl(page.locator('[data-a=log]'));assert.equal((await saved()).cur.ex[0].sets.length,0,'visible quantities remain strict');
+    await page.locator(test.field).fill(String(test.value));await clickControl(page.locator('[data-a=log]'));
+    let state=await saved();assert.equal(state.cur.ex[0].sets.length,1);const set=state.cur.ex[0].sets[0];
+    assert.equal(set.kg,0);assert.equal(set[test.key],test.value);assert.equal(set.trackingMode,test.mode);assert.equal(set.note,'Keep this typed note');assert.equal(set.rpe,8.5);if(test.mode==='band_reps')assert.equal(set.band,'red');
+    assert.equal(JSON.stringify(state.workouts),history,'logging cannot change saved history');
+    await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();
+    state=await saved();assert.equal(state.workouts.length,2);assert.deepEqual(state.workouts.find(w=>w.id===11).ex[0].sets[0],set);assert.equal(JSON.stringify(state.workouts.filter(w=>w.id!==11)),history);
+    await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.deepEqual((await saved()).workouts.find(w=>w.id===11).ex[0].sets[0],set);
+    await page.evaluate(()=>SlatData.validateBackup({...S,version:4,settings:S.set},X.catalogue));
+   }
+   for(const [n,unit] of [['Bench Press','kg'],['Weighted Plank','lb'],['Farmer’s Carry','kg']]){
+    await open(stale(n,unit),undefined,'[data-a=log]');assert.equal(await page.locator('#qol-weight').count(),1);
+    await clickControl(page.locator('[data-a=log]'));assert.equal((await saved()).cur.ex[0].sets.length,0,'loaded exercises still require valid weight');
+    await page.locator('#qol-weight').fill('20,5');await clickControl(page.locator('[data-a=log]'));
+    const state=await saved();assert.equal(state.cur.ex[0].sets.length,1);assert.equal(state.cur.ex[0].sets[0].kg,20.5/(unit==='lb'?2.20462:1));
+   }
+  });
   await check(name+': open set editor cannot mutate a tab paused by another writer',async()=>{
    await open({...base(),cur:workout('Bench Press',60,8)},undefined,'[data-a=log]');
    const second=await context.newPage();await second.goto(url);await second.locator('[data-a=log]').waitFor();
