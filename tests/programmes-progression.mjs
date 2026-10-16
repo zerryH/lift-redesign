@@ -8,6 +8,7 @@ const routine={id:'routine:a',name:'A routine',split:'Push',ex:[{n:'Bench Press'
  assert.equal(P.nextDate({mode:'weekdays',weekdays:[0,2,4]},'2026-10-16'),'2026-10-19');assert.equal(P.nextDate({mode:'rotation'},'2026-12-31'),'2027-01-01');
  const p={id:'programme:a',name:'A/B',mode:'rotation',routineIds:[routine.id],weekdays:[],cursor:0,paused:false};h.S.programmesV1=[p];h.S.planSlots=[P.slot(p,'2026-10-15','plan-slot:a',h.S.routines)];await h.save();
  h.A.programmeEdit({});assert(h.qolState.modal?.innerHTML.includes('Programme planner'),'New programme opens when no workout is active');
+ await run(ctx,"mutateTraining(()=>S.favourites=['ex037'],()=>qolCloseModal())");assert.equal(h.qolState.modal,null,'successful optional-feature saves release protection before closing their editor');
  const old=copy(h.S.routines);h.A.planStart({v:'plan-slot:a'});assert(h.S.cur.planLink);assert.equal(h.S.programmesV1[0].cursor,0,'Start cannot advance');assert.equal(h.S.workouts.length,0);assert.deepEqual(copy(h.S.routines),old);assert.equal(h.S.cur.ex[0].sets.length,0);
  h.V.today();h.dr={...h.dr,kg:60.123456789,reps:8};h.A.log();await h.flush();const id=h.S.cur.id,before=copy(h.S.planSlots);
  t.failWrites.add('liftlog-state');await h.A.fin();assert.equal(h.S.cur.id,id);assert.equal(h.S.programmesV1[0].cursor,0);assert.deepEqual(copy(h.S.planSlots),before);assert.equal(h.S.workouts.length,0,'failed Finish creates no completion');
@@ -18,6 +19,7 @@ const routine={id:'routine:a',name:'A routine',split:'Push',ex:[{n:'Bench Press'
  const day=run(ctx,"planDayMarkup({date:S.planSlots[1].scheduledDate},'', '<button class=\"activity-day rest-day\" aria-label=\"0 workouts\" title=\"0 workouts\"></button>')");assert(day.includes('planned-day'));assert(!day.includes(' trained'));
  assert.throws(()=>h.SlatData.validateBackup({...portable,programmesV1:[{...p,weekdays:[7]}]},h.X.catalogue),/programme/);
  assert.throws(()=>h.SlatData.validateBackup({...portable,workouts:[source,{...source,id:source.id+1}]},h.X.catalogue),/duplicate completed plan/);
+ const year=Number(h.iso().slice(0,4))+1,date=year+'-01-04';h.S.planSlots.push({...h.S.planSlots[1],id:'slot:future-year',scheduledDate:date});assert.equal(run(ctx,'activityBounds().max'),year,'future plans are reachable before that year has completed history');h.A.activityYear({v:year});assert(h.V.history().includes('data-v="'+date+'"'));
 }
 for(const n of ['Bench Press','Assisted Pull-Up Machine','Resistance Band Curl']){
  const t=await boot({...base(),rankingVersion:11}),{h,ctx}=t,record=h.catalogueRecord(n);assert(record,n);const p=run(ctx,'progressionProtocol('+JSON.stringify(n)+')'),band=n==='Resistance Band Curl',assisted=n==='Assisted Pull-Up Machine',load=assisted?20:60;
