@@ -7,7 +7,7 @@
  * license expressly permits it. This canary is an authorship marker, not a security control.
  */
 const LIFT_SOURCE_CANARY='liftlog-or146-7f3a9c2e-5b84-legal-canary';
-const BUILD_VERSION='5.7.48';
+const BUILD_VERSION='5.7.49';
 /*BEGIN:RANKING_ENGINE*//* Slat ranking engine — v11 exercise-specific scoring; no UI/state side effects. */
 var LiftRankingEngine=globalThis.LiftRankingEngine=(()=>{
 const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
@@ -627,9 +627,13 @@ const repairState=()=>{
  if(S.editingId!=null&&(!S.cur||Number(S.cur.id)!==Number(S.editingId)||(Array.isArray(S.workouts)?S.workouts:[]).filter(w=>Number(w?.id)===Number(S.editingId)).length!==1))S.editingId=null;
  const normSet=(z,record)=>{const raw=z&&typeof z==='object'?{...z}:{};const q=SlatPerformance.repair(raw,record,X.catalogueVersion);if(typeof q.id!=='string'||!q.id||setIds.has(q.id)){q.id=newRecordId('set');q.migrated=true;}setIds.add(q.id);q.kg=num(q.kg);q.reps=num(q.reps);q.t=typeof q.t==='string'?q.t:'';if(q.bw!=null)q.bw=num(q.bw);if(q.height!=null)q.height=num(q.height);return q};
  const normEx=(x,w)=>{
-  const q=x&&typeof x==='object'?{...x}:{},oldName=q.n;
+  const q=x&&typeof x==='object'?{...x}:{},oldName=q.n,oldEntryId=q.entryId;
   q.n=S.custom.find(c=>c.id===q.exerciseId)?.n||canonicalExercise(safeName(q.n));
   if(typeof q.entryId!=='string'||!q.entryId||entryIds.has(q.entryId))q.entryId=newRecordId('exercise');entryIds.add(q.entryId);
+  // An identity repair must move the owning entry's draft, not orphan or duplicate its input.
+  if(q.entryId!==oldEntryId&&typeof oldEntryId==='string'&&oldEntryId&&Object.hasOwn(w.drafts||{},oldEntryId)&&w.ex.find(e=>e?.entryId===oldEntryId)===x){
+   w.drafts={...w.drafts,[q.entryId]:w.drafts[q.entryId]??w.drafts[oldEntryId]};delete w.drafts[oldEntryId];
+  }
   // Older drafts use exercise names. Retain their text when stable identity resolves a renamed/aliased entry.
   if(q.n!==oldName&&typeof oldName==='string'&&Object.hasOwn(w.drafts||{},oldName)&&w.ex.find(e=>e?.n===oldName)===x){
    w.drafts={...w.drafts,[q.entryId]:w.drafts[q.entryId]??w.drafts[oldName]};delete w.drafts[oldName];
