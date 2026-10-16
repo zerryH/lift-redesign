@@ -51,6 +51,7 @@ interface SlatDOMSelectors {
   "#history-query": HTMLInputElement;
   "#history-split": HTMLSelectElement;
   "#imp": HTMLInputElement;
+  "#verify-backup": HTMLInputElement;
   "#import-status": HTMLParagraphElement;
   "#legal-title": HTMLHeadingElement;
   "#log-band": HTMLInputElement;

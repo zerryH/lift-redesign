@@ -4,12 +4,14 @@ Slat is a local-first, offline strength-training logger. Workout data is stored 
 
 ## Current release
 
-**Build: 5.7.51**
+**Build: 5.7.52**
 
 - 475 compatible names, grouped into 450 distinct browse identities
 - 400 ranked movements; other movements track duration, distance, bands or reps
 - 46 rank tiers
 - Ranking standards v11: Slat-owned exercise-specific heuristics
+
+New in 5.7.52: Profile → Verify backup checks a selected file without offering to replace current records. It lists calendar/history/routine/check counts and unfinished-workout presence, distinguishes structural checks of legacy exports from SHA-256 verification of recovery envelopes, and never changes data or backup freshness. Both backup review screens now include legacy saved rank checks in their counts without double-counting aliases or overriding the frozen snapshot format. It does not create an external backup or automatic device snapshot. See [the verification note](docs/backup-verification.md).
 
 New in 5.7.51: Recovery groundwork adds a full-field, versioned snapshot/manifest contract with SHA-256 integrity verification and bounded retention planning. It does not yet capture or restore device snapshots or add a recovery screen. See [the implementation register](docs/feature-roadmap-implementation.md) for the eight-feature roadmap and remaining work.
 
