@@ -10,7 +10,7 @@ var SlatPlanning=globalThis.SlatPlanning=(()=>{
 })();
 async function mutateTraining(change,success=()=>{}){
  if(!stateMutationAllowed())return false;const before=JSON.parse(JSON.stringify(S)),owner=S;importing=true;let saved=false;
- try{change();saved=await save();if(!saved){if(S===owner)S=before;rebuildRegistry();toast('Changes were not saved. Your previous records are retained.');return false;}success();return true;}
+ try{change();saved=await save();if(!saved){if(S===owner)S=before;rebuildRegistry();toast('Changes were not saved. Your previous records are retained.');return false;}importing=false;success();return true;}
  catch(error){if(!saved&&S===owner)S=before;rebuildRegistry();throw error;}
  finally{importing=false;render();}
 }

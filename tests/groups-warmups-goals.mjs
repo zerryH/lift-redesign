@@ -3,6 +3,11 @@ import vm from 'node:vm';
 import {boot,base,workout} from './support/runtime.mjs';
 const copy=x=>JSON.parse(JSON.stringify(x)),run=(ctx,code)=>vm.runInContext(code,ctx);
 {
+ const t=await boot({...base(),rankingVersion:11}),h=t.h,day=t.ctx.SlatPlanning.addDays(h.iso(),-1);h.S.workouts=[{...workout(),d:day}];
+ for(const mode of ['year','month']){t.ctx.testMode=mode;const html=run(t.ctx,"calendarPlanFilter='Completed';activityMode=testMode;activityYear=Number(S.workouts[0].d.slice(0,4));activityMonth=Number(S.workouts[0].d.slice(5,7))-1;V.history()");assert.equal((html.match(/<button(?![^>]*\bdisabled\b)[^>]*class="activity-day[^>]*tabindex="0"/g)||[]).length,1,'filtered '+mode+' keeps one enabled keyboard entry after render');}
+ h.S.workouts=[];assert.doesNotThrow(()=>h.V.history(),'an empty filtered calendar remains readable');
+}
+{
  const t=await boot({...base(),rankingVersion:11,cur:{...workout(),ex:[{n:'Bench Press',entryId:'exercise:setup-warm',exerciseId:'ex001',sets:[]}]}}),h=t.h;h.V.today();h.dr={...h.dr,note:'Keep setup note',rpe:'7'};
  const protocol=copy(run(t.ctx,"progressionProtocol('Bench Press')"));h.S.warmupPresets=[{id:'warmup:setup',version:1,name:'Setup warm-up',exerciseId:'ex001',setupLabel:'',protocol,steps:[{kg:20,reps:8,seconds:30,meters:20,band:''}]}];await h.A.warmupApply({v:'warmup:setup'});
  h.resetEquipmentDrafts('ex001');assert.equal(h.S.cur.ex[0].warmupQueue,undefined,'changing equipment stops the old setup preset before another log');const draft=h.S.cur.drafts['exercise:setup-warm'];assert.equal(draft.warmup,false);assert.equal(draft.note,'Keep setup note');assert.equal(draft.rpe,'7');
