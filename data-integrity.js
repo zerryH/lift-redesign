@@ -89,5 +89,10 @@ var SlatData=globalThis.SlatData= (() => {
     const activityDays=new Set(workouts.filter(w=>w.ex.some(x=>x.sets.length)).map(w=>w.d)).size;
     return {version:data.version||'Legacy',workouts:workouts.length,activityDays,sets,bodyweights:(data.bw||[]).length,custom:(data.custom||[]).length,routines:(data.routines||[]).length,exercisePreferences:Object.keys(data.exercisePreferences||{}).length,checks:Object.keys(data.checks||{}).length,hasDraft:!!data.cur};
   }
-  return {validateBackup,canonicalName,date,backupSummary,number,IMPORT_TEXT_BUDGETS};
+  // Review counts follow restore's legacy/manual merge, not the frozen snapshot wire counts.
+  function restoreSummary(data,catalogue={}) {
+    const checks={...Object.fromEntries(Object.entries(data.rk||{}).filter(([,r])=>r&&r.auto!==1)),...(data.checks||{})};
+    return {...backupSummary(data),checks:new Set(Object.keys(checks).map(n=>canonicalName(n,catalogue))).size};
+  }
+  return {validateBackup,canonicalName,date,backupSummary,restoreSummary,number,IMPORT_TEXT_BUDGETS};
 })();
