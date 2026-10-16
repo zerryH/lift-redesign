@@ -135,6 +135,28 @@ try{
     const state=await saved();assert.equal(state.cur.ex[0].sets.length,1);assert.equal(state.cur.ex[0].sets[0].kg,20.5/(unit==='lb'?2.20462:1));
    }
   });
+  await check(name+': repaired entry identities retain typed drafts through reload, import and Undo',async()=>{
+   const shared='exercise:restored-entry',note='Keep my unsaved identity draft';
+   const fixture=(n,unit)=>({...base(),set:{...base().set,unit,restEnabled:false},workouts:[{...workout('Bench Press',60,8),id:10,ex:[{n:'Bench Press',entryId:shared,sets:[{id:'set:original-history',kg:60,reps:8,t:''}]}]}],cur:{...workout(n),id:11,ex:[{n,entryId:shared,sets:[]}],drafts:{[shared]:{kg:27.25,reps:11,weightText:unit==='lb'?'60,077445':'27,25',weightUnit:unit,repsText:'11',seconds:'75.5',meters:'42.25',band:'Yellow test band',note,rpe:'8.5',invalidWeight:false,invalidReps:false}}}});
+   for(const test of [{n:'Cable Bicep Curl',unit:'kg',path:'startup',field:'#qol-reps',value:11,key:'reps',kg:27.25},{n:'Bench Press',unit:'lb',path:'import',field:'#qol-reps',value:11,key:'reps',kg:60.077445/2.20462},{n:'Plank',unit:'kg',path:'undo',field:'#log-seconds',value:75.5,key:'seconds',kg:0},{n:'Resistance Band Curl',unit:'lb',path:'startup',field:'#qol-reps',value:11,key:'reps',kg:0},{n:'Farmer’s Carry',unit:'kg',path:'import',field:'#log-meters',value:42.25,key:'meters',kg:27.25}]){
+    const state=fixture(test.n,test.unit);
+    if(test.path==='startup')await open(state,undefined,'[data-a=log]');
+    else{
+     await open({...state,cur:null,undo:test.path==='undo'?{type:'draft',record:state.cur,editingId:null,removedAt:1}:null});
+     if(test.path==='undo')await clickControl(page.locator('[data-a=undo]'));
+     else await page.evaluate(async initial=>{await importBackup(initial);await saveTail;},{...state,version:4,settings:state.set});
+     await page.locator('[data-a=log]').waitFor();
+    }
+    const before=await page.evaluate(()=>({entryId:S.cur.ex[0].entryId,history:JSON.stringify(S.workouts)}));assert.notEqual(before.entryId,shared);
+    assert.equal(await page.locator('#qol-note').inputValue(),note);assert.equal(await page.locator(test.field).inputValue(),String(test.value));assert.equal(await page.locator('#qol-rpe').inputValue(),'8.5');
+    if(test.n==='Resistance Band Curl')assert.equal(await page.locator('#log-band').inputValue(),'Yellow test band');
+    await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-note').inputValue(),note);assert.equal(await page.evaluate(()=>S.cur.ex[0].entryId),before.entryId);
+    assert.equal(await page.evaluate(id=>S.cur.drafts[id],shared),undefined);assert.equal(await page.locator(test.field).inputValue(),String(test.value));
+    await clickControl(page.locator('[data-a=log]'));let stored=await saved();const set=stored.cur.ex[0].sets[0];assert.equal(stored.cur.ex[0].sets.length,1);assert.equal(set[test.key],test.value);assert.equal(set.kg,test.kg);assert.equal(set.note,note);assert.equal(set.rpe,8.5);if(test.n==='Resistance Band Curl')assert.equal(set.band,'Yellow test band');assert.equal(JSON.stringify(stored.workouts),before.history);
+    await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();stored=await saved();assert.equal(stored.workouts.length,2);assert.deepEqual(stored.workouts.find(w=>w.id===11).ex[0].sets[0],set);assert.equal(JSON.stringify(stored.workouts.filter(w=>w.id!==11)),before.history);
+    await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.deepEqual((await saved()).workouts.find(w=>w.id===11).ex[0].sets[0],set);await page.evaluate(()=>SlatData.validateBackup({...S,version:4,settings:S.set},X.catalogue));
+   }
+  });
   await check(name+': open set editor cannot mutate a tab paused by another writer',async()=>{
    await open({...base(),cur:workout('Bench Press',60,8)},undefined,'[data-a=log]');
    const second=await context.newPage();await second.goto(url);await second.locator('[data-a=log]').waitFor();
