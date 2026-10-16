@@ -605,6 +605,60 @@ try{
    });
    assert(result.matches&&result.unchanged);assert.equal(result.rejected,'RECOVERY_INTEGRITY');assert.equal(result.manifest.counts.workouts,1);assert.equal(result.plan.persistFirst,'snapshot:browser');assert.equal(result.plan.keep.length,1);assert.deepEqual(result.plan.remove,[]);
   });
+  await check(name+': recovery centre exports and explicitly restores exact records and typed drafts',async()=>{
+   const routine={id:'routine:recover',name:'Recovery routine',split:'Push',ex:[{n:'Bench Press',exerciseId:'ex001',sets:3,reps:8,seconds:30,meters:20,rest:120}]};
+   const current={...workout('Bench Press'),id:991,ex:[{n:'Bench Press',entryId:'exercise:recovery-ui',sets:[]}],drafts:{'exercise:recovery-ui':{kg:null,weightText:'keep invalid text',weightUnit:'lb',reps:8,note:'Keep my typed recovery draft',rpe:'8,5'}}};
+   await open({...base(),set:{...base().set,unit:'lb'},workouts:[{...workout('Bench Press',61.123456789,8),id:12},{...workout('Dumbbell Curl',12.987654321,9),id:13}],cur:current,routines:[routine],exercisePreferences:{ex001:{rest:120,equipmentLabel:'Gym A · cable 2:1'}},additionalFeatureData:{ids:['future:one'],exact:18.123456789}},undefined,'[data-a=log]');
+   await saved();const before=await page.evaluate(()=>JSON.parse(JSON.stringify(S)));await clickTab('settings');await clickControl(page.locator('[data-a=recovery]'));await page.locator('#recovery-now').waitFor();
+   assert((await page.locator('#recovery-content').textContent()).includes('On this browser only'));assert((await page.locator('#recovery-content').textContent()).includes('Last acknowledged save'));
+   await clickControl(page.locator('#recovery-now'));await waitCondition(async()=>!importing&&(await recoveryContents(X.catalogue)).items.some(x=>x.manifest.reason==='manual'));await page.locator('#recovery-now').waitFor({state:'visible'});
+   assert.deepEqual(await page.evaluate(()=>JSON.parse(JSON.stringify(S))),before,'capturing a copy must not rewrite current state or freshness');
+   const snapshot=await page.evaluate(async()=>{const items=(await recoveryContents(X.catalogue)).items;return items.find(x=>x.manifest.reason==='manual').manifest.id;});
+   const downloadReady=page.waitForEvent('download');await clickControl(page.locator('[data-recovery-export="'+snapshot+'"]'));const download=await downloadReady,envelope=JSON.parse(await fs.readFile(await download.path(),'utf8'));
+   assert.equal(envelope.id,snapshot);assert.deepEqual(envelope.data.workouts,before.workouts);assert.deepEqual(envelope.data.cur,before.cur);assert.deepEqual(envelope.data.additionalFeatureData,before.additionalFeatureData);
+   const enlarged=await page.addStyleTag({content:'body{font-size:30px}input,button,select,textarea{font-size:32px}#recovery-content .support-copy,#recovery-content .recovery-status,#recovery-content .note,#recovery-content small{font-size:30px}'});
+   for(const dark of [0,1]){
+    await page.evaluate(d=>document.documentElement.dataset.d=String(d),dark);await page.setViewportSize({width:320,height:720});
+    assert(await page.locator('.action-card').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'recovery controls fit a narrow phone with enlarged text');assert((await page.locator('#recovery-now').boundingBox()).height>=44);assert(await page.locator('#recovery-now').evaluate(el=>parseFloat(getComputedStyle(el).fontSize)>=30));
+    await page.locator('.action-card').screenshot({path:path.join(out,name+'-recovery-'+(dark?'dark':'light')+'.png')});
+   }
+   await enlarged.evaluate(el=>el.remove());await page.keyboard.press('Escape');await page.setViewportSize({width:390,height:844});await page.evaluate(()=>document.documentElement.dataset.d=String(S.set.dark));
+   const blank={version:4,workouts:[],bw:[],settings:{table:'M',unit:'kg'}};
+   await page.locator('#imp').setInputFiles({name:'replace.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(blank))});await clickControl(page.locator('#confirm-import'));await page.locator('#confirm-import').waitFor({state:'detached'});assert.equal((await saved()).workouts.length,0);
+   await clickControl(page.locator('[data-a=recovery]'));await page.locator('[data-recovery-review="'+snapshot+'"]').waitFor();await clickControl(page.locator('[data-recovery-review="'+snapshot+'"]'));await page.locator('#confirm-import').waitFor();assert.equal((await saved()).workouts.length,0,'review alone never restores data');
+   await clickControl(page.locator('#confirm-import'));await page.locator('#confirm-import').waitFor({state:'detached'});
+   const restored=await saved();for(const key of ['workouts','cur','routines','exercisePreferences','additionalFeatureData'])assert.deepEqual(restored[key],before[key]);assert.equal(restored.lastBackup,0);assert.equal(restored.lastBackupRevision,0);
+   await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-weight').inputValue(),'keep invalid text');assert.equal(await page.locator('#qol-note').inputValue(),'Keep my typed recovery draft');assert.deepEqual((await saved()).workouts,before.workouts);
+  });
+  await check(name+': interrupted recovery writes preserve snapshots and acknowledged Finish',async()=>{
+   await open({...base(),workouts:[workout('Bench Press',61.123456789,8)],cur:{...workout('Cable Curl',25,8),id:999}},undefined,'[data-a=log]');await saved();
+   const result=await page.evaluate(async()=>{
+    const original=recoveryWrite;for(let i=0;i<4;i++){S.additionalFeatureData={sequence:i};await save();if(!await captureRecovery('manual'))throw Error('Initial recovery capture failed: '+recoveryStatus);}
+    const before=JSON.stringify(await recoveryRead(RECOVERY_KEYS[0])),state=JSON.stringify(S);
+    recoveryWrite=async(key,value,guard)=>{if(key===RECOVERY_KEYS[0]){const db=await idb();return storageRequest(db,'readwrite',(tx,finish)=>{tx.objectStore('kv').put(value,key);tx.oncomplete=()=>finish(null,true);tx.onabort=()=>finish(new DOMException('Simulated interrupted index','AbortError'));tx.onerror=()=>finish(new DOMException('Simulated index write failure','AbortError'));tx.abort();});}return original(key,value,guard);};
+    const accepted=await captureRecovery('manual'),after=JSON.stringify(await recoveryRead(RECOVERY_KEYS[0])),pending=await recoveryRead(RECOVERY_KEYS[1]),listed=await recoveryContents(X.catalogue);
+    recoveryWrite=original;const recovered=await captureRecovery('manual'),count=(await recoveryContents(X.catalogue)).items.length;
+    return {accepted,unchanged:before===after,stateUnchanged:state===JSON.stringify(S),staged:!!pending,listed:listed.items.length,valid:listed.items.every(x=>x.valid),recovered,count};
+   });
+   assert.deepEqual(result,{accepted:false,unchanged:true,stateUnchanged:true,staged:true,listed:4,valid:true,recovered:true,count:3});
+   await page.evaluate(()=>{globalThis.beforeRecoveryFailure=recoveryWrite;recoveryWrite=async()=>{throw new DOMException('Simulated snapshot quota','QuotaExceededError');};});
+   await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();const finished=await saved();assert.equal(finished.cur,null);assert.equal(finished.workouts.length,2);assert.equal(finished.workouts[1].ex[0].sets[0].kg,25);
+   await page.evaluate(()=>recoveryWrite=globalThis.beforeRecoveryFailure);await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.deepEqual((await saved()).workouts,finished.workouts);
+   await clickTab('settings');await clickControl(page.locator('[data-a=recovery]'));await page.locator('#recovery-now').waitFor();assert.equal(await page.locator('[data-recovery-review]').count(),3);await page.keyboard.press('Escape');
+   const bad=await page.evaluate(async()=>{const bundle=await recoveryRead(RECOVERY_KEYS[0]);bundle.records[0].data.workouts[0].ex[0].sets[0].kg=999;await recoveryWrite(RECOVERY_KEYS[0],bundle);return bundle.records[0].id;});
+   await clickControl(page.locator('[data-a=recovery]'));const blocked=page.locator('[data-recovery-review="'+bad+'"]');await blocked.waitFor();assert(await blocked.isDisabled());await clickControl(page.locator('#recovery-now'));await waitCondition(()=>!importing&&document.querySelector('#recovery-action-status')?.textContent.includes('not saved'));assert(await blocked.isDisabled(),'failed retry retains the corrupt-copy Restore prohibition');await page.keyboard.press('Escape');
+  });
+  await check(name+': reset clears recovery stores and a late checksum cannot recreate them',async()=>{
+   await open({...base(),workouts:[workout()]});await saved();await page.evaluate(async()=>{if(!await captureRecovery('manual'))throw Error('Recovery fixture not saved');});
+   const result=await page.evaluate(async()=>{
+    const original=crypto.subtle.digest.bind(crypto.subtle);let release,started;const began=new Promise(resolve=>started=resolve);
+    crypto.subtle.digest=(...args)=>new Promise(resolve=>{release=()=>original(...args).then(resolve);started();});
+    const captured=captureRecovery('manual');await began;const cleared=await clearStoredState();release();const late=await captured;crypto.subtle.digest=original;
+    return {cleared,late,current:await dbRead(),copies:await Promise.all(RECOVERY_KEYS.map(recoveryRead)),local:PERSONAL_STORAGE_KEYS.map(k=>localStorage.getItem(k))};
+   });
+   assert(result.cleared&&!result.late);assert.equal(result.current,null);assert.deepEqual(result.copies,[null,null]);assert(result.local.every(x=>x===null));
+   await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.equal((await saved()).workouts.length,0);assert.equal((await page.evaluate(async()=>recoveryContents(X.catalogue))).items.length,0);
+  });
   await check(name+': two real tabs block the stale writer',async()=>{
    await open();const second=await context.newPage();await second.goto(url);await second.locator('[data-a=start]').first().waitFor();await clickControl(page.locator('[data-a=start][data-v=Empty]'));await second.locator('#storage-conflict').waitFor();assert.equal(await second.locator('#storage-conflict').getAttribute('role'),'alertdialog');await second.close();
   });

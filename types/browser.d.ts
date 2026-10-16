@@ -52,6 +52,11 @@ interface SlatDOMSelectors {
   "#history-split": HTMLSelectElement;
   "#imp": HTMLInputElement;
   "#verify-backup": HTMLInputElement;
+  "#recovery-content": HTMLDivElement;
+  "#recovery-now": HTMLButtonElement;
+  "#recovery-verify": HTMLButtonElement;
+  "#recovery-raw": HTMLButtonElement;
+  "#recovery-action-status": HTMLParagraphElement;
   "#import-status": HTMLParagraphElement;
   "#legal-title": HTMLHeadingElement;
   "#log-band": HTMLInputElement;
@@ -114,6 +119,8 @@ interface SlatDOMSelectors {
   "[data-routine-move]": HTMLButtonElement;
   "[data-routine-remove]": HTMLButtonElement;
   "[data-routine-replace]": HTMLButtonElement;
+  "[data-recovery-review]": HTMLButtonElement;
+  "[data-recovery-export]": HTMLButtonElement;
   "[data-tut]": HTMLButtonElement;
 }
 type SlatElement<K extends string> = K extends keyof SlatDOMSelectors ? SlatDOMSelectors[K] : HTMLElement;

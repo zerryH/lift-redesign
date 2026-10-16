@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {boot,base,workout} from './support/runtime.mjs';
+const z=await boot({...base(),rankingVersion:11});
+const backup={version:4,workouts:[workout()],bw:base().bw,settings:base().set,additionalFeatureData:{id:'future:stable',order:['exercise:one'],paused:false,nested:{exact:61.123456789}},lastBackup:123,lastBackupRevision:999,savedAt:5,revision:999};
+await z.h.importBackup(backup);
+assert.equal(JSON.stringify(z.h.S.additionalFeatureData),JSON.stringify(backup.additionalFeatureData),'accepted JSON fields must not be silently discarded by restore');
+assert.equal(z.h.S.lastBackup,0,'restoring a file must not imply an external export happened on this device');
+assert.equal(z.h.S.lastBackupRevision,0);
+assert(z.h.S.revision<999,'source storage revisions cannot overwrite the local acknowledgement sequence');
+assert.equal(z.h.S.version,undefined);assert.equal(z.h.S.settings,undefined);
+assert.equal(JSON.parse(z.store.get('liftlog-state')).additionalFeatureData.nested.exact,61.123456789);
+let exported;z.ctx.File=class{constructor(parts,name){exported=JSON.parse(parts.join(''));this.name=name;}};
+const create=z.ctx.document.createElement;z.ctx.document.createElement=()=>{const el=create();el.click=()=>{};return el;};
+await z.h.A.exp();assert.deepEqual(exported.additionalFeatureData,backup.additionalFeatureData,'normal Export also retains additional feature data');
+for(const key of ['savedAt','revision','set','lastBackup','lastBackupRevision'])assert.equal(exported[key],undefined,'device-local metadata is not portable');
+assert.deepEqual(z.errors,[]);
+console.log('Additional accepted JSON fields survive restore without trusting source storage metadata or backup freshness');

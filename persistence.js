@@ -4,9 +4,11 @@ let dbPromise=null;const idb=()=>{if(location.protocol==='file:')return Promise.
 const storageRequest=(db,mode,operation)=>new Promise((resolve,reject)=>{let settled=false;const tx=db.transaction('kv',mode);const finish=(error,value)=>{if(settled)return;settled=true;clearTimeout(timer);error?reject(error):resolve(value);};const timer=setTimeout(()=>{finish(new Error('IndexedDB transaction timed out'));try{tx.abort();}catch{}},STORAGE_TIMEOUT_MS);try{operation(tx,finish);}catch(error){finish(error);try{tx.abort();}catch{}}});
 let unreadableLocal=false;const localGet=()=>{try{const raw=localStorage.getItem('liftlog-state');const value=JSON.parse(raw||'null');unreadableLocal=raw!==null&&(!value||typeof value!=='object'||Array.isArray(value));return unreadableLocal?null:value}catch{unreadableLocal=true;return null}};
 const localSave=value=>{try{localStorage.setItem('liftlog-state',JSON.stringify(value));return true}catch{return false}};
-const dbRead=async()=>{const d=await idb();return storageRequest(d,'readonly',(tx,finish)=>{const q=tx.objectStore('kv').get('s');q.onsuccess=event=>finish(null,q.result??event?.target?.result??null);q.onerror=()=>finish(q.error||new Error('IndexedDB read failed'));tx.onabort=()=>finish(tx.error||new Error('IndexedDB read aborted'));});};
+const dbReadKey=async(key)=>{const d=await idb();return storageRequest(d,'readonly',(tx,finish)=>{const q=tx.objectStore('kv').get(key);q.onsuccess=event=>finish(null,q.result??event?.target?.result??null);q.onerror=()=>finish(q.error||new Error('IndexedDB read failed'));tx.onabort=()=>finish(tx.error||new Error('IndexedDB read aborted'));});};
+const dbRead=()=>dbReadKey('s');
+const dbWriteKey=async(key,value)=>{const d=await idb();return storageRequest(d,'readwrite',(tx,finish)=>{const store=tx.objectStore('kv');if(value===null)store.delete(key);else store.put(value,key);tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>finish(tx.error||new Error('IndexedDB write aborted'));});};
 const dbWrite=async(value,expectedSavedAt,expectedRevision)=>{const d=await idb();return storageRequest(d,'readwrite',(tx,finish)=>{const store=tx.objectStore('kv');let failure=null;const q=store.get('s');q.onsuccess=event=>{const previous=q.result??event?.target?.result;if(Number(previous?.savedAt)>expectedSavedAt||Number(previous?.revision)>expectedRevision){failure=Object.assign(new Error('Another tab saved changes'),{code:'STATE_CONFLICT'});tx.abort();return;}store.put(value,'s');};q.onerror=()=>{failure=q.error||new Error('IndexedDB comparison failed');tx.abort();};tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(failure||tx.error||new Error('IndexedDB write failed'));tx.onabort=()=>finish(failure||tx.error||new Error('IndexedDB write aborted'));});};
-const dbClear=async()=>{const d=await idb();await storageRequest(d,'readwrite',(tx,finish)=>{tx.objectStore('kv').delete('s');tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(tx.error||new Error('IndexedDB delete failed'));tx.onabort=()=>finish(tx.error||new Error('IndexedDB delete aborted'));});return (await dbRead())==null;};
+const dbClear=async(keys=['s'])=>{const d=await idb();await storageRequest(d,'readwrite',(tx,finish)=>{for(const key of keys)tx.objectStore('kv').delete(key);tx.oncomplete=()=>finish(null,true);tx.onerror=()=>finish(tx.error||new Error('IndexedDB delete failed'));tx.onabort=()=>finish(tx.error||new Error('IndexedDB delete aborted'));});return (await dbRead())==null;};
 const dbGet=async()=>{const l=localGet();let d=null;if(location.protocol!=='file:')try{d=await dbRead()}catch{}const out=l&&(!d||Number(l.revision||0)>Number(d.revision||0)||(Number(l.revision||0)===Number(d.revision||0)&&(Number(l.savedAt)||0)>(Number(d.savedAt)||0)))?l:(d||l);if(!out&&unreadableLocal)throw new Error('Saved data could not be read. Export a recovery copy before retrying.');return out};
 /** @type {Promise<boolean|void>} */
 let saveTail=Promise.resolve(),saveEpoch=0,storageRevision=0,storageConflict=false;
@@ -34,17 +36,18 @@ const save=()=>{
  const run=async()=>{try{return await (navigator.locks?.request?navigator.locks.request('slat-state-write',job):job());}catch{setPersistenceStatus('failed');toast('Could not save. Keep this tab open and export a backup.');return false;}};
  const result=saveTail.then(run,run);saveTail=result.catch(()=>false);return result;
 };
-const PERSONAL_STORAGE_KEYS=['liftlog-state','liftlog-import-recovery','liftlog-ranking-migration-backup','liftlog-startup-recovery'];
+const RECOVERY_KEYS=['liftlog-recovery-v1','liftlog-recovery-pending-v1'];
+const PERSONAL_STORAGE_KEYS=['liftlog-state','liftlog-import-recovery','liftlog-ranking-migration-backup','liftlog-startup-recovery',...RECOVERY_KEYS];
 const storageCopies=storage=>PERSONAL_STORAGE_KEYS.map(key=>[key,storage.getItem(key)]);
 const restoreCopies=(storage,copies)=>{for(const [key,value] of copies)try{if(value===null)storage.removeItem(key);else storage.setItem(key,value);}catch{}};
 const clearCopies=(storage,copies,label)=>{for(const [key] of copies){storage.removeItem(key);if(storage.getItem(key)!==null)throw new Error(label+' reset verification failed');}};
 const clearStoredState=async()=>{
- saveEpoch++;await saveTail.catch(()=>false);
+ saveEpoch++;await saveTail.catch(()=>false);if(typeof recoveryEpoch!=='undefined')recoveryEpoch++;if(typeof recoveryTail!=='undefined')await recoveryTail.catch(()=>false);
  const clear=async()=>{
- let localCopies,sessionCopies=null,dbCopy=null;const web=location.protocol!=='file:',session=typeof sessionStorage!=='undefined'?sessionStorage:null;
- try{localCopies=storageCopies(localStorage);if(session)sessionCopies=storageCopies(session);if(web)dbCopy=await dbRead();}catch{return false;}
- const restore=async()=>{restoreCopies(localStorage,localCopies);if(session&&sessionCopies)restoreCopies(session,sessionCopies);if(web)try{if(dbCopy==null)await dbClear();else await dbWrite(dbCopy,Infinity,Infinity);}catch{}};
- try{clearCopies(localStorage,localCopies,'Local storage');if(session&&sessionCopies)clearCopies(session,sessionCopies,'Session storage');if(web&&!await dbClear())throw new Error('IndexedDB reset verification failed');}
+ let localCopies,sessionCopies=null,dbCopy=null,recoveryCopies=[];const web=location.protocol!=='file:',session=typeof sessionStorage!=='undefined'?sessionStorage:null;
+ try{localCopies=storageCopies(localStorage);if(session)sessionCopies=storageCopies(session);if(web){dbCopy=await dbRead();recoveryCopies=await Promise.all(RECOVERY_KEYS.map(async key=>[key,await dbReadKey(key)]));}}catch{return false;}
+ const restore=async()=>{restoreCopies(localStorage,localCopies);if(session&&sessionCopies)restoreCopies(session,sessionCopies);if(web)try{if(dbCopy==null)await dbClear();else await dbWrite(dbCopy,Infinity,Infinity);for(const [key,value] of recoveryCopies)await dbWriteKey(key,value);}catch{}};
+ try{clearCopies(localStorage,localCopies,'Local storage');if(session&&sessionCopies)clearCopies(session,sessionCopies,'Session storage');if(web){if(!await dbClear(['s',...RECOVERY_KEYS]))throw new Error('IndexedDB reset verification failed');for(const key of RECOVERY_KEYS)if(await dbReadKey(key)!==null)throw new Error('Recovery reset verification failed');}}
  catch{await restore();return false;}
  return true;
  };
