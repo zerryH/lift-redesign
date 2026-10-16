@@ -966,5 +966,8 @@ body.has-rest nav{grid-row:3;}
 .pin-order-row b{overflow-wrap:anywhere}
 .rank-inspect{cursor:pointer;min-width:44px;min-height:44px;white-space:normal}
 .rank-source dl{margin:10px 0 0}.inspector-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:12px;padding:8px 0;border-bottom:1px solid var(--ln)}
+.programme-row{flex-wrap:wrap;gap:12px}.programme-row>div,.programme-row>span,.programme-row>b{min-width:0;overflow-wrap:anywhere}.programme-card .enhanced-heading,.progression-card .enhanced-heading{flex-wrap:wrap;gap:10px}
+.planned-list>small{display:block;margin-block:10px}.activity-day.planned-day{outline:2px solid var(--ac);outline-offset:1px}.activity-day.skipped-day{box-shadow:inset 0 0 0 1px var(--mu)}
+.programme-card button,.progression-card button,.programme-row button{min-height:44px;white-space:normal}
 .inspector-row dt,.inspector-row dd{min-width:0;overflow-wrap:anywhere;margin:0}.inspector-row dt{color:var(--mu)}
 @media(max-width:380px){.inspector-row{grid-template-columns:minmax(0,1fr);gap:4px}.quick-exercise-row{flex-wrap:wrap}.quick-exercise-row .exercise-option{flex-basis:75%}}
