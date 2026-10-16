@@ -706,7 +706,7 @@ try{
    await open({...base(),rankingVersion:11,workouts:[workout()],cur:{...workout(),id:998,ex:[]}},undefined,'[data-a=openx]');
    await clickControl(page.locator('[data-a=openx]'));await page.locator('#ex-search').fill('Bench Press');await clickControl(page.locator('[data-a=pinExercise][data-v=ex001]'));await saved();
    await page.locator('#ex-search').fill('Squat');await clickControl(page.locator('[data-a=pinExercise][data-v=ex037]'));await saved();
-   await clickControl(page.locator('[data-a=pinOrder]'));await clickControl(page.locator('[data-a=pinMove][data-v=ex037][data-step="-1"]'));await page.keyboard.press('Escape');await page.keyboard.press('Escape');
+   await clickControl(page.locator('[data-a=pinOrder]'));await clickControl(page.locator('[data-a=pinMove][data-v=ex037][data-step="-1"]'));await waitCondition(()=>!importing&&S.favourites[0]==='ex037');assert.deepEqual((await saved()).favourites,['ex037','ex001']);await page.keyboard.press('Escape');await page.keyboard.press('Escape');
    await page.reload();await page.locator('[data-a=openx]').waitFor();await clickControl(page.locator('[data-a=openx]'));await clickControl(page.locator('[data-a=pickerMode][data-v=Pinned]'));
    assert.deepEqual(await page.locator('.exercise-option').evaluateAll(els=>els.map(el=>el.dataset.v)),['Squat','Bench Press']);
    await clickControl(page.locator('[data-a=pickerMode][data-v=Recent]'));assert.deepEqual(await page.locator('.exercise-option').evaluateAll(els=>els.map(el=>el.dataset.v)),['Bench Press']);await page.keyboard.press('Escape');
