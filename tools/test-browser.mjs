@@ -5,6 +5,7 @@ import http from 'node:http';
 import assert from 'node:assert/strict';
 import {base,workout} from '../tests/support/runtime.mjs';
 import {installFixture} from './browser-fixture.mjs';
+import {screenshotSection} from './browser-screenshot.mjs';
 const playwright=await import(process.env.SLAT_PLAYWRIGHT_PATH||'playwright');
 let workerTag='',legacyHtml=false,stalePage=false;const legacyErrors=[];
 const root=process.cwd(),mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.webmanifest':'application/manifest+json'};
@@ -48,7 +49,7 @@ async function stableScreenshot(filename){
  }
  // Let the app's 2.7s transient notifications fade before visual capture.
  await page.waitForTimeout(3000);
- if(filename.includes('-history-summary'))await page.locator('.training-summary').screenshot({path:path.join(out,filename)});else await page.screenshot({path:path.join(out,filename)});
+ if(filename.includes('-history-summary'))await screenshotSection(page,page.locator('.training-summary'),path.join(out,filename));else await page.screenshot({path:path.join(out,filename)});
 }
 // WebKit can stop animation-frame polling while timers and DOM updates keep running.
 // Keep the predicate and deadline; poll it independently of animation frames.

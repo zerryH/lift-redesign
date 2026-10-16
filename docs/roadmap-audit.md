@@ -20,6 +20,8 @@ The five-page roadmap's functional scope is F01–F08, delivered through recover
 
 The test harness also had two distinct timing defects: Playwright's async truthy-promise predicate needed an awaited bounded polling helper, and the new pin-order journey reloaded before its save acknowledgement. Both have direct regression coverage; original outcome assertions, deadlines and browser engines were retained.
 
+Final WebKit evidence reached and passed every new feature journey, then stalled in the history summary element screenshot's animation-frame-based stability wait after a viewport resize. Section capture now uses timer-backed stable geometry under the same 12-second deadline, requires the full section to fit without overflow clipping, captures it at the original narrow width, and restores the viewport even on failure. A no-animation-frame fixture rejects moving/clipped sections and propagates capture errors; no app outcome assertion or browser engine is removed.
+
 ## Coverage
 
 | Maintained area | Review and regression focus |
@@ -32,7 +34,7 @@ The test harness also had two distinct timing defects: Playwright's async truthy
 
 Generated `app.js`, both HTML distributions and embedded catalogue/rank/anatomy copies are checked against canonical sources by the independent build regression. They are not separate manual reviews. The generator checks every catalogue/standard record; provisional fitness heuristics still require independent domain review.
 
-The final local slice passes 112 regression scripts, both editor configurations with zero diagnostics and the 475-exercise generator. Hosted Chromium/WebKit, six local-file reload fixtures, native build and public Pages asset hashes are additional required gates; their completed results belong to the PR evidence, not an assumed pass here.
+The final local slice passes 113 regression scripts, both editor configurations with zero diagnostics and the 475-exercise generator. Hosted Chromium/WebKit, six local-file reload fixtures, native build and public Pages asset hashes are additional required gates; their completed results belong to the PR evidence, not an assumed pass here.
 
 The cumulative backup regression verifies favourites, programmes/slots, rules/decision snapshots, group order/rest, active warm-up queue and Undo, goals, exact values, stable IDs and unknown JSON through checksummed recovery, replacement, reload and Undo. Old backups and reset default optional feature arrays safely.
 
