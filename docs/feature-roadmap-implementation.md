@@ -4,7 +4,7 @@ Source: the user-approved five-page feature roadmap dated 15 October 2026. This 
 
 | Feature | Release | Tracking | Current state |
 | --- | --- | --- | --- |
-| F01 Recovery centre | R0 | [#157](https://github.com/zerryH/lift-redesign/issues/157) | Snapshot/manifest contract implemented in 5.7.51; validation and release evidence belong to its PR. Durable capture, recovery UI, Verify and Restore are not complete. |
+| F01 Recovery centre | R0 | [#157](https://github.com/zerryH/lift-redesign/issues/157) | Contract implemented in 5.7.51; read-only external-file verification in 5.7.52. Validation/release evidence belongs to each PR. Durable capture, recovery list/status and snapshot Restore are not complete. |
 | F02 Private diagnostics | R0 | [#156](https://github.com/zerryH/lift-redesign/issues/156) | Specified; not implemented. |
 | F03 Quick logging/favourites | R1 | [#155](https://github.com/zerryH/lift-redesign/issues/155) | Specified; existing previous-set/repeat controls are not the complete feature. |
 | F08 Rank/setup inspector | R1 | [#160](https://github.com/zerryH/lift-redesign/issues/160) | Specified; existing provenance and muscle information are inputs, not completion. |

@@ -479,6 +479,19 @@ try{
    assert.equal(await page.evaluate(()=>S.rk['Bench Press'].e),before.rank);
    assert((await page.locator('#v').textContent()).includes('1 future-dated workout'));
   });
+  await check(name+': Verify backup checks files read-only and distinguishes legacy checks from snapshot integrity',async()=>{
+   const initial={...base(),workouts:[{...workout('Bench Press',60.123456,8),id:10}],cur:{...workout(),id:11,ex:[{n:'Bench Press',entryId:'exercise:verify-draft',sets:[]}],drafts:{'exercise:verify-draft':{kg:null,weightText:'invalid typed text',note:'Keep this draft',rpe:'8,5'}}}};
+   await open(initial,undefined,'[data-a=log]');await clickTab('settings');assert(await page.getByRole('button',{name:'Verify backup',exact:true}).isVisible());
+   const before=await page.evaluate(async()=>{await saveTail;return {state:JSON.stringify(S),stored:localStorage.getItem('liftlog-state'),recovery:localStorage.getItem('liftlog-import-recovery')};});
+   const backup=await page.evaluate(()=>({...S,version:4,settings:S.set})),file=(name,data)=>({name,mimeType:'application/json',buffer:Buffer.from(JSON.stringify(data))});
+   await page.locator('#verify-backup').setInputFiles(file('legacy-check.json',backup));let modal=page.getByRole('dialog',{name:'Verify backup',exact:true});await modal.waitFor();
+   assert((await modal.textContent()).includes('no embedded checksum'));assert((await modal.locator('.backup-summary').textContent()).includes('Calendar days'));assert((await modal.textContent()).includes('Includes an unfinished workout'));assert.equal(await page.locator('#confirm-import').count(),0);assert.equal(await page.locator('#verify-backup').inputValue(),'');await clickControl(modal.getByRole('button',{name:'Done',exact:true}));await modal.waitFor({state:'detached'});
+   const envelope=await page.evaluate(async()=>SlatRecovery.create({...S,version:4,settings:S.set},{id:'snapshot:browser-file',reason:'manual',appVersion:BUILD_VERSION,revision:durableRevision,savedAt:storageRevision,createdAt:Date.now()},X.catalogue));
+   await page.locator('#verify-backup').setInputFiles(file('snapshot-check.json',envelope));modal=page.getByRole('dialog',{name:'Verify backup',exact:true});await modal.waitFor();assert((await modal.textContent()).includes('SHA-256 checksum and record counts match'));assert.equal(await page.locator('#confirm-import').count(),0);await clickControl(modal.getByRole('button',{name:'Done',exact:true}));await modal.waitFor({state:'detached'});
+   const corrupt=JSON.parse(JSON.stringify(envelope));corrupt.data.workouts[0].ex[0].sets[0].kg=777;await page.locator('#verify-backup').setInputFiles(file('tampered.json',corrupt));await waitCondition(()=>[...document.querySelectorAll('.toast')].some(el=>el.textContent.includes('integrity check')));assert.equal(await page.getByRole('dialog',{name:'Verify backup',exact:true}).count(),0);
+   assert.deepEqual(await page.evaluate(()=>({state:JSON.stringify(S),stored:localStorage.getItem('liftlog-state'),recovery:localStorage.getItem('liftlog-import-recovery')})),before,'reading, checking and rejecting files cannot replace data or update backup freshness');
+   await page.reload();await page.locator('[data-a=tab][data-v=settings]').waitFor();assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),before.stored);assert.equal((await saved()).cur.drafts['exercise:verify-draft'].weightText,'invalid typed text');
+  });
   await check(name+': backup preview cancels safely and confirms atomic replacement',async()=>{
    await open({...base(),workouts:[workout()]});await clickTab('settings');const raw=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
    await page.locator('#imp').setInputFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({workouts:[{d:'2026-10-10',ex:{}}],bw:[]}))});assert.equal(await page.evaluate(()=>localStorage.getItem('liftlog-state')),raw);
@@ -492,6 +505,7 @@ try{
    const buffer=Buffer.from(JSON.stringify({app:'slat',version:4,date:'2026-10-13',workouts,bw:[],settings:base().set}));assert(buffer.length>25*1024*1024);
    await page.locator('#imp').setInputFiles({name:'slat-large-backup.json',mimeType:'application/json',buffer});
    await page.locator('#confirm-import').waitFor();assert((await page.locator('.backup-summary').textContent()).includes('1650'));await clickControl(page.getByRole('button',{name:'Cancel',exact:true}));
+   await page.locator('#verify-backup').setInputFiles({name:'slat-large-backup.json',mimeType:'application/json',buffer});const verification=page.getByRole('dialog',{name:'Verify backup',exact:true});await verification.waitFor();assert((await verification.locator('.backup-summary').textContent()).includes('1650'));assert((await verification.textContent()).includes('no embedded checksum'));assert.equal(await page.locator('#confirm-import').count(),0);await clickControl(verification.getByRole('button',{name:'Done',exact:true}));
   });
   await check(name+': latest backup selection keeps its review when an older read finishes',async()=>{
    await open({...base(),workouts:[workout()]});await clickTab('settings');const before=await page.evaluate(()=>localStorage.getItem('liftlog-state'));
