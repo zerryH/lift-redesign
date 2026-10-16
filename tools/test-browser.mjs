@@ -147,7 +147,7 @@ try{
      else await page.evaluate(async initial=>{await importBackup(initial);await saveTail;},{...state,version:4,settings:state.set});
      await page.locator('[data-a=log]').waitFor();
     }
-    const before=await page.evaluate(()=>({entryId:S.cur.ex[0].entryId,history:JSON.stringify(S.workouts)}));assert.notEqual(before.entryId,shared);
+    const before=await page.evaluate(async()=>{const acknowledged=await saveTail,stored=JSON.parse(localStorage.getItem('liftlog-state'));return {entryId:S.cur.ex[0].entryId,history:JSON.stringify(S.workouts),acknowledged,storedEntryId:stored?.cur?.ex[0]?.entryId};});assert.notEqual(before.entryId,shared);assert.equal(before.acknowledged,true,test.path+' must acknowledge the recovered draft before reload');assert.equal(before.storedEntryId,before.entryId,test.path+' must store the repaired identity before reload');
     assert.equal(await page.locator('#qol-note').inputValue(),note);assert.equal(await page.locator(test.field).inputValue(),String(test.value));assert.equal(await page.locator('#qol-rpe').inputValue(),'8.5');
     if(test.n==='Resistance Band Curl')assert.equal(await page.locator('#log-band').inputValue(),'Yellow test band');
     await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-note').inputValue(),note);assert.equal(await page.evaluate(()=>S.cur.ex[0].entryId),before.entryId);
