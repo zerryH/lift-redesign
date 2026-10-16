@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {base,workout} from './support/runtime.mjs';
+import {recoveryBoot,keys} from './support/recovery.mjs';
+const z=await recoveryBoot({...base(),rankingVersion:11,workouts:[workout()]});await z.h.save();assert(await z.recovery.captureRecovery('manual'));
+const bundle=JSON.parse(z.store.get(keys[0]));bundle.records[0].counts.workouts='<b data-recovery-untrusted>not a count</b>';bundle.records[0].counts.activityDays='<i>not a date count</i>';bundle.records[0].counts.sets='<em>not a set count</em>';z.store.set(keys[0],JSON.stringify(bundle));
+const state=z.store.get('liftlog-state'),corrupt=z.store.get(keys[0]),create=z.ctx.document.createElement;z.ctx.document.createElement=()=>{const el=create();el.querySelector=z.get;return el;};
+await z.recovery.openRecoveryCentre();const html=z.get('#recovery-content').innerHTML;
+assert(!html.includes('data-recovery-untrusted'),'failed-integrity metadata must not become page markup');
+assert(html.includes('Counts unavailable: integrity check failed.'));assert(html.includes('Review restore'));assert(html.includes('disabled'));assert(html.includes('Export copy'));
+assert.equal(z.store.get('liftlog-state'),state);assert.equal(z.store.get(keys[0]),corrupt,'the damaged copy is retained for explicit export');assert.deepEqual(z.errors,[]);
+console.log('Unverified snapshot counts never become markup or trusted totals; damaged copies remain exportable and cannot be restored');

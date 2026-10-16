@@ -608,19 +608,29 @@ try{
   await check(name+': recovery centre exports and explicitly restores exact records and typed drafts',async()=>{
    const routine={id:'routine:recover',name:'Recovery routine',split:'Push',ex:[{n:'Bench Press',exerciseId:'ex001',sets:3,reps:8,seconds:30,meters:20,rest:120}]};
    const current={...workout('Bench Press'),id:991,ex:[{n:'Bench Press',entryId:'exercise:recovery-ui',sets:[]}],drafts:{'exercise:recovery-ui':{kg:null,weightText:'keep invalid text',weightUnit:'lb',reps:8,note:'Keep my typed recovery draft',rpe:'8,5'}}};
-   await open({...base(),set:{...base().set,unit:'lb'},workouts:[{...workout('Bench Press',61.123456789,8),id:12},{...workout('Dumbbell Curl',12.987654321,9),id:13}],cur:current,routines:[routine],exercisePreferences:{ex001:{rest:120,equipmentLabel:'Gym A · cable 2:1'}},additionalFeatureData:{ids:['future:one'],exact:18.123456789}},undefined,'[data-a=log]');
-   await saved();const before=await page.evaluate(()=>JSON.parse(JSON.stringify(S)));await clickTab('settings');await clickControl(page.locator('[data-a=recovery]'));await page.locator('#recovery-now').waitFor();
+   Object.defineProperty(current.drafts,'__proto__',{value:current.drafts['exercise:recovery-ui'],enumerable:true});delete current.drafts['exercise:recovery-ui'];current.ex[0].entryId='__proto__';
+   await open(JSON.stringify({...base(),set:{...base().set,unit:'lb'},workouts:[{...workout('Bench Press',61.123456789,8),id:12},{...workout('Dumbbell Curl',12.987654321,9),id:13}],cur:current,routines:[routine],exercisePreferences:{ex001:{rest:120,equipmentLabel:'Gym A · cable 2:1'}},additionalFeatureData:{ids:['future:one'],exact:18.123456789}}),undefined,'[data-a=log]');
+   assert(await page.evaluate(()=>S.cur.ex[0].entryId!=='__proto__'&&Object.hasOwn(S.cur.drafts,S.cur.ex[0].entryId)&&!Object.hasOwn(S.cur.drafts,'__proto__')),'unsafe entry ID is repaired with the owning typed draft');
+   await saved();await page.evaluate(async()=>{Object.defineProperty(S,'__proto__',{value:{recoveryOwnMarker:'ordinary JSON'},enumerable:true,writable:true,configurable:true});S.constructor={ordinary:'retained JSON'};await save();});const before=JSON.parse(await page.evaluate(()=>JSON.stringify(S)));await clickTab('settings');await clickControl(page.locator('[data-a=recovery]'));await page.locator('#recovery-now').waitFor();
    assert((await page.locator('#recovery-content').textContent()).includes('On this browser only'));assert((await page.locator('#recovery-content').textContent()).includes('Last acknowledged save'));
    await clickControl(page.locator('#recovery-now'));await waitCondition(async()=>!importing&&(await recoveryContents(X.catalogue)).items.some(x=>x.manifest.reason==='manual'));await page.locator('#recovery-now').waitFor({state:'visible'});
-   assert.deepEqual(await page.evaluate(()=>JSON.parse(JSON.stringify(S))),before,'capturing a copy must not rewrite current state or freshness');
+   assert.deepEqual(JSON.parse(await page.evaluate(()=>JSON.stringify(S))),before,'capturing a copy must not rewrite current state or freshness');
    const snapshot=await page.evaluate(async()=>{const items=(await recoveryContents(X.catalogue)).items;return items.find(x=>x.manifest.reason==='manual').manifest.id;});
    const downloadReady=page.waitForEvent('download');await clickControl(page.locator('[data-recovery-export="'+snapshot+'"]'));const download=await downloadReady,envelope=JSON.parse(await fs.readFile(await download.path(),'utf8'));
-   assert.equal(envelope.id,snapshot);assert.deepEqual(envelope.data.workouts,before.workouts);assert.deepEqual(envelope.data.cur,before.cur);assert.deepEqual(envelope.data.additionalFeatureData,before.additionalFeatureData);
+   assert.equal(envelope.id,snapshot);assert.deepEqual(envelope.data.workouts,before.workouts);assert.deepEqual(envelope.data.cur,before.cur);assert.deepEqual(envelope.data.additionalFeatureData,before.additionalFeatureData);assert.deepEqual(envelope.data.__proto__,before.__proto__);assert.deepEqual(envelope.data.constructor,before.constructor);
+   await waitCondition(()=>!document.querySelector('.toast:not(.toast-action)'));
    const enlarged=await page.addStyleTag({content:'body{font-size:30px}input,button,select,textarea{font-size:32px}#recovery-content .support-copy,#recovery-content .recovery-status,#recovery-content .note,#recovery-content small{font-size:30px}'});
    for(const dark of [0,1]){
     await page.evaluate(d=>document.documentElement.dataset.d=String(d),dark);await page.setViewportSize({width:320,height:720});
     assert(await page.locator('.action-card').evaluate(el=>el.scrollWidth<=el.clientWidth+1),'recovery controls fit a narrow phone with enlarged text');assert((await page.locator('#recovery-now').boundingBox()).height>=44);assert(await page.locator('#recovery-now').evaluate(el=>parseFloat(getComputedStyle(el).fontSize)>=30));
-    await page.locator('.action-card').screenshot({path:path.join(out,name+'-recovery-'+(dark?'dark':'light')+'.png')});
+    // Element screenshots wait for animation-frame stability, which hosted WebKit
+    // can stop delivering after a download. Keep the layout assertions above and
+    // capture the same visible card directly, without that extra scroll/stability step.
+    const clip=await page.locator('.action-card').evaluate(el=>{el.scrollTop=0;const r=el.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};});
+    assert(clip.x>=0&&clip.y>=0&&clip.width>0&&clip.height>0&&clip.x+clip.width<=320&&clip.y+clip.height<=720,'recovery capture contains the whole visible card');
+    await page.screenshot({path:path.join(out,name+'-recovery-'+(dark?'dark':'light')+'.png'),clip});
+    await page.locator('#recovery-now').evaluate(el=>el.scrollIntoView({block:'start'}));
+    await page.screenshot({path:path.join(out,name+'-recovery-'+(dark?'dark':'light')+'-actions.png'),clip});
    }
    await enlarged.evaluate(el=>el.remove());await page.keyboard.press('Escape');await page.setViewportSize({width:390,height:844});await page.evaluate(()=>document.documentElement.dataset.d=String(S.set.dark));
    const blank={version:4,workouts:[],bw:[],settings:{table:'M',unit:'kg'}};
@@ -628,7 +638,7 @@ try{
    await clickControl(page.locator('[data-a=recovery]'));await page.locator('[data-recovery-review="'+snapshot+'"]').waitFor();await clickControl(page.locator('[data-recovery-review="'+snapshot+'"]'));await page.locator('#confirm-import').waitFor();assert.equal((await saved()).workouts.length,0,'review alone never restores data');
    await clickControl(page.locator('#confirm-import'));await page.locator('#confirm-import').waitFor({state:'detached'});
    const restored=await saved();for(const key of ['workouts','cur','routines','exercisePreferences','additionalFeatureData'])assert.deepEqual(restored[key],before[key]);assert.equal(restored.lastBackup,0);assert.equal(restored.lastBackupRevision,0);
-   await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-weight').inputValue(),'keep invalid text');assert.equal(await page.locator('#qol-note').inputValue(),'Keep my typed recovery draft');assert.deepEqual((await saved()).workouts,before.workouts);
+   await page.reload();await page.locator('[data-a=log]').waitFor();assert.equal(await page.locator('#qol-weight').inputValue(),'keep invalid text');assert.equal(await page.locator('#qol-note').inputValue(),'Keep my typed recovery draft');assert.deepEqual((await saved()).workouts,before.workouts);assert(await page.evaluate(()=>Object.hasOwn(S,'__proto__')&&S.recoveryOwnMarker===undefined&&S.__proto__.recoveryOwnMarker==='ordinary JSON'&&S.constructor.ordinary==='retained JSON'),'prototype-like keys remain own JSON fields after actual restore/reload');
   });
   await check(name+': interrupted recovery writes preserve snapshots and acknowledged Finish',async()=>{
    await open({...base(),workouts:[workout('Bench Press',61.123456789,8)],cur:{...workout('Cable Curl',25,8),id:999}},undefined,'[data-a=log]');await saved();
@@ -645,8 +655,8 @@ try{
    await clickControl(page.locator('[data-a=fin]'));await page.locator('[data-a=start]').first().waitFor();const finished=await saved();assert.equal(finished.cur,null);assert.equal(finished.workouts.length,2);assert.equal(finished.workouts[1].ex[0].sets[0].kg,25);
    await page.evaluate(()=>recoveryWrite=globalThis.beforeRecoveryFailure);await page.reload();await page.locator('[data-a=start]').first().waitFor();assert.deepEqual((await saved()).workouts,finished.workouts);
    await clickTab('settings');await clickControl(page.locator('[data-a=recovery]'));await page.locator('#recovery-now').waitFor();assert.equal(await page.locator('[data-recovery-review]').count(),3);await page.keyboard.press('Escape');
-   const bad=await page.evaluate(async()=>{const bundle=await recoveryRead(RECOVERY_KEYS[0]);bundle.records[0].data.workouts[0].ex[0].sets[0].kg=999;await recoveryWrite(RECOVERY_KEYS[0],bundle);return bundle.records[0].id;});
-   await clickControl(page.locator('[data-a=recovery]'));const blocked=page.locator('[data-recovery-review="'+bad+'"]');await blocked.waitFor();assert(await blocked.isDisabled());await clickControl(page.locator('#recovery-now'));await waitCondition(()=>!importing&&document.querySelector('#recovery-action-status')?.textContent.includes('not saved'));assert(await blocked.isDisabled(),'failed retry retains the corrupt-copy Restore prohibition');await page.keyboard.press('Escape');
+   const bad=await page.evaluate(async()=>{const bundle=await recoveryRead(RECOVERY_KEYS[0]);bundle.records[0].data.workouts[0].ex[0].sets[0].kg=999;bundle.records[0].counts.workouts='<b data-recovery-untrusted>not a count</b>';await recoveryWrite(RECOVERY_KEYS[0],bundle);return bundle.records[0].id;});
+   await clickControl(page.locator('[data-a=recovery]'));const blocked=page.locator('[data-recovery-review="'+bad+'"]');await blocked.waitFor();assert(await blocked.isDisabled());assert.equal(await page.locator('[data-recovery-untrusted]').count(),0,'unverified record counts cannot be interpreted as page markup');assert((await page.locator('#recovery-content').textContent()).includes('Counts unavailable: integrity check failed.'));await clickControl(page.locator('#recovery-now'));await waitCondition(()=>!importing&&document.querySelector('#recovery-action-status')?.textContent.includes('not saved'));assert(await blocked.isDisabled(),'failed retry retains the corrupt-copy Restore prohibition');await page.keyboard.press('Escape');
   });
   await check(name+': reset clears recovery stores and a late checksum cannot recreate them',async()=>{
    await open({...base(),workouts:[workout()]});await saved();await page.evaluate(async()=>{if(!await captureRecovery('manual'))throw Error('Recovery fixture not saved');});
